@@ -6,7 +6,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({ override: true });
 
 const app = express();
 app.use(express.json({ limit: '1mb' }));
@@ -64,6 +64,9 @@ async function generateSuggestion({ prompt, categories, mode }: { prompt: string
   if (!GEMINI_API_KEY && !GROQ_API_KEY) {
     throw new Error('Missing GEMINI_API_KEY or GROQ_API_KEY.');
   }
+
+  let rawText = '';
+  let provider = '';
 
   const normalizedCategories = categories
     .map((item) => item.trim())
