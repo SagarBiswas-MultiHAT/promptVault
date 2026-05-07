@@ -246,7 +246,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
             initial={{ opacity: 0, y: 20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
-            className="fixed bottom-52 right-6 z-50 w-[420px] max-w-[calc(100vw-2rem)] max-h-[75vh] glass-panel rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-24 right-4 z-[9999] w-[380px] max-w-[calc(100vw-2rem)] max-h-[65vh] glass-panel rounded-2xl shadow-2xl flex flex-col overflow-hidden"
           >
             <div className="flex items-center justify-between px-5 py-4 border-b border-vault-border">
               <div>
@@ -363,18 +363,26 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                           </div>
                         </div>
                       ) : (
-                        <div className="space-y-2 text-sm">
-                          <div className="flex items-center justify-between">
-                            <span className="text-vault-text-muted">Title</span>
-                            <span className="text-vault-text">{suggestedTitle || 'Untitled'}</span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-vault-text-muted">Category</span>
-                            <span className="text-vault-text">{suggestedCategory || 'General'}</span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-vault-text-muted">Tags</span>
-                            <span className="text-vault-text">{parseTags(tagsInput).join(', ') || 'None'}</span>
+                        <div className="grid grid-cols-[72px_1fr] gap-x-3 gap-y-2.5 text-sm items-start">
+                          <span className="text-vault-text-muted text-xs pt-0.5 shrink-0">Title</span>
+                          <span className="text-vault-text font-medium leading-snug">{suggestedTitle || 'Untitled'}</span>
+
+                          <span className="text-vault-text-muted text-xs pt-0.5 shrink-0">Category</span>
+                          <span className="text-vault-text">{suggestedCategory || 'General'}</span>
+
+                          <span className="text-vault-text-muted text-xs pt-1 shrink-0">Tags</span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {parseTags(tagsInput).length > 0
+                              ? parseTags(tagsInput).map((tag) => (
+                                  <span
+                                    key={tag}
+                                    className="px-2 py-0.5 bg-vault-border/60 text-vault-text-muted rounded-full text-[10px] font-mono"
+                                  >
+                                    #{tag}
+                                  </span>
+                                ))
+                              : <span className="text-vault-text-muted text-xs">None</span>
+                            }
                           </div>
                         </div>
                       )}
@@ -489,7 +497,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
 
       <button
         onClick={() => setIsOpen(prev => !prev)}
-        className="fixed bottom-22 right-14 z-50 w-12 h-12 rounded-full bg-vault-accent text-vault-bg shadow-xl shadow-vault-accent/30 flex items-center justify-center hover:scale-105 transition-transform"
+        className="fixed bottom-22 right-6 z-[9999] w-12 h-12 rounded-full bg-vault-accent text-vault-bg shadow-xl shadow-vault-accent/30 flex items-center justify-center hover:scale-105 transition-transform"
         aria-label="Open prompt assistant"
       >
         <Sparkles size={22} />

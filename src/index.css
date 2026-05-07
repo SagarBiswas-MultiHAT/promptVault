@@ -35,6 +35,11 @@
     --v-muted: #737373;
   }
 
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
   body {
     @apply bg-vault-bg text-vault-text font-sans antialiased;
   }
