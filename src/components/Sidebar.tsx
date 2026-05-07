@@ -3,9 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Plus, ChevronDown, ChevronRight, LayoutGrid, Star, Trash2, Edit2, BarChart3 } from 'lucide-react';
+import { Plus, ChevronDown, ChevronRight, LayoutGrid, Star, Trash2, Edit2, BarChart3, X } from 'lucide-react';
 import { Category, Prompt } from '../types.ts';
 import { motion, AnimatePresence } from 'motion/react';
+import { useState } from 'react';
 
 interface SidebarProps {
   categories: Category[];
@@ -36,12 +37,33 @@ export function Sidebar({
   showStats,
   onToggleStats,
 }: SidebarProps) {
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState('');
   
   const getPromptCount = (categoryId: string) => {
     return prompts.filter(p => p.categoryId === categoryId).length;
   };
 
   const favoritesCount = prompts.filter(p => p.isFavorite).length;
+
+  const handleRenameClick = (category: Category) => {
+    setEditingCategoryId(category.id);
+    setEditingName(category.name);
+  };
+
+  const handleSaveRename = (categoryId: string) => {
+    if (editingName.trim()) {
+      onRenameCategory(categoryId, editingName.trim());
+    }
+    setEditingCategoryId(null);
+    setEditingName('');
+  };
+
+  const handleDeleteCategory = (id: string) => {
+    if (confirm('Delete this category and all its prompts? This cannot be undone.')) {
+      onDeleteCategory(id);
+    }
+  };
 
   return (
     <div className="w-[280px] h-full flex flex-col bg-vault-panel border-r border-vault-border overflow-hidden">
@@ -102,16 +124,54 @@ export function Sidebar({
           <div className="space-y-1">
             {categories.map((category) => (
               <div key={category.id} className="group flex flex-col">
-                <div className="flex items-center">
-                  <button
-                    onClick={() => onSelectCategory(category.id)}
-                    className={`flex-1 flex items-center justify-between p-2 rounded-md text-left transition-all ${
-                      selectedCategoryId === category.id ? 'text-vault-accent font-bold' : 'text-vault-text-muted hover:text-vault-accent'
-                    }`}
-                  >
-                    <span className="text-sm"># {category.name}</span>
-                    <span className="text-[10px] bg-vault-panel-bright px-1.5 py-0.5 rounded opacity-60">{getPromptCount(category.id)}</span>
-                  </button>
+                <div className="flex items-center gap-1">
+                  {editingCategoryId === category.id ? (
+                    <div className="flex-1 flex items-center gap-2 px-2 py-1">
+                      <input
+                        autoFocus
+                        type="text"
+                        value={editingName}
+                        onChange={(e) => setEditingName(e.target.value)}
+                        onBlur={() => handleSaveRename(category.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleSaveRename(category.id);
+                          if (e.key === 'Escape') {
+                            setEditingCategoryId(null);
+                            setEditingName('');
+                          }
+                        }}
+                        className="flex-1 bg-vault-border rounded px-2 py-1 text-sm text-vault-text font-mono focus:outline-none focus:border-vault-accent"
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => onSelectCategory(category.id)}
+                        className={`flex-1 flex items-center justify-between p-2 rounded-md text-left transition-all ${
+                          selectedCategoryId === category.id ? 'text-vault-accent font-bold' : 'text-vault-text-muted hover:text-vault-accent'
+                        }`}
+                      >
+                        <span className="text-sm"># {category.name}</span>
+                        <span className="text-[10px] bg-vault-panel-bright px-1.5 py-0.5 rounded opacity-60">{getPromptCount(category.id)}</span>
+                      </button>
+                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => handleRenameClick(category)}
+                          className="p-1.5 hover:bg-vault-border text-vault-text-muted hover:text-vault-accent rounded transition-colors"
+                          title="Rename category"
+                        >
+                          <Edit2 size={14} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteCategory(category.id)}
+                          className="p-1.5 hover:bg-vault-border text-vault-text-muted hover:text-red-500 rounded transition-colors"
+                          title="Delete category"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             ))}
