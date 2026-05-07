@@ -98,7 +98,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
   const handleAnalyze = async (overridePrompt?: string) => {
     let promptToAnalyze = overridePrompt || promptInput;
     promptToAnalyze = promptToAnalyze.trim();
-    
+
     if (!promptToAnalyze) {
       setError('Please enter a prompt to analyze.');
       return;
@@ -118,7 +118,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
         categories: availableCategoryNames,
         mode: 'analyze',
       };
-      
+
       const response = await fetch('/api/suggest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -246,7 +246,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
             initial={{ opacity: 0, y: 20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
-            className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)] max-h-[70vh] glass-panel rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-52 right-6 z-50 w-[260px] max-w-[calc(100vw-2rem)] max-h-[55vh] glass-panel rounded-2xl shadow-2xl flex flex-col overflow-hidden"
           >
             <div className="flex items-center justify-between px-5 py-4 border-b border-vault-border">
               <div>
@@ -489,7 +489,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
 
       <button
         onClick={() => setIsOpen(prev => !prev)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-vault-accent text-vault-bg shadow-xl shadow-vault-accent/30 flex items-center justify-center hover:scale-105 transition-transform"
+        className="fixed bottom-22 right-14 z-50 w-12 h-12 rounded-full bg-vault-accent text-vault-bg shadow-xl shadow-vault-accent/30 flex items-center justify-center hover:scale-105 transition-transform"
         aria-label="Open prompt assistant"
       >
         <Sparkles size={22} />
