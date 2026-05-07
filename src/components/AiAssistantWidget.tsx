@@ -246,7 +246,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
             initial={{ opacity: 0, y: 20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
-            className="fixed bottom-52 right-6 z-50 w-[260px] max-w-[calc(100vw-2rem)] max-h-[55vh] glass-panel rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-52 right-6 z-50 w-[420px] max-w-[calc(100vw-2rem)] max-h-[75vh] glass-panel rounded-2xl shadow-2xl flex flex-col overflow-hidden"
           >
             <div className="flex items-center justify-between px-5 py-4 border-b border-vault-border">
               <div>
