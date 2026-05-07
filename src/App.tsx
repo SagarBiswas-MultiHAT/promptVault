@@ -33,6 +33,7 @@ import { PromptForm } from './components/PromptForm.tsx';
 import { PinLock } from './components/PinLock.tsx';
 import { StatsDashboard } from './components/StatsDashboard.tsx';
 import { VariableForm } from './components/VariableForm.tsx';
+import { AiAssistantWidget } from './components/AiAssistantWidget.tsx';
 
 // Types and Constants
 import { Prompt, Category, VaultData, SortOption } from './types.ts';
@@ -112,20 +113,35 @@ export default function App() {
     setIsRemovingLock(false);
   };
 
-  const handleAddPrompt = (promptData: Partial<Prompt>) => {
+  const createPrompt = (promptData: { title: string; body: string; categoryId: string; tags?: string[]; isFavorite?: boolean }) => {
     const newPrompt: Prompt = {
       id: crypto.randomUUID(),
-      title: promptData.title!,
-      body: promptData.body!,
-      categoryId: promptData.categoryId!,
+      title: promptData.title,
+      body: promptData.body,
+      categoryId: promptData.categoryId,
       tags: promptData.tags || [],
-      isFavorite: false,
+      isFavorite: promptData.isFavorite ?? false,
       usageCount: 0,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
     setData(prev => ({ ...prev, prompts: [newPrompt, ...prev.prompts] }));
+    return newPrompt.id;
+  };
+
+  const handleAddPrompt = (promptData: Partial<Prompt>) => {
+    createPrompt({
+      title: promptData.title!,
+      body: promptData.body!,
+      categoryId: promptData.categoryId!,
+      tags: promptData.tags,
+      isFavorite: false,
+    });
     setIsNewModalOpen(false);
+  };
+
+  const handleCreatePromptFromAi = (promptData: { title: string; body: string; categoryId: string; tags: string[] }) => {
+    return createPrompt({ ...promptData, isFavorite: false });
   };
 
   const handleUpdatePrompt = (promptData: Partial<Prompt>) => {
@@ -441,6 +457,12 @@ export default function App() {
           <div>PromptVault — Offline First Encrypted Storage</div>
         </footer>
       </main>
+
+      <AiAssistantWidget
+        categories={data.categories}
+        onCreatePrompt={handleCreatePromptFromAi}
+        onToggleFavorite={handleToggleFavorite}
+      />
 
       {/* --- MODALS --- */}
       
