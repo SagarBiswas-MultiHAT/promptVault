@@ -61,6 +61,7 @@ export default function App() {
   const [variablePrompt, setVariablePrompt] = useState<{prompt: Prompt, vars: string[]} | null>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   // --- PERSISTENCE ---
   useEffect(() => {
@@ -165,11 +166,10 @@ export default function App() {
   };
 
   const handleDeletePrompt = (id: string) => {
-    if (confirm('Permanently delete this prompt?')) {
-      setData(prev => ({ ...prev, prompts: prev.prompts.filter(p => p.id !== id) }));
-      setViewingPrompt(null);
-      setEditingPrompt(null);
-    }
+    setData(prev => ({ ...prev, prompts: prev.prompts.filter(p => p.id !== id) }));
+    setViewingPrompt(null);
+    setEditingPrompt(null);
+    setConfirmDeleteId(null);
   };
 
   const handleDuplicatePrompt = (prompt: Prompt) => {
@@ -522,12 +522,31 @@ export default function App() {
                 Clone
               </button>
             </div>
-            <button
-               onClick={() => handleDeletePrompt(viewingPrompt.id)}
-               className="p-2.5 text-red-500/50 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
-            >
-              <AlertCircle size={20} />
-            </button>
+            {confirmDeleteId === viewingPrompt.id ? (
+              <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-xl">
+                <span className="text-[10px] font-mono text-red-500 uppercase font-bold tracking-widest">Confirm?</span>
+                <button
+                  onClick={() => handleDeletePrompt(viewingPrompt.id)}
+                  className="px-3 py-1 bg-red-500 text-white rounded-lg text-xs font-bold transition-all hover:bg-red-600 uppercase tracking-widest"
+                >
+                  Yes
+                </button>
+                <button
+                  onClick={() => setConfirmDeleteId(null)}
+                  className="px-3 py-1 text-vault-text-muted hover:text-vault-text text-xs font-bold transition-all uppercase tracking-widest"
+                >
+                  No
+                </button>
+              </div>
+            ) : (
+              <button
+                 onClick={() => setConfirmDeleteId(viewingPrompt.id)}
+                 className="p-2.5 text-red-500/50 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
+                 title="Delete Prompt"
+              >
+                <AlertCircle size={20} />
+              </button>
+            )}
           </div>
         )}
       >
