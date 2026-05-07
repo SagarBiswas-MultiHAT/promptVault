@@ -97,9 +97,6 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
 
   const handleAnalyze = async (overridePrompt?: string) => {
     let promptToAnalyze = overridePrompt || promptInput;
-    if (typeof promptToAnalyze !== 'string') {
-      promptToAnalyze = String(promptToAnalyze || '');
-    }
     promptToAnalyze = promptToAnalyze.trim();
     
     if (!promptToAnalyze) {
@@ -116,14 +113,16 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
     setAskFavorite(false);
 
     try {
+      const payload = {
+        prompt: promptToAnalyze,
+        categories: availableCategoryNames,
+        mode: 'analyze',
+      };
+      
       const response = await fetch('/api/suggest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt: promptToAnalyze,
-          categories: availableCategoryNames,
-          mode: 'analyze',
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -433,7 +432,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
               {!analysis ? (
                 <div className="grid grid-cols-2 gap-2">
                   <button
-                    onClick={handleAnalyze}
+                    onClick={() => handleAnalyze()}
                     disabled={isLoading}
                     className="flex items-center justify-center gap-2 px-3 py-2 bg-vault-accent text-vault-bg rounded-lg text-xs font-bold uppercase tracking-widest disabled:opacity-50"
                   >
@@ -466,7 +465,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                     Modify
                   </button>
                   <button
-                    onClick={handleImprove}
+                    onClick={() => handleImprove()}
                     disabled={isLoading}
                     className="flex items-center justify-center gap-2 px-3 py-2 border border-vault-border text-vault-text-muted rounded-lg text-xs font-bold uppercase tracking-widest disabled:opacity-50"
                   >

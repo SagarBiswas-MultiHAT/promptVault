@@ -23,7 +23,8 @@ const responseCache = new Map<string, { expiresAt: number; value: any }>();
 type Mode = 'analyze' | 'improve';
 
 app.post('/api/suggest', async (req, res) => {
-  const { prompt, categories, mode } = req.body || {};
+  const body = req.body || {};
+  const { prompt, categories, mode } = body;
 
   if (!prompt || typeof prompt !== 'string') {
     return res.status(400).json({ error: 'Prompt is required.' });
@@ -77,9 +78,6 @@ async function generateSuggestion({ prompt, categories, mode }: { prompt: string
     ? buildImprovePrompt(prompt, normalizedCategories)
     : buildAnalysisPrompt(prompt, normalizedCategories);
 
-  let rawText = '';
-  let provider: 'gemini' | 'groq' | '' = '';
-
   if (GEMINI_API_KEY) {
     try {
       rawText = await requestGemini(promptText);
@@ -126,24 +124,44 @@ function buildAnalysisPrompt(prompt: string, categories: string[]) {
     : 'If no categories are provided, use "General".';
 
   return [
-    'You are a prompt librarian. Return strict JSON only.',
-    'Use this deterministic rubric. Score each dimension with an integer only:',
-    'Clarity (0-3): 0 = unclear, 1 = somewhat clear, 2 = mostly clear, 3 = crystal clear.',
-    'Context (0-3): 0 = no context, 1 = limited context, 2 = adequate context, 3 = rich context.',
-    'Constraints (0-2): 0 = none, 1 = some, 2 = precise constraints.',
-    'Output format (0-2): 0 = unspecified, 1 = implied, 2 = explicit format.',
-    'Rating must equal clarity + context + constraints + output format. Use the same rating for identical input.',
-    'JSON schema:',
+    'You are a senior prompt engineer. Evaluate the user prompt below and return ONLY valid JSON.',
+    '',
+    'Score the prompt from 0.0 to 10.0 (use one decimal place) based on these criteria:',
+    '- Clarity: Is the request clear and unambiguous?',
+    '- Context: Does it provide enough background information?',
+    '- Specificity: Are there concrete details, constraints, or requirements?',
+    '- Output format: Does it describe the desired response format?',
+    '- Completeness: Could an AI answer this without asking follow-up questions?',
+    '',
+    'Scoring guide (be honest and fair):',
+    '- 0-2: Gibberish, empty, or completely unclear',
+    '- 2-4: Has a basic idea but very vague, missing key details',
+    '- 4-6: Decent intent with some context but needs more specificity',
+    '- 6-8: Well-structured with clear intent, context, and some constraints',
+    '- 8-10: Excellent prompt with detailed instructions, constraints, and output format',
+    '',
+    'IMPORTANT RULES:',
+    '- The "title" MUST describe what the prompt is actually about. Read the full prompt content carefully.',
+    '  For example: "Website Pricing Consultation", "Python Code Review Request", "Essay Writing Help".',
+    '  NEVER use generic titles like "Empty Prompt" or "Untitled" if the prompt has actual content.',
+    '- Tags should reflect the actual topic and intent of the prompt.',
+    '- Weaknesses and improvements must be specific and actionable.',
+    '',
+    'Return this exact JSON structure with your assessment values:',
     '{',
-    '  "rating": 0-10 number,',
-    '  "weaknesses": ["short reason", ...],',
-    '  "improvements": ["short improvement", ...],',
-    '  "title": "short title",',
+    '  "rating": 8.5,',
+    '  "weaknesses": ["specific weakness"],',
+    '  "improvements": ["actionable suggestion"],',
+    '  "title": "short descriptive title based on prompt content",',
     '  "category": "category name",',
-    '  "tags": ["tag", "tag", ...]',
+    '  "tags": ["relevant", "topic", "tags"]',
     '}',
+    'The rating MUST be a number between 0.0 and 10.0 (not a string or array). Replace all example values with your real assessment.',
+    '',
     categoryLine,
-    'User prompt:',
+    '',
+    'Here is the user prompt to evaluate:',
+    '',
     prompt,
   ].join('\n');
 }
@@ -154,16 +172,23 @@ function buildImprovePrompt(prompt: string, categories: string[]) {
     : 'Category list is unavailable.';
 
   return [
-    'You are a prompt quality editor. Return strict JSON only.',
-    'JSON schema:',
+    'You are a prompt quality editor. Return ONLY valid JSON.',
+    '',
+    'Rewrite the user prompt below to make it significantly better.',
+    'Focus on: adding clarity, providing context, defining constraints, specifying output format.',
+    'Preserve the original intent and topic completely.',
+    '',
+    'Return this exact JSON structure:',
     '{',
-    '  "improvedPrompt": "rewritten prompt",',
-    '  "weaknesses": ["short reason", ...],',
-    '  "improvements": ["short improvement", ...]',
+    '  "improvedPrompt": "the rewritten, improved prompt",',
+    '  "weaknesses": ["what was wrong with the original"],',
+    '  "improvements": ["what you improved and why"]',
     '}',
-    'Preserve the original intent, aim for score 8 or higher.',
+    '',
     categoryLine,
-    'User prompt:',
+    '',
+    'User prompt to improve:',
+    '',
     prompt,
   ].join('\n');
 }
@@ -176,10 +201,10 @@ async function requestGemini(promptText: string) {
     body: JSON.stringify({
       contents: [{ role: 'user', parts: [{ text: promptText }] }],
       generationConfig: {
-        temperature: 0,
-        topP: 1,
-        topK: 1,
-        maxOutputTokens: 512,
+        temperature: 0.3,
+        topP: 0.95,
+        topK: 40,
+        maxOutputTokens: 1024,
       },
     }),
   });
@@ -203,10 +228,10 @@ async function requestGroq(promptText: string) {
     },
     body: JSON.stringify({
       model: GROQ_MODEL,
-      temperature: 0,
-      top_p: 1,
+      temperature: 0.3,
+      top_p: 0.95,
       messages: [
-        { role: 'system', content: 'Return strict JSON only.' },
+        { role: 'system', content: 'You are a senior prompt quality assessor. Return strict JSON only.' },
         { role: 'user', content: promptText },
       ],
     }),
@@ -238,7 +263,8 @@ function extractJson(text: string) {
 
 function normalizeAnalysis(data: any, categories: string[]) {
   const rating = Number.isFinite(Number(data?.rating)) ? Number(data.rating) : 0;
-  const safeRating = Math.max(0, Math.min(10, Math.round(rating)));
+  // Preserve one decimal place from AI assessment — do NOT round to integer
+  const safeRating = Math.max(0, Math.min(10, Math.round(rating * 10) / 10));
   const weaknesses = Array.isArray(data?.weaknesses) ? data.weaknesses.filter(Boolean) : [];
   const improvements = Array.isArray(data?.improvements) ? data.improvements.filter(Boolean) : [];
   const title = typeof data?.title === 'string' ? data.title.trim() : '';
