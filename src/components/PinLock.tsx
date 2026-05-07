@@ -12,12 +12,15 @@ interface PinLockProps {
   storedHash: string | null;
   onUnlocked: () => void;
   onSetPin: (hash: string) => void;
+  isRemovingLock?: boolean;
+  onRemoveLock?: () => void;
+  onCancelRemove?: () => void;
 }
 
-export function PinLock({ storedHash, onUnlocked, onSetPin }: PinLockProps) {
+export function PinLock({ storedHash, onUnlocked, onSetPin, isRemovingLock = false, onRemoveLock, onCancelRemove }: PinLockProps) {
   const [pin, setPin] = useState('');
   const [isError, setIsError] = useState(false);
-  const [mode, setMode] = useState<'LOGIN' | 'SETUP_START' | 'SETUP_CONFIRM'>(storedHash ? 'LOGIN' : 'SETUP_START');
+  const [mode, setMode] = useState<'LOGIN' | 'SETUP_START' | 'SETUP_CONFIRM' | 'REMOVE_LOCK'>(isRemovingLock ? 'REMOVE_LOCK' : (storedHash ? 'LOGIN' : 'SETUP_START'));
   const [firstPin, setFirstPin] = useState('');
 
   const handleCharClick = (char: string) => {
@@ -37,6 +40,14 @@ export function PinLock({ storedHash, onUnlocked, onSetPin }: PinLockProps) {
       const isValid = await validatePin(pin, storedHash);
       if (isValid) {
         onUnlocked();
+      } else {
+        setIsError(true);
+        setPin('');
+      }
+    } else if (mode === 'REMOVE_LOCK' && storedHash) {
+      const isValid = await validatePin(pin, storedHash);
+      if (isValid) {
+        onRemoveLock?.();
       } else {
         setIsError(true);
         setPin('');
@@ -111,12 +122,12 @@ export function PinLock({ storedHash, onUnlocked, onSetPin }: PinLockProps) {
         {/* Text Container */}
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-mono font-bold tracking-tight uppercase">
-            {mode === 'LOGIN' ? 'Vault Locked' : mode === 'SETUP_START' ? 'Establish PIN' : 'Verify PIN'}
+            {mode === 'LOGIN' ? 'Vault Locked' : mode === 'SETUP_START' ? 'Establish PIN' : mode === 'REMOVE_LOCK' ? 'Remove Lock' : 'Verify PIN'}
           </h1>
           <p className="text-xs text-vault-text-muted font-mono uppercase tracking-[0.2em]">
             {isError 
-                ? (mode === 'LOGIN' ? 'Access Denied' : 'Codes Mismatch') 
-                : (mode === 'LOGIN' ? 'Enter credentials' : mode === 'SETUP_START' ? '4-6 digits for privacy' : 'Repeat pattern')}
+                ? (mode === 'LOGIN' || mode === 'REMOVE_LOCK' ? 'Access Denied' : 'Codes Mismatch') 
+                : (mode === 'LOGIN' ? 'Enter credentials' : mode === 'REMOVE_LOCK' ? 'Enter PIN to disable lock' : mode === 'SETUP_START' ? '4-6 digits for privacy' : 'Repeat pattern')}
           </p>
         </div>
 
@@ -155,14 +166,24 @@ export function PinLock({ storedHash, onUnlocked, onSetPin }: PinLockProps) {
         </div>
 
         {/* Submit Action */}
-        <button
-          onClick={handleSubmit}
-          disabled={pin.length < (mode === 'LOGIN' ? 4 : 4)}
-          className="group flex items-center gap-3 px-12 py-4 bg-vault-accent text-vault-bg rounded-lg font-mono font-bold uppercase tracking-tight text-sm hover:opacity-90 active:scale-95 transition-all disabled:opacity-30 disabled:grayscale"
-        >
-          {mode === 'LOGIN' ? 'Decrypt' : 'Secure Vault'}
-          <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-        </button>
+        <div className="flex gap-4 items-center">
+          {mode === 'REMOVE_LOCK' && (
+            <button
+              onClick={onCancelRemove}
+              className="px-8 py-4 border border-vault-border text-vault-text-muted rounded-lg font-mono font-bold uppercase tracking-tight text-sm hover:border-vault-accent hover:text-vault-accent transition-all"
+            >
+              Cancel
+            </button>
+          )}
+          <button
+            onClick={handleSubmit}
+            disabled={pin.length < (mode === 'LOGIN' || mode === 'REMOVE_LOCK' ? 4 : 4)}
+            className="group flex items-center gap-3 px-12 py-4 bg-vault-accent text-vault-bg rounded-lg font-mono font-bold uppercase tracking-tight text-sm hover:opacity-90 active:scale-95 transition-all disabled:opacity-30 disabled:grayscale"
+          >
+            {mode === 'LOGIN' ? 'Decrypt' : mode === 'REMOVE_LOCK' ? 'Remove Lock' : 'Secure Vault'}
+            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+          </button>
+        </div>
       </motion.div>
     </div>
   );

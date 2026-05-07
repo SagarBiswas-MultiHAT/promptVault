@@ -46,6 +46,7 @@ export default function App() {
   });
 
   const [isLocked, setIsLocked] = useState(data.settings.pinHash !== null);
+  const [isRemovingLock, setIsRemovingLock] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [showFavorites, setShowFavorites] = useState(false);
@@ -93,11 +94,22 @@ export default function App() {
 
   // Update logic for the lock button in header
   const handleLockButtonClick = () => {
-    if (data.settings.pinHash) {
-      setIsLocked(true);
-    } else {
+    if (data.settings.pinHash && !isRemovingLock) {
+      // If there's a PIN set and we're not already removing, start the removal process
+      setIsRemovingLock(true);
+    } else if (!data.settings.pinHash) {
+      // If no PIN is set, show settings to create one
       setShowSettings(true);
     }
+  };
+
+  const handleRemoveLock = () => {
+    setData(prev => ({ ...prev, settings: { ...prev.settings, pinHash: null } }));
+    setIsRemovingLock(false);
+  };
+
+  const handleCancelRemoveLock = () => {
+    setIsRemovingLock(false);
   };
 
   const handleAddPrompt = (promptData: Partial<Prompt>) => {
@@ -295,12 +307,15 @@ export default function App() {
   }, [data.prompts, searchQuery, selectedCategoryId, showFavorites, sortBy]);
 
   // --- RENDER ---
-  if (isLocked) {
+  if (isLocked || isRemovingLock) {
     return (
       <PinLock 
         storedHash={data.settings.pinHash} 
         onUnlocked={() => setIsLocked(false)}
-        onSetPin={handleSetPin} 
+        onSetPin={handleSetPin}
+        isRemovingLock={isRemovingLock}
+        onRemoveLock={handleRemoveLock}
+        onCancelRemove={handleCancelRemoveLock}
       />
     );
   }
