@@ -1,0 +1,6 @@
+{
+  "name": "PromptVault",
+  "description": "A private, beautiful, offline-first prompt manager for organizing and deploying AI prompts across any workflow.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

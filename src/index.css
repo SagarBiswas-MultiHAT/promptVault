@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-vault-accent: #f59e0b; /* Amber accent */
+  --color-vault-accent-blue: #3b82f6; /* Electric Blue accent */
+  
+  --color-vault-bg: var(--v-bg);
+  --color-vault-panel: var(--v-panel);
+  --color-vault-panel-bright: var(--v-panel-bright);
+  --color-vault-border: var(--v-border);
+  --color-vault-text: var(--v-text);
+  --color-vault-text-muted: var(--v-muted);
+}
+
+@layer base {
+  :root {
+    --v-bg: #0D0D0D;
+    --v-panel: #161616;
+    --v-panel-bright: #222222;
+    --v-border: #2A2A2A;
+    --v-text: #E5E5E5;
+    --v-muted: #888888;
+  }
+
+  .light {
+    --v-bg: #f5f5f0;
+    --v-panel: #ffffff;
+    --v-panel-bright: #fafafa;
+    --v-border: #e2e2da;
+    --v-text: #1a1a1a;
+    --v-muted: #737373;
+  }
+
+  body {
+    @apply bg-vault-bg text-vault-text font-sans antialiased;
+  }
+
+  /* Custom Scrollbar for the editorial look */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-vault-border rounded-full hover:bg-neutral-700 transition-colors;
+  }
+}
+
+/* Glassmorphism for modals */
+.glass-panel {
+  @apply bg-vault-panel/80 backdrop-blur-xl border border-vault-border;
+}
+
+/* Monospace anchor elements */
+.font-mono-tight {
+  @apply font-mono tracking-tighter;
+}
