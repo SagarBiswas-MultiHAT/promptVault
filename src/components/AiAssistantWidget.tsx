@@ -42,8 +42,8 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
 
   const availableCategoryNames = useMemo(() => categories.map(c => c.name), [categories]);
 
-  const canConfirm = Boolean(analysis && analysis.rating >= 8 && suggestedTitle.trim() && suggestedCategory.trim());
-  const canModify = Boolean(analysis && analysis.rating >= 8);
+  const canConfirm = Boolean(analysis && suggestedTitle.trim() && suggestedCategory.trim());
+  const canModify = Boolean(analysis);
 
   const ratingColor = analysis
     ? analysis.rating >= 8
@@ -201,10 +201,6 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
 
   const handleConfirm = () => {
     if (!analysis) return;
-    if (analysis.rating < 8) {
-      setError('Score is below 8. Request improvements before saving.');
-      return;
-    }
 
     const categoryId = resolveCategoryId(suggestedCategory);
     if (!categoryId) {
@@ -226,16 +222,10 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
     }
 
     setCreatedPromptId(createdId);
-    setAskFavorite(true);
     setEditingSuggestions(false);
     setError(null);
-  };
-
-  const handleFavorite = (shouldFavorite: boolean) => {
-    if (shouldFavorite && createdPromptId) {
-      onToggleFavorite(createdPromptId);
-    }
-    setAskFavorite(false);
+    resetAssistant();
+    setIsOpen(false);
   };
 
   return (
@@ -287,7 +277,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                     {analysis.rating < 8 && (
                       <div className="flex items-center gap-2 text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-full">
                         <AlertTriangle size={12} />
-                        Improve before saving
+                        Consider improving
                       </div>
                     )}
                   </div>
@@ -412,26 +402,6 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
               {error && (
                 <div className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 px-3 py-2 rounded-lg">
                   {error}
-                </div>
-              )}
-
-              {askFavorite && (
-                <div className="space-y-2 bg-vault-panel-bright/60 border border-vault-border rounded-lg p-3">
-                  <p className="text-xs font-mono uppercase tracking-widest text-vault-text-muted">Add to Favorites?</p>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleFavorite(true)}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-vault-accent text-vault-bg rounded-lg text-xs font-bold uppercase tracking-widest"
-                    >
-                      <Star size={14} /> Yes
-                    </button>
-                    <button
-                      onClick={() => handleFavorite(false)}
-                      className="flex-1 px-3 py-2 border border-vault-border text-vault-text-muted rounded-lg text-xs font-bold uppercase tracking-widest"
-                    >
-                      No
-                    </button>
-                  </div>
                 </div>
               )}
             </div>
