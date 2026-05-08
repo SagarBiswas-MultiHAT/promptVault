@@ -53,13 +53,6 @@ export function Sidebar({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Auto-collapse on mobile on mount
-  useEffect(() => {
-    if (isMobile && !isCollapsed) {
-      onToggleSidebar();
-    }
-  }, [isMobile]);
-
   // Auto-close sidebar on mobile after selecting a nav item
   const handleMobileAutoClose = useCallback(() => {
     if (isMobile && !isCollapsed) {
@@ -98,9 +91,10 @@ export function Sidebar({
       <AnimatePresence>
         {isMobile && !isCollapsed && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            key="sidebar-backdrop"
+            initial={{ opacity: 0, pointerEvents: 'none' }}
+            animate={{ opacity: 1, pointerEvents: 'auto' }}
+            exit={{ opacity: 0, pointerEvents: 'none' }}
             transition={{ duration: 0.2 }}
             className="sidebar-backdrop"
             onClick={onToggleSidebar}
@@ -108,16 +102,18 @@ export function Sidebar({
         )}
       </AnimatePresence>
 
-    <div className={`relative flex h-full shrink-0 group/sidebar ${isMobile ? 'sidebar-mobile-overlay' : ''}`}>
+    {/* On mobile: fixed position removes it from flow, so no width override is needed */}
+    <div className={`relative flex h-full shrink-0 group/sidebar ${isMobile ? 'sidebar-mobile-overlay' : ''} ${isMobile && isCollapsed ? 'pointer-events-none' : ''}`}
+    >
       {/* Main Sidebar Panel */}
       <motion.div
-        animate={{ width: isCollapsed ? 64 : 280 }}
+        animate={{ width: isMobile ? (isCollapsed ? 0 : 280) : (isCollapsed ? 64 : 280) }}
         transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
         className="h-full flex flex-col bg-vault-panel border-r border-vault-border overflow-hidden"
       >
         <AnimatePresence mode="wait">
-          {isCollapsed ? (
-            /* ==================== COLLAPSED STATE ==================== */
+          {isCollapsed && !isMobile ? (
+            /* ==================== COLLAPSED STATE (Desktop Only) ==================== */
             <motion.div
               key="collapsed"
               initial={{ opacity: 0 }}
@@ -346,7 +342,8 @@ export function Sidebar({
         </AnimatePresence>
       </motion.div>
 
-      {/* ==================== SLIDE HANDLE BAR ==================== */}
+      {/* ==================== SLIDE HANDLE BAR (desktop only) ==================== */}
+      {!isMobile && (
       <div
         onClick={onToggleSidebar}
         className="slide-handle w-[6px] h-full cursor-pointer flex items-center justify-center shrink-0 relative z-20"
@@ -374,6 +371,7 @@ export function Sidebar({
           </div>
         </div>
       </div>
+      )}
     </div>
     </>
   );

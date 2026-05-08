@@ -14,6 +14,9 @@
   --color-vault-border: var(--v-border);
   --color-vault-text: var(--v-text);
   --color-vault-text-muted: var(--v-muted);
+
+  /* Extra-small breakpoint for 480px+ screens */
+  --breakpoint-xs: 480px;
 }
 
 @layer base {

@@ -53,7 +53,8 @@ export default function App() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>('RECENTLY_ADDED');
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.innerWidth <= 768);
+  const [isMobile, setIsMobile] = useState(false);
   
   // Modal states
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
@@ -73,6 +74,14 @@ export default function App() {
     }, 500);
     return () => clearTimeout(timer);
   }, [data]);
+
+  // --- MOBILE DETECTION ---
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   useEffect(() => {
     if (data.settings.isDarkMode) {
@@ -368,45 +377,135 @@ export default function App() {
       />
 
       <main className="flex-1 flex flex-col min-w-0 h-full">
-        {/* Header */}
-        <header className="h-[72px] border-b border-vault-border flex items-center justify-between px-8 bg-[#0D0D0D]/80 backdrop-blur-[10px] z-10 shrink-0">
-          <div className="w-[400px] relative">
-            <input
-              id="main-search"
-              type="text"
-              placeholder="Search prompts..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-vault-panel border border-vault-border rounded-lg pl-10 pr-12 py-2 focus:border-vault-accent outline-none transition-all font-mono text-sm"
-            />
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-vault-text-muted" size={14} />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 border border-vault-border rounded text-[10px] text-vault-text-muted font-mono">⌘ K</div>
-          </div>
+        {/* Header — Desktop: single-row | Mobile: two-row */}
+        <header className={`border-b border-vault-border bg-[#0D0D0D]/80 backdrop-blur-[10px] z-10 shrink-0 ${
+          isMobile ? 'flex flex-col' : 'h-[72px] flex items-center justify-between px-8'
+        }`}>
 
-          <div className="flex items-center gap-4">
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] text-vault-text-muted font-mono uppercase tracking-widest leading-none">Vault Status</span>
-              <span className="text-[11px] text-[#10B981] font-bold uppercase tracking-tight">● Encrypted</span>
-            </div>
-            
-            <button
-              onClick={() => setIsNewModalOpen(true)}
-              className="bg-vault-accent text-vault-bg px-5 py-2.5 rounded-lg font-mono font-bold text-xs uppercase tracking-tight hover:opacity-90 active:scale-95 transition-all"
-            >
-              + New Prompt
-            </button>
+          {isMobile ? (
+            /* ─── Mobile Header ─── */
+            <>
+              {/* Row 1: Menu toggle · Logo · Action buttons */}
+              <div className="flex items-center justify-between px-4 pt-3 pb-2">
+                {/* Left: hamburger + logo */}
+                <div className="flex items-center gap-3">
+                  <button
+                    id="mobile-menu-toggle"
+                    onClick={() => setSidebarCollapsed(prev => !prev)}
+                    aria-label="Toggle sidebar"
+                    className="w-9 h-9 flex flex-col items-center justify-center gap-[5px] rounded-lg border border-vault-border text-vault-text-muted hover:text-vault-accent hover:border-vault-accent active:scale-95 transition-all"
+                  >
+                    {/* Animated hamburger: 3 lines → X when sidebar open */}
+                    <span className={`block h-[1.5px] w-4 rounded-full bg-current transition-all duration-300 ${
+                      !sidebarCollapsed ? 'rotate-45 translate-y-[6.5px]' : ''
+                    }`} />
+                    <span className={`block h-[1.5px] w-4 rounded-full bg-current transition-all duration-300 ${
+                      !sidebarCollapsed ? 'opacity-0 scale-x-0' : ''
+                    }`} />
+                    <span className={`block h-[1.5px] w-4 rounded-full bg-current transition-all duration-300 ${
+                      !sidebarCollapsed ? '-rotate-45 -translate-y-[6.5px]' : ''
+                    }`} />
+                  </button>
 
-            <button
-              onClick={handleLockButtonClick}
-              className="p-2.5 border border-vault-border text-vault-text-muted hover:text-vault-accent rounded-lg transition-colors"
-            >
-              {data.settings.pinHash ? <Lock size={18} /> : <Unlock size={18} />}
-            </button>
-          </div>
+                  {/* Brand wordmark */}
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 bg-vault-accent rounded-[3px] shadow-[0_0_10px_rgba(245,158,11,0.25)] shrink-0" />
+                    <span className="text-sm font-mono font-bold tracking-tighter">PromptVault</span>
+                  </div>
+                </div>
+
+                {/* Right: vault status badge + new + lock */}
+                <div className="flex items-center gap-2">
+                  {/* Encrypted badge */}
+                  <div className="hidden xs:flex items-center gap-1.5 px-2 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/8">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.7)]" />
+                    <span className="text-[9px] font-mono text-emerald-400 uppercase tracking-widest">Encrypted</span>
+                  </div>
+
+                  <button
+                    id="mobile-new-prompt"
+                    onClick={() => setIsNewModalOpen(true)}
+                    aria-label="New Prompt"
+                    className="flex items-center gap-1.5 bg-vault-accent text-vault-bg h-9 px-3 rounded-lg font-mono font-bold text-[11px] uppercase tracking-tight hover:opacity-90 active:scale-95 transition-all shadow-[0_0_12px_rgba(245,158,11,0.2)]"
+                  >
+                    <Plus size={13} />
+                    <span>New</span>
+                  </button>
+
+                  <button
+                    id="mobile-lock-toggle"
+                    onClick={handleLockButtonClick}
+                    aria-label={data.settings.pinHash ? 'Vault locked' : 'Vault unlocked'}
+                    className="w-9 h-9 flex items-center justify-center border border-vault-border text-vault-text-muted hover:text-vault-accent hover:border-vault-accent rounded-lg transition-colors"
+                  >
+                    {data.settings.pinHash ? <Lock size={15} /> : <Unlock size={15} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Row 2: Full-width search bar */}
+              <div className="px-4 pb-3">
+                <div className="relative">
+                  <input
+                    id="main-search"
+                    type="text"
+                    placeholder="Search prompts..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-vault-panel border border-vault-border rounded-xl pl-9 pr-4 py-2.5 focus:border-vault-accent outline-none transition-all font-mono text-sm placeholder:text-vault-text-muted/50"
+                  />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-vault-text-muted" size={14} />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center rounded-full bg-vault-border text-vault-text-muted hover:text-vault-text transition-colors text-[10px] font-bold"
+                    >×</button>
+                  )}
+                </div>
+              </div>
+            </>
+          ) : (
+            /* ─── Desktop Header ─── */
+            <>
+              <div className="w-[400px] relative">
+                <input
+                  id="main-search"
+                  type="text"
+                  placeholder="Search prompts..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-vault-panel border border-vault-border rounded-lg pl-10 pr-12 py-2 focus:border-vault-accent outline-none transition-all font-mono text-sm"
+                />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-vault-text-muted" size={14} />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 border border-vault-border rounded text-[10px] text-vault-text-muted font-mono">⌘ K</div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="flex flex-col items-end">
+                  <span className="text-[10px] text-vault-text-muted font-mono uppercase tracking-widest leading-none">Vault Status</span>
+                  <span className="text-[11px] text-[#10B981] font-bold uppercase tracking-tight">● Encrypted</span>
+                </div>
+                
+                <button
+                  onClick={() => setIsNewModalOpen(true)}
+                  className="bg-vault-accent text-vault-bg px-5 py-2.5 rounded-lg font-mono font-bold text-xs uppercase tracking-tight hover:opacity-90 active:scale-95 transition-all"
+                >
+                  + New Prompt
+                </button>
+
+                <button
+                  onClick={handleLockButtonClick}
+                  className="p-2.5 border border-vault-border text-vault-text-muted hover:text-vault-accent rounded-lg transition-colors"
+                >
+                  {data.settings.pinHash ? <Lock size={18} /> : <Unlock size={18} />}
+                </button>
+              </div>
+            </>
+          )}
         </header>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto p-12 custom-scrollbar">
+        <div className={`flex-1 overflow-y-auto custom-scrollbar ${isMobile ? 'p-4' : 'p-12'}`}>
           {showStats ? (
             <div className="max-w-5xl mx-auto">
               <div className="flex items-center justify-between mb-12">
@@ -455,13 +554,52 @@ export default function App() {
             </div>
           )}
         </div>
-        <footer className="h-10 border-t border-vault-border px-8 flex items-center justify-between text-[10px] font-mono text-vault-text-muted uppercase tracking-widest bg-vault-panel shrink-0">
-          <div className="flex gap-4">
-            <span>Schema: {SCHEMA_VERSION}</span>
-            <span>Last Saved: {new Date().toLocaleTimeString()}</span>
-          </div>
-          <div>PromptVault — Offline First Encrypted Storage</div>
-        </footer>
+        {isMobile ? (
+          /* ─── Mobile Footer: compact bottom action bar ─── */
+          <footer className="border-t border-vault-border bg-vault-panel/95 backdrop-blur-sm shrink-0 px-4 py-2 flex items-center justify-between">
+            {/* Left: save indicator + schema */}
+            <div className="flex items-center gap-2">
+              <motion.span
+                key={isSaved ? 'saved' : 'idle'}
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className={`text-[9px] font-mono uppercase tracking-widest ${
+                  isSaved ? 'text-emerald-400' : 'text-vault-text-muted/50'
+                }`}
+              >
+                {isSaved ? '✓ Saved' : `v${SCHEMA_VERSION}`}
+              </motion.span>
+              <span className="text-vault-border">·</span>
+              <span className="text-[9px] font-mono text-vault-text-muted/40 uppercase tracking-widest">Offline</span>
+            </div>
+
+            {/* Center: prompt count pill */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-vault-panel-bright border border-vault-border">
+              <span className="text-[10px] font-mono font-bold text-vault-accent">{filteredPrompts.length}</span>
+              <span className="text-[9px] font-mono text-vault-text-muted uppercase tracking-wider">prompts</span>
+            </div>
+
+            {/* Right: settings shortcut */}
+            <button
+              id="mobile-settings-btn"
+              onClick={() => setShowSettings(true)}
+              aria-label="Settings"
+              className="flex items-center gap-1.5 text-vault-text-muted hover:text-vault-accent transition-colors"
+            >
+              <Settings size={13} />
+              <span className="text-[9px] font-mono uppercase tracking-widest">Settings</span>
+            </button>
+          </footer>
+        ) : (
+          /* ─── Desktop Footer ─── */
+          <footer className="h-10 border-t border-vault-border px-8 flex items-center justify-between text-[10px] font-mono text-vault-text-muted uppercase tracking-widest bg-vault-panel shrink-0">
+            <div className="flex gap-4">
+              <span>Schema: {SCHEMA_VERSION}</span>
+              <span>Last Saved: {new Date().toLocaleTimeString()}</span>
+            </div>
+            <div>PromptVault — Offline First Encrypted Storage</div>
+          </footer>
+        )}
       </main>
 
       <AiAssistantWidget
