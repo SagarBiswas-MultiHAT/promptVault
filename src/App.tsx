@@ -53,6 +53,7 @@ export default function App() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>('RECENTLY_ADDED');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
   // Modal states
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
@@ -264,7 +265,10 @@ export default function App() {
       
       const isCmdOrCtrl = e.metaKey || e.ctrlKey;
       
-      if (isCmdOrCtrl && e.key === 'k') {
+      if (isCmdOrCtrl && e.key === '[') {
+        e.preventDefault();
+        setSidebarCollapsed(prev => !prev);
+      } else if (isCmdOrCtrl && e.key === 'k') {
         e.preventDefault();
         document.getElementById('main-search')?.focus();
       } else if (isCmdOrCtrl && e.key === 'n') {
@@ -359,6 +363,8 @@ export default function App() {
         }}
         showStats={showStats}
         onToggleStats={() => setShowStats(!showStats)}
+        isCollapsed={sidebarCollapsed}
+        onToggleSidebar={() => setSidebarCollapsed(prev => !prev)}
       />
 
       <main className="flex-1 flex flex-col min-w-0 h-full">

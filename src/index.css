@@ -68,3 +68,189 @@
 .font-mono-tight {
   @apply font-mono tracking-tighter;
 }
+
+/* ===== Slide Handle Bar ===== */
+.slide-handle:hover .hover-trigger-bg {
+  opacity: 1;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(245, 158, 11, 0.12) 30%,
+    rgba(245, 158, 11, 0.2) 50%,
+    rgba(245, 158, 11, 0.12) 70%,
+    transparent 100%
+  );
+}
+
+.slide-handle:hover .grip-indicator {
+  opacity: 0.6;
+}
+
+.slide-handle:hover .slide-knob {
+  opacity: 1;
+}
+
+.slide-handle:active .hover-trigger-bg {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(245, 158, 11, 0.25) 30%,
+    rgba(245, 158, 11, 0.35) 50%,
+    rgba(245, 158, 11, 0.25) 70%,
+    transparent 100%
+  );
+}
+
+/* ===== Mobile: Always-visible handle (no hover on touch) ===== */
+@media (max-width: 768px) {
+  .slide-handle {
+    width: 10px !important;
+  }
+
+  .slide-handle .hover-trigger-bg {
+    opacity: 1 !important;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(245, 158, 11, 0.08) 20%,
+      rgba(245, 158, 11, 0.14) 50%,
+      rgba(245, 158, 11, 0.08) 80%,
+      transparent 100%
+    ) !important;
+  }
+
+  .slide-handle .grip-indicator {
+    opacity: 0.5 !important;
+  }
+
+  .slide-handle .slide-knob {
+    opacity: 1 !important;
+  }
+
+  .slide-handle .slide-knob > div {
+    border-color: rgba(245, 158, 11, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Sidebar overlay mode on mobile */
+  .sidebar-mobile-overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 40;
+  }
+
+  /* Backdrop */
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 35;
+  }
+
+  /* Hide tooltips on mobile — not needed with touch */
+  .sidebar-tooltip::after,
+  .sidebar-tooltip::before {
+    display: none !important;
+  }
+}
+
+/* Touch device detection via pointer */
+@media (pointer: coarse) {
+  .slide-handle {
+    width: 10px !important;
+  }
+
+  .slide-handle .hover-trigger-bg {
+    opacity: 1 !important;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(245, 158, 11, 0.08) 20%,
+      rgba(245, 158, 11, 0.14) 50%,
+      rgba(245, 158, 11, 0.08) 80%,
+      transparent 100%
+    ) !important;
+  }
+
+  .slide-handle .grip-indicator {
+    opacity: 0.5 !important;
+  }
+
+  .slide-handle .slide-knob {
+    opacity: 1 !important;
+  }
+
+  .slide-handle .slide-knob > div {
+    border-color: rgba(245, 158, 11, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* ===== Sidebar Collapsed Tooltips ===== */
+.sidebar-tooltip {
+  position: relative;
+}
+
+.sidebar-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%) scale(0.92);
+  padding: 5px 10px;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  font-size: 11px;
+  font-family: "Space Mono", monospace;
+  letter-spacing: -0.02em;
+  color: #e5e5e5;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar-tooltip::before {
+  content: '';
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg) scale(0.92);
+  width: 8px;
+  height: 8px;
+  background: #1a1a1a;
+  border-left: 1px solid #2a2a2a;
+  border-bottom: 1px solid #2a2a2a;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 99;
+}
+
+.sidebar-tooltip:hover::after {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+.sidebar-tooltip:hover::before {
+  opacity: 1;
+  transform: translateY(-50%) rotate(45deg) scale(1);
+}
+
+.light .sidebar-tooltip::after {
+  background: #ffffff;
+  border-color: #e2e2da;
+  color: #1a1a1a;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.light .sidebar-tooltip::before {
+  background: #ffffff;
+  border-color: #e2e2da;
+}
