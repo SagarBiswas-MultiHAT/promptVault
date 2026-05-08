@@ -352,7 +352,7 @@ export function Sidebar({
         <div className="absolute inset-0 bg-vault-border/40 opacity-0 hover-trigger-bg transition-all duration-300" />
         
         {/* Grip dots indicator */}
-        <div className="grip-indicator absolute flex flex-col gap-[3px] opacity-0 transition-all duration-300 z-10">
+        <div className="grip-indicator absolute flex flex-col gap-[3px] transition-all duration-300 z-10">
           <div className="w-[3px] h-[3px] bg-vault-text-muted rounded-full" />
           <div className="w-[3px] h-[3px] bg-vault-text-muted rounded-full" />
           <div className="w-[3px] h-[3px] bg-vault-text-muted rounded-full" />
@@ -361,7 +361,7 @@ export function Sidebar({
         </div>
 
         {/* Chevron indicator knob */}
-        <div className="slide-knob absolute z-20 transition-all duration-300 opacity-0">
+        <div className="slide-knob absolute z-20 transition-all duration-300">
           <div className="w-6 h-10 bg-vault-panel border border-vault-border rounded-full flex items-center justify-center shadow-[0_2px_12px_rgba(0,0,0,0.4)] hover:border-vault-accent hover:shadow-[0_0_16px_rgba(245,158,11,0.2)] transition-all duration-200">
             {isCollapsed ? (
               <ChevronRight size={12} className="text-vault-accent" />

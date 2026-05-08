@@ -73,6 +73,14 @@
 }
 
 /* ===== Slide Handle Bar ===== */
+.slide-handle .grip-indicator {
+  opacity: 0.3;
+}
+
+.slide-handle .slide-knob {
+  opacity: 0.6;
+}
+
 .slide-handle:hover .hover-trigger-bg {
   opacity: 1;
   background: linear-gradient(
