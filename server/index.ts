@@ -5,29 +5,143 @@
 
 import express from 'express';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config({ override: true });
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-app.use(express.json({ limit: '1mb' }));
+
+// ---------------------------------------------------------------------------
+// Configuration
+// ---------------------------------------------------------------------------
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
 const GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
-const PORT = Number(process.env.AI_PROXY_PORT || 3001);
+const PORT = Number(process.env.AI_PROXY_PORT || process.env.PORT || 3002);
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim())
+  : [];
+
 const CACHE_TTL_MS = 1000 * 60 * 30;
 const MAX_CACHE_ENTRIES = 200;
+const MAX_PROMPT_LENGTH = 10_000;
+const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
+const RATE_LIMIT_MAX = 30; // requests per window per IP
+
 const responseCache = new Map<string, { expiresAt: number; value: any }>();
 
 type Mode = 'analyze' | 'improve';
 
-app.post('/api/suggest', async (req, res) => {
+// ---------------------------------------------------------------------------
+// Startup validation
+// ---------------------------------------------------------------------------
+
+if (!GEMINI_API_KEY && !GROQ_API_KEY) {
+  console.error('[ai-proxy] ⚠  No API keys configured. Set GEMINI_API_KEY or GROQ_API_KEY in your .env file.');
+  if (IS_PRODUCTION) {
+    console.error('[ai-proxy] Refusing to start in production without API keys.');
+    process.exit(1);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Middleware
+// ---------------------------------------------------------------------------
+
+// JSON body parser
+app.use(express.json({ limit: '1mb' }));
+
+// Security headers
+app.use((_req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  if (IS_PRODUCTION) {
+    res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+  }
+  next();
+});
+
+// CORS
+app.use((req, res, next) => {
+  const origin = req.headers.origin || '';
+  if (!IS_PRODUCTION || ALLOWED_ORIGINS.length === 0 || ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  }
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
+
+// Request logging
+app.use((req, _res, next) => {
+  if (req.path.startsWith('/api')) {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] ${req.method} ${req.path}`);
+  }
+  next();
+});
+
+// Rate limiting (simple in-memory, per-IP)
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+
+function rateLimiter(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const ip = req.ip || req.socket.remoteAddress || 'unknown';
+  const now = Date.now();
+  let entry = rateLimitMap.get(ip);
+
+  if (!entry || now > entry.resetAt) {
+    entry = { count: 0, resetAt: now + RATE_LIMIT_WINDOW_MS };
+    rateLimitMap.set(ip, entry);
+  }
+
+  entry.count++;
+
+  res.setHeader('X-RateLimit-Limit', String(RATE_LIMIT_MAX));
+  res.setHeader('X-RateLimit-Remaining', String(Math.max(0, RATE_LIMIT_MAX - entry.count)));
+  res.setHeader('X-RateLimit-Reset', String(Math.ceil(entry.resetAt / 1000)));
+
+  if (entry.count > RATE_LIMIT_MAX) {
+    return res.status(429).json({
+      error: 'Too many requests. Please wait a moment before trying again.',
+    });
+  }
+
+  next();
+}
+
+// Periodically clean up expired rate-limit entries
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, entry] of rateLimitMap) {
+    if (now > entry.resetAt) rateLimitMap.delete(key);
+  }
+}, RATE_LIMIT_WINDOW_MS);
+
+// ---------------------------------------------------------------------------
+// API Routes
+// ---------------------------------------------------------------------------
+
+app.post('/api/suggest', rateLimiter, async (req, res) => {
   const body = req.body || {};
   const { prompt, categories, mode } = body;
 
   if (!prompt || typeof prompt !== 'string') {
     return res.status(400).json({ error: 'Prompt is required.' });
+  }
+
+  if (prompt.length > MAX_PROMPT_LENGTH) {
+    return res.status(400).json({ error: `Prompt exceeds maximum length of ${MAX_PROMPT_LENGTH} characters.` });
   }
 
   const categoryList = Array.isArray(categories)
@@ -48,17 +162,70 @@ app.post('/api/suggest', async (req, res) => {
   }
 });
 
-app.get('/', (_req, res) => {
-  res.json({ status: 'ok', service: 'promptvault-ai-proxy' });
-});
-
 app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok' });
+  res.json({
+    status: 'ok',
+    version: '1.0.0',
+    providers: {
+      gemini: GEMINI_API_KEY ? 'configured' : 'missing',
+      groq: GROQ_API_KEY ? 'configured' : 'missing',
+    },
+  });
 });
 
-app.listen(PORT, () => {
-  console.log(`[ai-proxy] listening on http://localhost:${PORT}`);
+// ---------------------------------------------------------------------------
+// Production: serve static frontend
+// ---------------------------------------------------------------------------
+
+if (IS_PRODUCTION) {
+  const distPath = path.resolve(__dirname, '..', 'dist');
+  app.use(express.static(distPath, { maxAge: '1y', immutable: true }));
+
+  // SPA fallback — serve index.html for any unmatched route
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+
+  console.log(`[ai-proxy] Serving static frontend from ${distPath}`);
+} else {
+  app.get('/', (_req, res) => {
+    res.json({ status: 'ok', service: 'promptvault-ai-proxy' });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Global error handler
+// ---------------------------------------------------------------------------
+
+app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error('[ai-proxy] Unhandled error:', err);
+  res.status(500).json({ error: 'Internal server error.' });
 });
+
+// ---------------------------------------------------------------------------
+// Start server
+// ---------------------------------------------------------------------------
+
+const server = app.listen(PORT, () => {
+  console.log(`[ai-proxy] listening on http://localhost:${PORT} (${IS_PRODUCTION ? 'production' : 'development'})`);
+});
+
+// Graceful shutdown
+function shutdown(signal: string) {
+  console.log(`\n[ai-proxy] ${signal} received, shutting down gracefully...`);
+  server.close(() => {
+    console.log('[ai-proxy] Server closed.');
+    process.exit(0);
+  });
+  // Force exit after 10 seconds
+  setTimeout(() => {
+    console.error('[ai-proxy] Forced shutdown after timeout.');
+    process.exit(1);
+  }, 10_000);
+}
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
 
 // ---------------------------------------------------------------------------
 // Core pipeline — two-step: analyze (score) then improve (rewrite)

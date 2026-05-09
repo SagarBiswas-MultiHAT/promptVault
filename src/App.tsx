@@ -42,8 +42,19 @@ import { INITIAL_DATA, LOCAL_STORAGE_KEY, SCHEMA_VERSION } from './constants.ts'
 export default function App() {
   // --- STATE ---
   const [data, setData] = useState<VaultData>(() => {
-    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return saved ? JSON.parse(saved) : INITIAL_DATA;
+    try {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as VaultData;
+        // Basic schema guard: ensure required fields exist
+        if (parsed && parsed.schemaVersion && Array.isArray(parsed.prompts) && Array.isArray(parsed.categories)) {
+          return parsed;
+        }
+      }
+    } catch (err) {
+      console.error('[PromptVault] Failed to parse saved data, resetting to defaults:', err);
+    }
+    return INITIAL_DATA;
   });
 
   const [isLocked, setIsLocked] = useState(data.settings.pinHash !== null);
@@ -379,7 +390,7 @@ export default function App() {
 
       <main className="flex-1 flex flex-col min-w-0 h-full">
         {/* Header — Desktop: single-row | Mobile: two-row */}
-        <header className={`border-b border-vault-border bg-[#0D0D0D]/80 backdrop-blur-[10px] z-10 shrink-0 ${
+        <header className={`border-b border-vault-border bg-vault-bg/80 backdrop-blur-[10px] z-10 shrink-0 ${
           isMobile ? 'flex flex-col' : 'h-[72px] flex items-center justify-between px-8'
         }`}>
 
