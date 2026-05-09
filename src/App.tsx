@@ -103,17 +103,10 @@ export default function App() {
   }, [data.settings.isDarkMode]);
 
   const [showSettings, setShowSettings] = useState(false);
-  const [showLockModal, setShowLockModal] = useState(false);
 
   // --- ACTIONS ---
   const handleSetPin = async (hash: string) => {
     setData(prev => ({ ...prev, settings: { ...prev.settings, pinHash: hash } }));
-  };
-
-  const handleClearPin = () => {
-    if (confirm('Disable PIN lock? This will remove the privacy screen.')) {
-      setData(prev => ({ ...prev, settings: { ...prev.settings, pinHash: null } }));
-    }
   };
 
   // Update logic for the lock button in header
@@ -122,8 +115,8 @@ export default function App() {
       // If there's a PIN set and we're not already removing, start the removal process
       setIsRemovingLock(true);
     } else if (!data.settings.pinHash) {
-      // If no PIN is set, show settings to create one
-      setShowLockModal(true);
+      // If no PIN is set, go straight to the PIN setup flow
+      setIsLocked(true);
     }
   };
 
@@ -446,7 +439,7 @@ export default function App() {
                   <button
                     id="mobile-lock-toggle"
                     onClick={handleLockButtonClick}
-                    aria-label={data.settings.pinHash ? 'Vault locked' : 'Vault unlocked'}
+                    aria-label={data.settings.pinHash ? 'Remove Lock' : 'Create PIN'}
                     className="w-9 h-9 flex items-center justify-center border border-vault-border text-vault-text-muted hover:text-vault-accent hover:border-vault-accent rounded-lg transition-colors"
                   >
                     {data.settings.pinHash ? <Lock size={15} /> : <Unlock size={15} />}
@@ -509,7 +502,7 @@ export default function App() {
                 <button
                   onClick={handleLockButtonClick}
                   className="p-2.5 border border-vault-border text-vault-text-muted hover:text-vault-accent hover:border-vault-accent/30 rounded-xl transition-all"
-                  title="Vault Lock Settings"
+                  title={data.settings.pinHash ? 'Remove Lock' : 'Create PIN'}
                 >
                   {data.settings.pinHash ? <Lock size={16} /> : <Unlock size={16} />}
                 </button>
@@ -798,44 +791,6 @@ export default function App() {
         )}
       </Modal>
 
-      {/* Lock Modal */}
-      <Modal
-        isOpen={showLockModal}
-        onClose={() => setShowLockModal(false)}
-        title="Privacy Layer"
-      >
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 text-vault-accent font-mono uppercase tracking-widest text-[10px] font-bold">
-            <ShieldCheck size={14} />
-            <span>Access PIN Lock</span>
-          </div>
-          <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-sm font-medium">Security Status</p>
-              <p className="text-xs text-vault-text-muted font-mono">{data.settings.pinHash ? 'Vault is currently protected by hash logic.' : 'Security is currently disabled.'}</p>
-            </div>
-            {data.settings.pinHash ? (
-              <button
-                onClick={handleClearPin}
-                className="px-4 py-2 border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white rounded-lg text-[10px] font-mono tracking-widest uppercase transition-all"
-              >
-                Disable
-              </button>
-            ) : (
-              <button
-                onClick={() => {
-                  setShowLockModal(false);
-                  setIsLocked(true);
-                }}
-                className="px-4 py-2 bg-vault-accent text-vault-bg rounded-lg text-[10px] font-mono font-bold tracking-widest uppercase transition-all"
-              >
-                Enable PIN
-              </button>
-            )}
-          </div>
-        </div>
-      </Modal>
-
       {/* Settings Modal */}
       <Modal
         isOpen={showSettings}
@@ -846,19 +801,24 @@ export default function App() {
           <section className="space-y-4">
             <div className="flex items-center gap-2 text-vault-accent font-mono uppercase tracking-widest text-[10px] font-bold">
               <ShieldCheck size={14} />
-              <span>Privacy Layer</span>
+              <span>PIN Lock</span>
             </div>
-            <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl flex items-center justify-between">
+            <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl flex items-center justify-between gap-4">
               <div className="space-y-1">
-                <p className="text-sm font-medium">Access PIN Lock</p>
-                <p className="text-xs text-vault-text-muted font-mono">{data.settings.pinHash ? 'Vault is currently protected by hash logic.' : 'Security is currently disabled.'}</p>
+                <p className="text-sm font-medium">{data.settings.pinHash ? 'Remove Lock' : 'Create PIN'}</p>
+                <p className="text-xs text-vault-text-muted font-mono">
+                  {data.settings.pinHash ? 'Require your PIN to confirm removal.' : 'Set a PIN to protect the vault.'}
+                </p>
               </div>
               {data.settings.pinHash ? (
                 <button
-                  onClick={handleClearPin}
+                  onClick={() => {
+                    setShowSettings(false);
+                    setIsRemovingLock(true);
+                  }}
                   className="px-4 py-2 border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white rounded-lg text-[10px] font-mono tracking-widest uppercase transition-all"
                 >
-                  Disable
+                  Remove Lock
                 </button>
               ) : (
                 <button
@@ -868,7 +828,7 @@ export default function App() {
                   }}
                   className="px-4 py-2 bg-vault-accent text-vault-bg rounded-lg text-[10px] font-mono font-bold tracking-widest uppercase transition-all"
                 >
-                  Enable PIN
+                  Create PIN
                 </button>
               )}
             </div>
