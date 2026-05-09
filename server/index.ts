@@ -20,9 +20,11 @@ const CACHE_TTL_MS = 1000 * 60 * 30;
 const MAX_CACHE_ENTRIES = 200;
 const responseCache = new Map<string, { expiresAt: number; value: any }>();
 
+type Mode = 'analyze' | 'improve';
+
 app.post('/api/suggest', async (req, res) => {
   const body = req.body || {};
-  const { prompt, categories } = body;
+  const { prompt, categories, mode } = body;
 
   if (!prompt || typeof prompt !== 'string') {
     return res.status(400).json({ error: 'Prompt is required.' });
@@ -36,6 +38,7 @@ app.post('/api/suggest', async (req, res) => {
     const result = await generateSuggestion({
       prompt: prompt.trim(),
       categories: categoryList,
+      mode: mode === 'improve' ? 'improve' : 'analyze',
     });
 
     return res.json(result);
@@ -58,10 +61,10 @@ app.listen(PORT, () => {
 });
 
 // ---------------------------------------------------------------------------
-// Core pipeline — unified prompt evaluation
+// Core pipeline — two-step: analyze (score) then improve (rewrite)
 // ---------------------------------------------------------------------------
 
-async function generateSuggestion({ prompt, categories }: { prompt: string; categories: string[] }) {
+async function generateSuggestion({ prompt, categories, mode }: { prompt: string; categories: string[]; mode: Mode }) {
   if (!GEMINI_API_KEY && !GROQ_API_KEY) {
     throw new Error('Missing GEMINI_API_KEY or GROQ_API_KEY.');
   }
@@ -72,13 +75,15 @@ async function generateSuggestion({ prompt, categories }: { prompt: string; cate
   const normalizedCategories = categories
     .map((item) => item.trim())
     .filter(Boolean);
-  const cacheKey = getCacheKey(prompt, normalizedCategories);
+  const cacheKey = getCacheKey(prompt, normalizedCategories, mode);
   const cached = getCachedResult(cacheKey);
   if (cached) {
     return cached;
   }
 
-  const promptText = buildAssistantPrompt(prompt, normalizedCategories);
+  const promptText = mode === 'improve'
+    ? buildImprovePrompt(prompt, normalizedCategories)
+    : buildAnalyzePrompt(prompt, normalizedCategories);
 
   if (GEMINI_API_KEY) {
     try {
@@ -112,31 +117,32 @@ async function generateSuggestion({ prompt, categories }: { prompt: string; cate
   }
 
   const parsed = extractJson(rawText);
-  const normalized = normalizeAssistantResponse(parsed, normalizedCategories);
+  const normalized = mode === 'improve'
+    ? normalizeImproveResponse(parsed)
+    : normalizeAnalyzeResponse(parsed, normalizedCategories);
   const result = { ...normalized, provider };
   setCachedResult(cacheKey, result);
   return result;
 }
 
 // ---------------------------------------------------------------------------
-// Unified prompt builder — embeds the full prompt_assistant_template pipeline
+// ANALYZE prompt — Steps 1–3 of the template: Understand, Score, Decide
+// Scores the prompt, identifies weak spots, suggests metadata. No rewrite.
 // ---------------------------------------------------------------------------
 
-function buildAssistantPrompt(prompt: string, categories: string[]) {
+function buildAnalyzePrompt(prompt: string, categories: string[]) {
   const categoryLine = categories.length
     ? `Available categories to choose from: ${categories.join(', ')}.`
     : 'No categories provided — use "General".';
 
   return [
-    // ── System identity & pipeline ──
     'IDENTITY',
     'You are the PromptVault AI Librarian — a world-class prompt engineer and quality analyst.',
-    'Your sole purpose is to evaluate the user\'s prompt and return a superior, production-ready version of it.',
+    'Your task is to EVALUATE and SCORE the user\'s prompt. Do NOT rewrite or improve the prompt.',
     '',
     'You are precise, direct, and inference-first. You never pad responses.',
-    'You never guess wildly. You improve what you can from context and ask ONLY when you cannot proceed without the answer.',
     '',
-    'YOUR INTERNAL PIPELINE (run every time, in order)',
+    'YOUR EVALUATION PIPELINE',
     '',
     'STEP 1 — UNDERSTAND',
     'Read the user\'s prompt carefully. Identify:',
@@ -159,16 +165,76 @@ function buildAssistantPrompt(prompt: string, categories: string[]) {
     'Score 7–8  → GOOD: solid but improvable',
     'Score ≤6   → CONSIDER IMPROVING: significant gaps present',
     '',
-    'STEP 3 — DECIDE: ASK OR INFER?',
-    'Ask a question ONLY if ALL three conditions are true:',
-    '① The intent is genuinely ambiguous',
-    '② Inferring would produce a clearly wrong improvement',
-    '③ The gap cannot be filled with a reasonable assumption',
+    'STEP 3 — IDENTIFY GAPS',
+    'List specific weak spots and what could be improved (but do NOT write the improved prompt).',
     '',
-    'If you ask: ask ONE question only. Never a list.',
-    'If you can infer: do so silently and note the assumption inline.',
+    'STRICT OUTPUT FORMAT',
     '',
-    'STEP 4 — IMPROVE',
+    'You MUST return ONLY valid JSON. No markdown, no explanation, no preamble.',
+    'Return this exact JSON structure:',
+    '{',
+    '  "qualityScore": 7.5,',
+    '  "scoreLabel": "GOOD",',
+    '  "weakSpots": ["specific gap #1", "specific gap #2"],',
+    '  "improvements": ["actionable suggestion for what could be improved"],',
+    '  "confidence": "HIGH",',
+    '  "confidenceNote": "",',
+    '  "title": "short descriptive title based on prompt content",',
+    '  "category": "category name",',
+    '  "tags": ["relevant", "topic", "tags"]',
+    '}',
+    '',
+    'FIELD RULES:',
+    '- qualityScore: number 0.0–10.0 (one decimal place). Use the rubric above.',
+    '- scoreLabel: exactly one of "EXCELLENT" (9–10), "GOOD" (7–8), or "CONSIDER IMPROVING" (≤6).',
+    '- weakSpots: array of strings, max 5. Specific gaps in the prompt.',
+    '- improvements: array of strings. Actionable suggestions for what could be improved.',
+    '- confidence: exactly "HIGH" or "MEDIUM".',
+    '- confidenceNote: empty string if HIGH, one-line explanation if MEDIUM.',
+    '- title: descriptive title of what the prompt is about. NEVER "Empty Prompt" or "Untitled" if the prompt has content.',
+    '- category: one of the available categories listed below.',
+    '- tags: array of 2–6 relevant keyword tags.',
+    '',
+    'Replace ALL example values with your real assessment. Do NOT include any text outside the JSON.',
+    '',
+    categoryLine,
+    '',
+    'Here is the user prompt to evaluate:',
+    '',
+    prompt,
+  ].join('\n');
+}
+
+// ---------------------------------------------------------------------------
+// IMPROVE prompt — Full template pipeline: Steps 1–5
+// Rewrites the prompt using Fixes A–H and the quality contract.
+// ---------------------------------------------------------------------------
+
+function buildImprovePrompt(prompt: string, categories: string[]) {
+  const categoryLine = categories.length
+    ? `Available categories: ${categories.join(', ')}.`
+    : 'Category list is unavailable.';
+
+  return [
+    'IDENTITY',
+    'You are the PromptVault AI Librarian — a world-class prompt engineer and quality analyst.',
+    'Your sole purpose is to rewrite the user\'s prompt into a superior, production-ready version.',
+    '',
+    'You are precise, direct, and inference-first. You never pad responses.',
+    'You never guess wildly. You improve what you can from context.',
+    '',
+    'YOUR IMPROVEMENT PIPELINE (run every step, in order)',
+    '',
+    'STEP 1 — UNDERSTAND',
+    'Read the user\'s prompt carefully. Identify:',
+    '• What is the user ultimately trying to accomplish?',
+    '• What AI model/task type is this for?',
+    '• What is currently weak, missing, or ambiguous?',
+    '',
+    'STEP 2 — DECIDE: ASK OR INFER?',
+    'If you can infer missing context: do so silently and note the assumption inline.',
+    '',
+    'STEP 3 — IMPROVE',
     'Rewrite the prompt applying every fix below that is needed:',
     '',
     'FIX A — Role injection',
@@ -199,7 +265,7 @@ function buildAssistantPrompt(prompt: string, categories: string[]) {
     'If the prompt type benefits from AI asking the user questions, append: "Ask me any clarifying questions you need."',
     'Apply judiciously — not for every prompt.',
     '',
-    'STEP 5 — SELF-CHECK',
+    'STEP 4 — SELF-CHECK',
     'Before finalizing, ask yourself:',
     '• Would a domain expert immediately understand what to do?',
     '• Is every vague word replaced with a specific one?',
@@ -218,51 +284,34 @@ function buildAssistantPrompt(prompt: string, categories: string[]) {
     'If the prompt is already excellent (9–10), say so clearly and return it with micro-polish only.',
     'Do not over-engineer it.',
     '',
-    // ── Output format instructions (JSON wrapper) ──
     'STRICT OUTPUT FORMAT',
     '',
     'You MUST return ONLY valid JSON. No markdown, no explanation, no preamble.',
     'Return this exact JSON structure:',
     '{',
-    '  "qualityScore": 7.5,',
-    '  "scoreLabel": "GOOD",',
-    '  "weakSpots": ["specific gap #1", "specific gap #2"],',
-    '  "improvementsMade": ["what you added/changed and why — one line each"],',
     '  "improvedPrompt": "the full rewritten prompt here",',
-    '  "confidence": "HIGH",',
-    '  "confidenceNote": "",',
-    '  "title": "short descriptive title based on prompt content",',
-    '  "category": "category name",',
-    '  "tags": ["relevant", "topic", "tags"]',
+    '  "improvementsMade": ["what you added/changed and why — one line each"]',
     '}',
     '',
     'FIELD RULES:',
-    '- qualityScore: number 0.0–10.0 (one decimal place). Use the rubric above.',
-    '- scoreLabel: exactly one of "EXCELLENT" (9–10), "GOOD" (7–8), or "CONSIDER IMPROVING" (≤6).',
-    '- weakSpots: array of strings, max 5. Specific gaps only.',
-    '- improvementsMade: array of strings. What you fixed and why.',
-    '- improvedPrompt: the full rewritten prompt. Immediately usable.',
-    '- confidence: exactly "HIGH" or "MEDIUM".',
-    '- confidenceNote: empty string if HIGH, one-line explanation if MEDIUM.',
-    '- title: descriptive title of what the prompt is about. NEVER "Empty Prompt" or "Untitled" if the prompt has content.',
-    '- category: one of the available categories listed below.',
-    '- tags: array of 2–6 relevant keyword tags.',
+    '- improvedPrompt: the full rewritten prompt. Immediately usable — paste and run.',
+    '- improvementsMade: array of strings. Each describes one specific change and why.',
     '',
-    'Replace ALL example values with your real assessment. Do NOT include any text outside the JSON.',
+    'Replace ALL example values. Do NOT include any text outside the JSON.',
     '',
     categoryLine,
     '',
-    'Here is the user prompt to evaluate:',
+    'User prompt to improve:',
     '',
     prompt,
   ].join('\n');
 }
 
 // ---------------------------------------------------------------------------
-// Response normalizer
+// Response normalizers
 // ---------------------------------------------------------------------------
 
-function normalizeAssistantResponse(data: any, categories: string[]) {
+function normalizeAnalyzeResponse(data: any, categories: string[]) {
   // Quality score
   const rawScore = Number(data?.qualityScore);
   const qualityScore = Number.isFinite(rawScore)
@@ -278,10 +327,7 @@ function normalizeAssistantResponse(data: any, categories: string[]) {
 
   // Arrays
   const weakSpots = Array.isArray(data?.weakSpots) ? data.weakSpots.filter(Boolean).slice(0, 5) : [];
-  const improvementsMade = Array.isArray(data?.improvementsMade) ? data.improvementsMade.filter(Boolean) : [];
-
-  // Improved prompt
-  const improvedPrompt = typeof data?.improvedPrompt === 'string' ? data.improvedPrompt.trim() : '';
+  const improvements = Array.isArray(data?.improvements) ? data.improvements.filter(Boolean) : [];
 
   // Confidence
   const rawConfidence = typeof data?.confidence === 'string' ? data.confidence.trim().toUpperCase() : '';
@@ -297,13 +343,22 @@ function normalizeAssistantResponse(data: any, categories: string[]) {
     qualityScore,
     scoreLabel,
     weakSpots,
-    improvementsMade,
-    improvedPrompt,
+    improvements,
     confidence,
     confidenceNote,
     title: title || 'Untitled Prompt',
     category: pickCategory(rawCategory, categories),
     tags,
+  };
+}
+
+function normalizeImproveResponse(data: any) {
+  const improvedPrompt = typeof data?.improvedPrompt === 'string' ? data.improvedPrompt.trim() : '';
+  const improvementsMade = Array.isArray(data?.improvementsMade) ? data.improvementsMade.filter(Boolean) : [];
+
+  return {
+    improvedPrompt,
+    improvementsMade,
   };
 }
 
@@ -390,9 +445,9 @@ function pickCategory(candidate: string, categories: string[]) {
   return match || categories.find((cat) => cat.toLowerCase() === 'general') || categories[0];
 }
 
-function getCacheKey(prompt: string, categories: string[]) {
+function getCacheKey(prompt: string, categories: string[], mode: Mode) {
   const categoryKey = categories.join('|').toLowerCase();
-  return `evaluate:${hashString(prompt)}:${hashString(categoryKey)}`;
+  return `${mode}:${hashString(prompt)}:${hashString(categoryKey)}`;
 }
 
 function getCachedResult(key: string) {

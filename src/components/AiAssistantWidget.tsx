@@ -5,20 +5,25 @@
 
 import { useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Sparkles, Send, X, AlertTriangle, Check, Shield, ChevronDown, ChevronUp, Zap } from 'lucide-react';
+import { Sparkles, Send, X, AlertTriangle, Check, Shield, Zap, Wand2 } from 'lucide-react';
 import { Category } from '../types.ts';
 
 interface EvaluationResult {
   qualityScore: number;
   scoreLabel: string;
   weakSpots: string[];
-  improvementsMade: string[];
-  improvedPrompt: string;
+  improvements: string[];
   confidence: string;
   confidenceNote: string;
   title: string;
   category: string;
   tags: string[];
+  provider?: string;
+}
+
+interface ImproveResult {
+  improvedPrompt: string;
+  improvementsMade: string[];
   provider?: string;
 }
 
@@ -32,13 +37,14 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
   const [isOpen, setIsOpen] = useState(false);
   const [promptInput, setPromptInput] = useState('');
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
+  const [improveResult, setImproveResult] = useState<ImproveResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isImproving, setIsImproving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editingSuggestions, setEditingSuggestions] = useState(false);
   const [suggestedTitle, setSuggestedTitle] = useState('');
   const [suggestedCategory, setSuggestedCategory] = useState('');
   const [tagsInput, setTagsInput] = useState('');
-  const [showImproved, setShowImproved] = useState(false);
 
   const availableCategoryNames = useMemo(() => categories.map(c => c.name), [categories]);
 
@@ -64,13 +70,14 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
   const resetAssistant = () => {
     setPromptInput('');
     setEvaluation(null);
+    setImproveResult(null);
     setIsLoading(false);
+    setIsImproving(false);
     setError(null);
     setEditingSuggestions(false);
     setSuggestedTitle('');
     setSuggestedCategory('');
     setTagsInput('');
-    setShowImproved(false);
   };
 
   const parseTags = (value: string) => {
@@ -90,6 +97,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
     return general?.id || categories[0]?.id || '';
   };
 
+  // Step 1: Evaluate — score + weak spots + metadata (no rewrite)
   const handleEvaluate = async (overridePrompt?: string) => {
     let promptToEvaluate = overridePrompt || promptInput;
     promptToEvaluate = promptToEvaluate.trim();
@@ -102,18 +110,17 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
     setIsLoading(true);
     setError(null);
     setEvaluation(null);
-    setShowImproved(false);
+    setImproveResult(null);
 
     try {
-      const payload = {
-        prompt: promptToEvaluate,
-        categories: availableCategoryNames,
-      };
-
       const response = await fetch('/api/suggest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          prompt: promptToEvaluate,
+          categories: availableCategoryNames,
+          mode: 'analyze',
+        }),
       });
 
       const data = await response.json();
@@ -125,8 +132,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
         qualityScore: Number.isFinite(Number(data?.qualityScore)) ? Number(data.qualityScore) : 0,
         scoreLabel: data?.scoreLabel || 'CONSIDER IMPROVING',
         weakSpots: Array.isArray(data?.weakSpots) ? data.weakSpots : [],
-        improvementsMade: Array.isArray(data?.improvementsMade) ? data.improvementsMade : [],
-        improvedPrompt: data?.improvedPrompt || '',
+        improvements: Array.isArray(data?.improvements) ? data.improvements : [],
         confidence: data?.confidence || 'HIGH',
         confidenceNote: data?.confidenceNote || '',
         title: data?.title || '',
@@ -147,11 +153,50 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
     }
   };
 
+  // Step 2: Improve — generate improved prompt (only on button click)
+  const handleImprove = async () => {
+    if (!promptInput.trim()) {
+      setError('Please enter a prompt to improve.');
+      return;
+    }
+
+    setIsImproving(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/suggest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: promptInput.trim(),
+          categories: availableCategoryNames,
+          mode: 'improve',
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data?.error || 'Failed to improve prompt.');
+      }
+
+      setImproveResult({
+        improvedPrompt: data?.improvedPrompt || '',
+        improvementsMade: Array.isArray(data?.improvementsMade) ? data.improvementsMade : [],
+        provider: typeof data?.provider === 'string' ? data.provider : '',
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to improve prompt.');
+    } finally {
+      setIsImproving(false);
+    }
+  };
+
+  // Use improved prompt: swap it in and re-evaluate
   const handleUseImprovedPrompt = async () => {
-    if (!evaluation?.improvedPrompt?.trim()) return;
-    const updatedPrompt = evaluation.improvedPrompt.trim();
+    if (!improveResult?.improvedPrompt?.trim()) return;
+    const updatedPrompt = improveResult.improvedPrompt.trim();
     setPromptInput(updatedPrompt);
-    setShowImproved(false);
+    setImproveResult(null);
     await handleEvaluate(updatedPrompt);
   };
 
@@ -185,6 +230,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
 
   const scoreConfig = evaluation ? getScoreConfig(evaluation.scoreLabel) : null;
   const providerLabel = evaluation ? formatProvider(evaluation.provider) : '';
+  const anyLoading = isLoading || isImproving;
 
   return (
     <>
@@ -215,7 +261,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
             <div className="flex-1 overflow-y-auto p-5 space-y-4">
               {/* Prompt Input */}
               <div className="space-y-2">
-                <label className="text-[10px] font-mono text-vault-text-muted uppercase tracking-widest">Prompt to Evaluate</label>
+                <label className="text-[10px] font-mono text-vault-text-muted uppercase tracking-widest">Prompt to Analyze</label>
                 <textarea
                   rows={4}
                   value={promptInput}
@@ -229,7 +275,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
               {isLoading && (
                 <div className="flex items-center gap-3 p-4 rounded-xl bg-vault-accent/5 border border-vault-accent/10">
                   <div className="w-4 h-4 border-2 border-vault-accent/30 border-t-vault-accent rounded-full animate-spin" />
-                  <span className="text-xs font-mono text-vault-text-muted uppercase tracking-widest">Running 5-step evaluation pipeline...</span>
+                  <span className="text-xs font-mono text-vault-text-muted uppercase tracking-widest">Evaluating prompt quality...</span>
                 </div>
               )}
 
@@ -274,53 +320,18 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                     </div>
                   )}
 
-                  {/* Improvements Made */}
-                  {evaluation.improvementsMade.length > 0 && (
+                  {/* Improvements (suggestions from analyze) */}
+                  {evaluation.improvements.length > 0 && (
                     <div>
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted mb-2">Improvements Made</p>
+                      <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted mb-2">Improvements</p>
                       <ul className="space-y-1.5 text-xs text-vault-text-muted">
-                        {evaluation.improvementsMade.map((item, index) => (
+                        {evaluation.improvements.map((item, index) => (
                           <li key={index} className="flex items-start gap-2">
                             <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-vault-accent shrink-0" />
                             <span>{item}</span>
                           </li>
                         ))}
                       </ul>
-                    </div>
-                  )}
-
-                  {/* Improved Prompt (collapsible) */}
-                  {evaluation.improvedPrompt && (
-                    <div className="space-y-2">
-                      <button
-                        onClick={() => setShowImproved(prev => !prev)}
-                        className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-vault-accent hover:text-vault-text transition-colors"
-                      >
-                        {showImproved ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-                        {showImproved ? 'Hide' : 'View'} Improved Prompt
-                      </button>
-                      <AnimatePresence>
-                        {showImproved && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="overflow-hidden"
-                          >
-                            <div className="bg-vault-bg border border-vault-border rounded-lg p-3 text-xs text-vault-text-muted whitespace-pre-wrap max-h-40 overflow-y-auto custom-scrollbar">
-                              {evaluation.improvedPrompt}
-                            </div>
-                            <button
-                              onClick={handleUseImprovedPrompt}
-                              disabled={isLoading}
-                              className="mt-2 flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-vault-accent hover:text-vault-text transition-colors disabled:opacity-50"
-                            >
-                              <Zap size={12} />
-                              Use improved prompt & re-evaluate
-                            </button>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
                     </div>
                   )}
 
@@ -339,9 +350,61 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                     )}
                   </div>
 
+                  {/* Improved Prompt — only shown after IMPROVE button click */}
+                  {isImproving && (
+                    <div className="flex items-center gap-3 p-4 rounded-xl bg-vault-accent/5 border border-vault-accent/10">
+                      <div className="w-4 h-4 border-2 border-vault-accent/30 border-t-vault-accent rounded-full animate-spin" />
+                      <span className="text-xs font-mono text-vault-text-muted uppercase tracking-widest">Generating improved prompt...</span>
+                    </div>
+                  )}
+
+                  {improveResult && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="space-y-3"
+                    >
+                      {/* Improvements Made */}
+                      {improveResult.improvementsMade.length > 0 && (
+                        <div>
+                          <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted mb-2">Improvements Made</p>
+                          <ul className="space-y-1.5 text-xs text-vault-text-muted">
+                            {improveResult.improvementsMade.map((item, index) => (
+                              <li key={index} className="flex items-start gap-2">
+                                <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Improved Prompt */}
+                      {improveResult.improvedPrompt && (
+                        <div className="space-y-2">
+                          <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Improved Prompt</p>
+                          {improveResult.provider && (
+                            <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Provider: {formatProvider(improveResult.provider)}</p>
+                          )}
+                          <div className="bg-vault-bg border border-vault-border rounded-lg p-3 text-xs text-vault-text-muted whitespace-pre-wrap max-h-40 overflow-y-auto custom-scrollbar">
+                            {improveResult.improvedPrompt}
+                          </div>
+                          <button
+                            onClick={handleUseImprovedPrompt}
+                            disabled={anyLoading}
+                            className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-vault-accent hover:text-vault-text transition-colors disabled:opacity-50"
+                          >
+                            <Zap size={12} />
+                            Use improved prompt & re-analyze
+                          </button>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+
                   {/* Suggestions (Title / Category / Tags) */}
                   <div className="space-y-2 pt-2 border-t border-vault-border/50">
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Save Details</p>
+                    <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Suggestions</p>
 
                     {editingSuggestions ? (
                       <div className="space-y-3">
@@ -422,7 +485,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                     disabled={isLoading}
                     className="flex items-center justify-center gap-2 px-3 py-2 bg-vault-accent text-vault-bg rounded-lg text-xs font-bold uppercase tracking-widest disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97]"
                   >
-                    <Send size={14} /> Evaluate
+                    <Send size={14} /> Analyze
                   </button>
                   <button
                     onClick={() => {
@@ -435,20 +498,27 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={handleConfirm}
-                    disabled={!canConfirm || isLoading}
+                    disabled={!canConfirm || anyLoading}
                     className="flex items-center justify-center gap-2 px-3 py-2 bg-vault-accent text-vault-bg rounded-lg text-xs font-bold uppercase tracking-widest disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97]"
                   >
-                    <Check size={14} /> Save
+                    <Check size={14} /> Confirm
                   </button>
                   <button
                     onClick={() => setEditingSuggestions(prev => !prev)}
-                    disabled={!canModify || isLoading}
+                    disabled={!canModify || anyLoading}
                     className="flex items-center justify-center gap-2 px-3 py-2 border border-vault-border text-vault-text-muted rounded-lg text-xs font-bold uppercase tracking-widest disabled:opacity-50 hover:text-vault-text transition-colors"
                   >
                     Modify
+                  </button>
+                  <button
+                    onClick={handleImprove}
+                    disabled={anyLoading}
+                    className="flex items-center justify-center gap-2 px-3 py-2 border border-vault-border text-vault-text-muted rounded-lg text-xs font-bold uppercase tracking-widest disabled:opacity-50 hover:text-vault-text transition-colors"
+                  >
+                    <Wand2 size={14} /> Improve
                   </button>
                   <button
                     onClick={() => {
