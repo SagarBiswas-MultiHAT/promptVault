@@ -31,7 +31,7 @@ export function VariableForm({ prompt, variables, onCopy, onCancel }: VariableFo
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3 p-4 bg-vault-accent/10 border border-vault-accent/20 rounded-xl">
+      <div className="flex items-start gap-3 p-4 bg-vault-accent/8 border border-vault-accent/15 rounded-xl">
         <Info size={18} className="text-vault-accent shrink-0" />
         <p className="text-xs text-vault-text-muted leading-relaxed">
           This prompt contains <span className="text-vault-accent font-bold">{variables.length} variables</span>. Fill them in below to personalize the text before copying.
@@ -50,7 +50,7 @@ export function VariableForm({ prompt, variables, onCopy, onCancel }: VariableFo
               value={values[v]}
               onChange={(e) => setValues(prev => ({ ...prev, [v]: e.target.value }))}
               placeholder={`Enter ${v}...`}
-              className="w-full bg-vault-bg border border-vault-border rounded-lg px-4 py-3 focus:border-vault-accent outline-none transition-all placeholder:text-vault-text-muted/30"
+              className="w-full bg-vault-bg/60 border border-vault-border rounded-xl px-4 py-3 focus:border-vault-accent/50 focus:shadow-[0_0_0_3px_rgba(245,158,11,0.08)] outline-none transition-all placeholder:text-vault-text-muted/30 text-sm"
             />
           </div>
         ))}
@@ -65,7 +65,7 @@ export function VariableForm({ prompt, variables, onCopy, onCancel }: VariableFo
         </button>
         <button
           onClick={handleCopy}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-vault-accent text-vault-bg hover:bg-vault-accent/90 rounded-xl font-bold uppercase tracking-widest text-xs transition-all shadow-lg shadow-vault-accent/20"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 btn-primary !rounded-xl"
         >
           <Clipboard size={14} />
           Inject & Copy

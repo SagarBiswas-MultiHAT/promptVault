@@ -109,7 +109,7 @@ export function Sidebar({
         <motion.div
           animate={{ width: isMobile ? (isCollapsed ? 0 : 280) : (isCollapsed ? 64 : 280) }}
           transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-          className="h-full flex flex-col bg-vault-panel border-r border-vault-border overflow-hidden"
+          className="h-full flex flex-col bg-vault-panel/95 backdrop-blur-sm border-r border-vault-border overflow-hidden relative z-10"
         >
           <AnimatePresence mode="wait">
             {isCollapsed && !isMobile ? (
@@ -124,7 +124,11 @@ export function Sidebar({
               >
                 {/* Brand Icon */}
                 <div className="pt-6 pb-4 flex justify-center">
-                  <div className="w-6 h-6 bg-vault-accent rounded-[4px] shrink-0 shadow-[0_0_12px_rgba(245,158,11,0.15)]" />
+                  <div className="w-7 h-7 rounded-lg shrink-0 relative overflow-hidden accent-glow"
+                    style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
+                  </div>
                 </div>
 
                 {/* Nav Icons */}
@@ -135,12 +139,12 @@ export function Sidebar({
                     data-tooltip="Favorites"
                     className={`sidebar-tooltip w-10 h-10 flex items-center justify-center rounded-lg transition-all relative ${showFavorites
                       ? 'bg-vault-accent/10 text-vault-accent shadow-[inset_0_0_12px_rgba(245,158,11,0.08)]'
-                      : 'text-vault-text-muted hover:text-vault-accent hover:bg-vault-border/50'
+                      : 'text-vault-text-muted hover:text-vault-accent hover:bg-vault-panel-bright'
                       }`}
                   >
                     <Star size={17} />
                     {favoritesCount > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-vault-accent text-vault-bg text-[8px] font-bold rounded-full flex items-center justify-center">
+                      <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-vault-accent text-vault-bg text-[8px] font-bold rounded-full flex items-center justify-center shadow-sm">
                         {favoritesCount}
                       </span>
                     )}
@@ -156,14 +160,14 @@ export function Sidebar({
                     data-tooltip="All Prompts"
                     className={`sidebar-tooltip w-10 h-10 flex items-center justify-center rounded-lg transition-all ${selectedCategoryId === null && !showFavorites
                       ? 'bg-vault-accent/10 text-vault-accent shadow-[inset_0_0_12px_rgba(245,158,11,0.08)]'
-                      : 'text-vault-text-muted hover:text-vault-accent hover:bg-vault-border/50'
+                      : 'text-vault-text-muted hover:text-vault-accent hover:bg-vault-panel-bright'
                       }`}
                   >
                     <FolderOpen size={17} />
                   </button>
 
                   {/* Divider */}
-                  <div className="w-6 h-px bg-vault-border my-2!" />
+                  <div className="w-6 my-2! divider-glow" />
 
                   {/* Category Icons */}
                   {categories.map((cat) => (
@@ -173,7 +177,7 @@ export function Sidebar({
                       data-tooltip={cat.name}
                       className={`sidebar-tooltip w-10 h-10 flex items-center justify-center rounded-lg transition-all ${selectedCategoryId === cat.id
                         ? 'bg-vault-accent/10 text-vault-accent'
-                        : 'text-vault-text-muted hover:text-vault-accent hover:bg-vault-border/50'
+                        : 'text-vault-text-muted hover:text-vault-accent hover:bg-vault-panel-bright'
                         }`}
                     >
                       <Hash size={15} />
@@ -184,7 +188,7 @@ export function Sidebar({
                   <button
                     onClick={onAddCategory}
                     data-tooltip="Add Category"
-                    className="sidebar-tooltip w-10 h-10 flex items-center justify-center rounded-lg text-vault-accent/60 hover:text-vault-accent hover:bg-vault-border/50 transition-all"
+                    className="sidebar-tooltip w-10 h-10 flex items-center justify-center rounded-lg text-vault-accent/60 hover:text-vault-accent hover:bg-vault-panel-bright transition-all"
                   >
                     <Plus size={15} />
                   </button>
@@ -195,7 +199,7 @@ export function Sidebar({
                   <button
                     onClick={onToggleStats}
                     data-tooltip="Analytics"
-                    className="sidebar-tooltip w-10 h-10 flex items-center justify-center rounded-lg text-vault-text-muted hover:text-vault-accent hover:bg-vault-border/50 transition-all"
+                    className="sidebar-tooltip w-10 h-10 flex items-center justify-center rounded-lg text-vault-text-muted hover:text-vault-accent hover:bg-vault-panel-bright transition-all"
                   >
                     <BarChart3 size={17} />
                   </button>
@@ -212,27 +216,39 @@ export function Sidebar({
                 className="h-full flex flex-col"
               >
                 {/* Brand */}
-                <div className="p-6 pb-8">
+                <div className="p-6 pb-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 bg-vault-accent rounded-[3px] shrink-0" />
-                    <h1 className="text-lg font-mono font-bold tracking-tighter">PromptVault</h1>
+                    <div className="w-8 h-8 rounded-lg shrink-0 relative overflow-hidden accent-glow"
+                      style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
+                    </div>
+                    <div>
+                      <h1 className="text-lg font-bold tracking-tight leading-none">
+                        Prompt<span className="text-vault-accent">Vault</span>
+                      </h1>
+                      <p className="text-[9px] font-mono text-vault-text-muted uppercase tracking-[0.15em] mt-0.5">Prompt Intelligence</p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-4 space-y-6">
+                <div className="flex-1 overflow-y-auto px-3 pb-4 space-y-5">
                   {/* Main Filters */}
-                  <div className="space-y-4">
-                    <span className="text-[10px] font-mono text-vault-text-muted uppercase underline underline-offset-4 tracking-widest block mb-3 px-2">Library</span>
-                    <div className="space-y-1">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono text-vault-text-muted uppercase tracking-[0.15em] block mb-2 px-3 font-semibold">Library</span>
+                    <div className="space-y-0.5">
                       <button
                         onClick={onToggleFavorites}
-                        className={`w-full flex items-center justify-between p-2 rounded-md transition-all ${showFavorites ? 'text-vault-accent font-bold' : 'hover:text-vault-accent text-vault-text-muted'
+                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all group/nav ${showFavorites
+                          ? 'text-vault-accent font-semibold bg-vault-accent/8 nav-active-bar'
+                          : 'hover:text-vault-text hover:bg-vault-panel-bright text-vault-text-muted'
                           }`}
                       >
                         <div className="flex items-center gap-3">
-                          <span className="text-sm">⭐ Favorites</span>
+                          <Star size={15} className={showFavorites ? 'text-vault-accent' : 'text-vault-text-muted group-hover/nav:text-vault-accent'} />
+                          <span className="text-sm">Favorites</span>
                         </div>
-                        <span className="text-[10px] bg-vault-panel-bright px-1.5 py-0.5 rounded text-vault-text-muted">{favoritesCount}</span>
+                        <span className="badge badge-amber text-[9px] py-0 px-1.5">{favoritesCount}</span>
                       </button>
 
                       <button
@@ -240,35 +256,38 @@ export function Sidebar({
                           onSelectCategory(null);
                           if (showFavorites) onToggleFavorites();
                         }}
-                        className={`w-full flex items-center justify-between p-2 rounded-md transition-all ${selectedCategoryId === null && !showFavorites ? 'text-vault-accent font-bold' : 'hover:text-vault-accent text-vault-text-muted'
+                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all group/nav ${selectedCategoryId === null && !showFavorites
+                          ? 'text-vault-accent font-semibold bg-vault-accent/8 nav-active-bar'
+                          : 'hover:text-vault-text hover:bg-vault-panel-bright text-vault-text-muted'
                           }`}
                       >
                         <div className="flex items-center gap-3">
-                          <span className="text-sm">📁 All Prompts</span>
+                          <FolderOpen size={15} className={selectedCategoryId === null && !showFavorites ? 'text-vault-accent' : 'text-vault-text-muted group-hover/nav:text-vault-accent'} />
+                          <span className="text-sm">All Prompts</span>
                         </div>
-                        <span className="text-[10px] bg-vault-panel-bright px-1.5 py-0.5 rounded text-vault-text-muted">{prompts.length}</span>
+                        <span className="badge badge-amber text-[9px] py-0 px-1.5">{prompts.length}</span>
                       </button>
                     </div>
                   </div>
 
                   {/* Categories Section */}
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between px-2">
-                      <h3 className="text-[10px] font-mono text-vault-text-muted uppercase underline underline-offset-4 tracking-widest">Categories</h3>
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between px-3 mb-2">
+                      <h3 className="text-[10px] font-mono text-vault-text-muted uppercase tracking-[0.15em] font-semibold">Categories</h3>
                       <button
                         onClick={onAddCategory}
-                        className="p-1 hover:bg-vault-border text-vault-accent rounded transition-colors"
+                        className="p-1 hover:bg-vault-panel-bright text-vault-text-muted hover:text-vault-accent rounded-md transition-all"
                       >
                         <Plus size={14} />
                       </button>
                     </div>
 
-                    <div className="space-y-1">
+                    <div className="space-y-0.5">
                       {categories.map((category) => (
                         <div key={category.id} className="group flex flex-col">
                           <div className="flex items-center gap-1">
                             {editingCategoryId === category.id ? (
-                              <div className="flex-1 flex items-center gap-2 px-2 py-1">
+                              <div className="flex-1 flex items-center gap-2 px-3 py-1">
                                 <input
                                   autoFocus
                                   type="text"
@@ -282,33 +301,38 @@ export function Sidebar({
                                       setEditingName('');
                                     }
                                   }}
-                                  className="flex-1 bg-vault-border rounded px-2 py-1 text-sm text-vault-text font-mono focus:outline-none focus:border-vault-accent"
+                                  className="flex-1 bg-vault-bg border border-vault-accent/30 rounded-md px-2 py-1 text-sm text-vault-text font-mono focus:outline-none focus:border-vault-accent"
                                 />
                               </div>
                             ) : (
                               <>
                                 <button
                                   onClick={() => onSelectCategory(category.id)}
-                                  className={`flex-1 flex items-center justify-between p-2 rounded-md text-left transition-all ${selectedCategoryId === category.id ? 'text-vault-accent font-bold' : 'text-vault-text-muted hover:text-vault-accent'
+                                  className={`flex-1 flex items-center justify-between px-3 py-2.5 rounded-lg text-left transition-all group/nav ${selectedCategoryId === category.id
+                                    ? 'text-vault-accent font-semibold bg-vault-accent/8 nav-active-bar'
+                                    : 'text-vault-text-muted hover:text-vault-text hover:bg-vault-panel-bright'
                                     }`}
                                 >
-                                  <span className="text-sm"># {category.name}</span>
-                                  <span className="text-[10px] bg-vault-panel-bright px-1.5 py-0.5 rounded opacity-60">{getPromptCount(category.id)}</span>
+                                  <div className="flex items-center gap-3">
+                                    <Hash size={14} className={selectedCategoryId === category.id ? 'text-vault-accent' : 'text-vault-text-muted'} />
+                                    <span className="text-sm">{category.name}</span>
+                                  </div>
+                                  <span className="text-[10px] text-vault-text-muted/60 font-mono tabular-nums">{getPromptCount(category.id)}</span>
                                 </button>
-                                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                   <button
                                     onClick={() => handleRenameClick(category)}
-                                    className="p-1.5 hover:bg-vault-border text-vault-text-muted hover:text-vault-accent rounded transition-colors"
+                                    className="p-1.5 hover:bg-vault-panel-bright text-vault-text-muted hover:text-vault-accent rounded-md transition-all"
                                     title="Rename category"
                                   >
-                                    <Edit2 size={14} />
+                                    <Edit2 size={13} />
                                   </button>
                                   <button
                                     onClick={() => handleDeleteCategory(category.id)}
-                                    className="p-1.5 hover:bg-vault-border text-vault-text-muted hover:text-red-500 rounded transition-colors"
+                                    className="p-1.5 hover:bg-vault-panel-bright text-vault-text-muted hover:text-red-400 rounded-md transition-all"
                                     title="Delete category"
                                   >
-                                    <Trash2 size={14} />
+                                    <Trash2 size={13} />
                                   </button>
                                 </div>
                               </>
@@ -320,16 +344,30 @@ export function Sidebar({
                   </div>
                 </div>
 
-                <div className="p-6 border-t border-vault-border flex flex-col gap-4 mt-auto">
-                  <span className="text-[10px] font-mono text-vault-text-muted uppercase tracking-widest underline underline-offset-4">Vault Health</span>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-vault-text-muted">Total Uses</span>
-                      <span className="text-vault-accent font-bold">{prompts.reduce((acc, p) => acc + p.usageCount, 0)}</span>
+                {/* Vault Health Footer */}
+                <div className="p-4 border-t border-vault-border mt-auto">
+                  <div className="p-3 rounded-lg bg-vault-bg/50 border border-vault-border/50 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono text-vault-text-muted uppercase tracking-[0.1em] font-semibold">Vault Health</span>
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" />
                     </div>
-                    <div className="flex justify-between text-xs">
-                      <button onClick={onToggleStats} className="text-[11px] font-mono hover:text-vault-accent transition-colors opacity-60">Press ? for analytics</button>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-vault-text-muted">Total Extractions</span>
+                        <span className="text-vault-accent font-bold font-mono tabular-nums">{prompts.reduce((acc, p) => acc + p.usageCount, 0)}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-vault-text-muted">Prompts Stored</span>
+                        <span className="text-vault-text font-bold font-mono tabular-nums">{prompts.length}</span>
+                      </div>
                     </div>
+                    <button
+                      onClick={onToggleStats}
+                      className="w-full flex items-center justify-center gap-2 py-2 rounded-md border border-vault-border text-vault-text-muted hover:text-vault-accent hover:border-vault-accent/30 transition-all text-[10px] font-mono uppercase tracking-widest"
+                    >
+                      <BarChart3 size={12} />
+                      <span>View Analytics</span>
+                    </button>
                   </div>
                 </div>
               </motion.div>

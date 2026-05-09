@@ -4,18 +4,18 @@
  */
 
 import React, { useState, useEffect, useMemo, useCallback, ChangeEvent } from 'react';
-import { 
-  Search, 
-  Plus, 
-  Lock, 
-  Unlock, 
-  Settings, 
-  Download, 
-  Upload, 
-  HelpCircle, 
-  Moon, 
-  Sun, 
-  Filter, 
+import {
+  Search,
+  Plus,
+  Lock,
+  Unlock,
+  Settings,
+  Download,
+  Upload,
+  HelpCircle,
+  Moon,
+  Sun,
+  Filter,
   ArrowUpDown,
   Command,
   Heart,
@@ -66,12 +66,12 @@ export default function App() {
   const [sortBy, setSortBy] = useState<SortOption>('RECENTLY_ADDED');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.innerWidth <= 768);
   const [isMobile, setIsMobile] = useState(false);
-  
+
   // Modal states
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
   const [editingPrompt, setEditingPrompt] = useState<Prompt | null>(null);
   const [viewingPrompt, setViewingPrompt] = useState<Prompt | null>(null);
-  const [variablePrompt, setVariablePrompt] = useState<{prompt: Prompt, vars: string[]} | null>(null);
+  const [variablePrompt, setVariablePrompt] = useState<{ prompt: Prompt, vars: string[] } | null>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -171,7 +171,7 @@ export default function App() {
     if (!editingPrompt) return;
     setData(prev => ({
       ...prev,
-      prompts: prev.prompts.map(p => 
+      prompts: prev.prompts.map(p =>
         p.id === editingPrompt.id ? { ...p, ...promptData, updatedAt: Date.now() } : p
       )
     }));
@@ -181,7 +181,7 @@ export default function App() {
   const handleToggleFavorite = (id: string) => {
     setData(prev => ({
       ...prev,
-      prompts: prev.prompts.map(p => 
+      prompts: prev.prompts.map(p =>
         p.id === id ? { ...p, isFavorite: !p.isFavorite } : p
       )
     }));
@@ -208,7 +208,7 @@ export default function App() {
 
   const handleCopyPrompt = useCallback((prompt: Prompt, customBody?: string) => {
     const finalBody = customBody || prompt.body;
-    
+
     // Check for variables if no custom body provided
     if (!customBody) {
       const matches = prompt.body.match(/{{([^{}]+)}}/g);
@@ -222,7 +222,7 @@ export default function App() {
     navigator.clipboard.writeText(finalBody).then(() => {
       setData(prev => ({
         ...prev,
-        prompts: prev.prompts.map(p => 
+        prompts: prev.prompts.map(p =>
           p.id === prompt.id ? { ...p, usageCount: p.usageCount + 1 } : p
         )
       }));
@@ -283,9 +283,9 @@ export default function App() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isLocked) return;
-      
+
       const isCmdOrCtrl = e.metaKey || e.ctrlKey;
-      
+
       if (isCmdOrCtrl && e.key === '[') {
         e.preventDefault();
         setSidebarCollapsed(prev => !prev);
@@ -316,9 +316,9 @@ export default function App() {
     // Search
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(p => 
-        p.title.toLowerCase().includes(q) || 
-        p.body.toLowerCase().includes(q) || 
+      result = result.filter(p =>
+        p.title.toLowerCase().includes(q) ||
+        p.body.toLowerCase().includes(q) ||
         p.tags.some(t => t.toLowerCase().includes(q))
       );
     }
@@ -350,8 +350,8 @@ export default function App() {
   // --- RENDER ---
   if (isLocked || isRemovingLock) {
     return (
-      <PinLock 
-        storedHash={data.settings.pinHash} 
+      <PinLock
+        storedHash={data.settings.pinHash}
         onUnlocked={() => setIsLocked(false)}
         onSetPin={handleSetPin}
         isRemovingLock={isRemovingLock}
@@ -361,10 +361,13 @@ export default function App() {
     );
   }
 
+  // Compute the current view label for the section header
+  const currentViewLabel = showFavorites ? '⭐ Favorites' : selectedCategoryId ? `# ${data.categories.find(c => c.id === selectedCategoryId)?.name || 'Unknown'}` : 'All Prompts';
+
   return (
-    <div className="flex h-screen w-full bg-vault-bg text-vault-text overflow-hidden transition-colors duration-300">
+    <div className="flex h-screen w-full bg-vault-bg text-vault-text overflow-hidden transition-colors duration-300 relative z-[1]">
       {/* Sidebar Overlay for Mobile/Smaller Screens could go here */}
-      <Sidebar 
+      <Sidebar
         categories={data.categories}
         prompts={data.prompts}
         selectedCategoryId={selectedCategoryId}
@@ -390,9 +393,8 @@ export default function App() {
 
       <main className="flex-1 flex flex-col min-w-0 h-full">
         {/* Header — Desktop: single-row | Mobile: two-row */}
-        <header className={`border-b border-vault-border bg-vault-bg/80 backdrop-blur-[10px] z-10 shrink-0 ${
-          isMobile ? 'flex flex-col' : 'h-[72px] flex items-center justify-between px-8'
-        }`}>
+        <header className={`border-b border-vault-border bg-vault-panel/70 backdrop-blur-xl z-10 shrink-0 ${isMobile ? 'flex flex-col' : 'h-[72px] flex items-center justify-between px-8'
+          }`}>
 
           {isMobile ? (
             /* ─── Mobile Header ─── */
@@ -408,21 +410,18 @@ export default function App() {
                     className="w-9 h-9 flex flex-col items-center justify-center gap-[5px] rounded-lg border border-vault-border text-vault-text-muted hover:text-vault-accent hover:border-vault-accent active:scale-95 transition-all"
                   >
                     {/* Animated hamburger: 3 lines → X when sidebar open */}
-                    <span className={`block h-[1.5px] w-4 rounded-full bg-current transition-all duration-300 ${
-                      !sidebarCollapsed ? 'rotate-45 translate-y-[6.5px]' : ''
-                    }`} />
-                    <span className={`block h-[1.5px] w-4 rounded-full bg-current transition-all duration-300 ${
-                      !sidebarCollapsed ? 'opacity-0 scale-x-0' : ''
-                    }`} />
-                    <span className={`block h-[1.5px] w-4 rounded-full bg-current transition-all duration-300 ${
-                      !sidebarCollapsed ? '-rotate-45 -translate-y-[6.5px]' : ''
-                    }`} />
+                    <span className={`block h-[1.5px] w-4 rounded-full bg-current transition-all duration-300 ${!sidebarCollapsed ? 'rotate-45 translate-y-[6.5px]' : ''
+                      }`} />
+                    <span className={`block h-[1.5px] w-4 rounded-full bg-current transition-all duration-300 ${!sidebarCollapsed ? 'opacity-0 scale-x-0' : ''
+                      }`} />
+                    <span className={`block h-[1.5px] w-4 rounded-full bg-current transition-all duration-300 ${!sidebarCollapsed ? '-rotate-45 -translate-y-[6.5px]' : ''
+                      }`} />
                   </button>
 
                   {/* Brand wordmark */}
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-vault-accent rounded-[3px] shadow-[0_0_10px_rgba(245,158,11,0.25)] shrink-0" />
-                    <span className="text-sm font-mono font-bold tracking-tighter">PromptVault</span>
+                    <div className="w-5 h-5 rounded-md shrink-0 accent-glow" style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }} />
+                    <span className="text-sm font-bold tracking-tight">Prompt<span className="text-vault-accent">Vault</span></span>
                   </div>
                 </div>
 
@@ -438,7 +437,7 @@ export default function App() {
                     id="mobile-new-prompt"
                     onClick={() => setIsNewModalOpen(true)}
                     aria-label="New Prompt"
-                    className="flex items-center gap-1.5 bg-vault-accent text-vault-bg h-9 px-3 rounded-lg font-mono font-bold text-[11px] uppercase tracking-tight hover:opacity-90 active:scale-95 transition-all shadow-[0_0_12px_rgba(245,158,11,0.2)]"
+                    className="btn-primary flex items-center gap-1.5 h-9 px-3 !py-0 !rounded-lg text-[11px]"
                   >
                     <Plus size={13} />
                     <span>New</span>
@@ -464,7 +463,7 @@ export default function App() {
                     placeholder="Search prompts..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-vault-panel border border-vault-border rounded-xl pl-9 pr-4 py-2.5 focus:border-vault-accent outline-none transition-all font-mono text-sm placeholder:text-vault-text-muted/50"
+                    className="w-full bg-vault-bg/80 border border-vault-border rounded-xl pl-9 pr-4 py-2.5 focus:border-vault-accent/50 focus:shadow-[0_0_0_3px_rgba(245,158,11,0.08)] outline-none transition-all font-mono text-sm placeholder:text-vault-text-muted/40"
                   />
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-vault-text-muted" size={14} />
                   {searchQuery && (
@@ -479,45 +478,47 @@ export default function App() {
           ) : (
             /* ─── Desktop Header ─── */
             <>
-              <div className="w-[400px] relative">
+              <div className="w-[400px] relative group/search">
                 <input
                   id="main-search"
                   type="text"
                   placeholder="Search prompts..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-vault-panel border border-vault-border rounded-lg pl-10 pr-12 py-2 focus:border-vault-accent outline-none transition-all font-mono text-sm"
+                  className="w-full bg-vault-bg/60 border border-vault-border rounded-xl pl-10 pr-12 py-2.5 focus:border-vault-accent/50 focus:shadow-[0_0_0_3px_rgba(245,158,11,0.08)] outline-none transition-all font-mono text-sm placeholder:text-vault-text-muted/40"
                 />
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-vault-text-muted" size={14} />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 border border-vault-border rounded text-[10px] text-vault-text-muted font-mono">⌘ K</div>
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-vault-text-muted group-focus-within/search:text-vault-accent transition-colors" size={14} />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 border border-vault-border/60 rounded-md text-[10px] text-vault-text-muted/60 font-mono">⌘K</div>
               </div>
 
-              <div className="flex items-center gap-4">
-                <div className="flex flex-col items-end">
-                  <span className="text-[10px] text-vault-text-muted font-mono uppercase tracking-widest leading-none">Vault Status</span>
-                  <span className="text-[11px] text-[#10B981] font-bold uppercase tracking-tight">● Encrypted</span>
+              <div className="flex items-center gap-3">
+                {/* Security chip */}
+                <div className="badge badge-emerald">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" />
+                  <span>Secured</span>
                 </div>
-                
+
                 <button
                   onClick={() => setIsNewModalOpen(true)}
-                  className="bg-vault-accent text-vault-bg px-5 py-2.5 rounded-lg font-mono font-bold text-xs uppercase tracking-tight hover:opacity-90 active:scale-95 transition-all"
+                  className="btn-primary flex items-center gap-2 !text-[11px]"
                 >
-                  + New Prompt
+                  <Plus size={14} />
+                  New Prompt
                 </button>
 
                 <button
                   onClick={handleLockButtonClick}
-                  className="p-2.5 border border-vault-border text-vault-text-muted hover:text-vault-accent rounded-lg transition-colors"
+                  className="p-2.5 border border-vault-border text-vault-text-muted hover:text-vault-accent hover:border-vault-accent/30 rounded-xl transition-all"
                   title="Vault Lock Settings"
                 >
-                  {data.settings.pinHash ? <Lock size={18} /> : <Unlock size={18} />}
+                  {data.settings.pinHash ? <Lock size={16} /> : <Unlock size={16} />}
                 </button>
                 <button
                   onClick={() => setShowSettings(true)}
-                  className="p-2.5 border border-vault-border text-vault-text-muted hover:text-vault-accent rounded-lg transition-colors"
+                  className="p-2.5 border border-vault-border text-vault-text-muted hover:text-vault-accent hover:border-vault-accent/30 rounded-xl transition-all"
                   title="Vault Protocol Settings"
                 >
-                  <Settings size={18} />
+                  <Settings size={16} />
                 </button>
               </div>
             </>
@@ -525,23 +526,31 @@ export default function App() {
         </header>
 
         {/* Content Area */}
-        <div className={`flex-1 overflow-y-auto custom-scrollbar ${isMobile ? 'p-4' : 'p-12'}`}>
+        <div className={`flex-1 overflow-y-auto ${isMobile ? 'p-4' : 'px-10 py-8'}`}>
           {showStats ? (
             <div className="max-w-5xl mx-auto">
-              <div className="flex items-center justify-between mb-12">
-                 <h2 className="text-3xl font-mono font-bold uppercase tracking-tighter">Vault <span className="text-vault-accent">Intelligence</span></h2>
-                 <button onClick={() => setShowStats(false)} className="text-xs font-mono text-vault-text-muted hover:text-vault-accent uppercase px-4 py-2 border border-vault-border rounded-lg">Back to Prompts</button>
+              <div className="flex items-center justify-between mb-10">
+                <h2 className="text-2xl font-bold tracking-tight">Vault <span className="text-gradient">Intelligence</span></h2>
+                <button onClick={() => setShowStats(false)} className="text-[11px] font-mono text-vault-text-muted hover:text-vault-accent uppercase px-4 py-2 border border-vault-border hover:border-vault-accent/30 rounded-xl transition-all">Back to Prompts</button>
               </div>
               <StatsDashboard prompts={data.prompts} categories={data.categories} />
             </div>
           ) : (
-            <div className="space-y-12 max-w-7xl mx-auto">
+            <div className="space-y-6 max-w-7xl mx-auto">
+              {/* Section Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-lg font-bold tracking-tight">{currentViewLabel}</h2>
+                  <span className="badge badge-amber">{filteredPrompts.length} prompts</span>
+                </div>
+              </div>
+
               {/* Grid */}
               {filteredPrompts.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                   {filteredPrompts.map(prompt => (
-                    <PromptCard 
-                      key={prompt.id} 
+                    <PromptCard
+                      key={prompt.id}
                       prompt={prompt}
                       onCopy={handleCopyPrompt}
                       onToggleFavorite={handleToggleFavorite}
@@ -551,23 +560,32 @@ export default function App() {
                   ))}
                 </div>
               ) : (
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex flex-col items-center justify-center py-32 space-y-6"
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="flex flex-col items-center justify-center py-28 space-y-8"
                 >
-                  <div className="w-24 h-24 bg-vault-panel border border-vault-border rounded-3xl flex items-center justify-center text-vault-text-muted/30">
-                    {searchQuery ? <Search size={48} /> : <Briefcase size={48} />}
+                  {/* Animated geometric illustration */}
+                  <div className="relative w-32 h-32">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-20 h-20 rounded-2xl border border-vault-border bg-vault-panel/50 flex items-center justify-center geo-float">
+                        {searchQuery ? <Search size={32} className="text-vault-text-muted/30" /> : <Briefcase size={32} className="text-vault-text-muted/30" />}
+                      </div>
+                    </div>
+                    <div className="absolute top-0 right-2 w-6 h-6 rounded-lg border border-vault-accent/20 bg-vault-accent/5 geo-float-delay" />
+                    <div className="absolute bottom-2 left-0 w-4 h-4 rounded-md border border-vault-accent-blue/20 bg-vault-accent-blue/5 geo-float-delay-2" />
+                    <div className="absolute top-4 left-3 w-3 h-3 rounded-full border border-emerald-500/20 bg-emerald-500/5 geo-float-delay" />
                   </div>
                   <div className="text-center space-y-2">
-                    <h3 className="text-xl font-mono-tight font-bold uppercase">Empty Sector</h3>
-                    <p className="text-sm text-vault-text-muted max-w-xs">{searchQuery ? `No results for "${searchQuery}". Try broad terms.` : 'You haven’t archived any prompts in this category yet.'}</p>
+                    <h3 className="text-xl font-bold tracking-tight">{searchQuery ? 'No Results Found' : 'Start Your Collection'}</h3>
+                    <p className="text-sm text-vault-text-muted max-w-sm leading-relaxed">{searchQuery ? `No prompts match "${searchQuery}". Try different terms or browse categories.` : 'Your prompt library is empty. Add your first prompt to begin building your vault.'}</p>
                   </div>
-                  <button 
+                  <button
                     onClick={() => searchQuery ? setSearchQuery('') : setIsNewModalOpen(true)}
-                    className="flex items-center gap-2 px-6 py-2.5 border border-vault-accent text-vault-accent hover:bg-vault-accent hover:text-vault-bg rounded-full text-xs font-bold uppercase tracking-widest transition-all"
+                    className="btn-primary flex items-center gap-2 !rounded-full !px-8"
                   >
-                    {searchQuery ? 'Reset Archive' : 'Add First Prompt'}
+                    {searchQuery ? 'Clear Search' : <><Plus size={14} /> Add First Prompt</>}
                   </button>
                 </motion.div>
               )}
@@ -583,9 +601,8 @@ export default function App() {
                 key={isSaved ? 'saved' : 'idle'}
                 initial={{ opacity: 0, scale: 0.85 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className={`text-[9px] font-mono uppercase tracking-widest ${
-                  isSaved ? 'text-emerald-400' : 'text-vault-text-muted/50'
-                }`}
+                className={`text-[9px] font-mono uppercase tracking-widest ${isSaved ? 'text-emerald-400' : 'text-vault-text-muted/50'
+                  }`}
               >
                 {isSaved ? '✓ Saved' : `v${SCHEMA_VERSION}`}
               </motion.span>
@@ -612,12 +629,22 @@ export default function App() {
           </footer>
         ) : (
           /* ─── Desktop Footer ─── */
-          <footer className="h-10 border-t border-vault-border px-8 flex items-center justify-between text-[10px] font-mono text-vault-text-muted uppercase tracking-widest bg-vault-panel shrink-0">
-            <div className="flex gap-4">
-              <span>Schema: {SCHEMA_VERSION}</span>
-              <span>Last Saved: {new Date().toLocaleTimeString()}</span>
+          <footer className="h-10 shrink-0 relative">
+            <div className="divider-glow" />
+            <div className="h-full px-8 flex items-center justify-between text-[10px] font-mono text-vault-text-muted/60 uppercase tracking-widest bg-vault-panel/50">
+              <div className="flex items-center gap-3">
+                <span className="font-semibold text-vault-text-muted">PromptVault</span>
+                <span className="text-vault-border">·</span>
+                <span>v{SCHEMA_VERSION}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <motion.span key={isSaved ? 'saved' : 'idle'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={isSaved ? 'text-emerald-400/80' : ''}>
+                  {isSaved ? '✓ Saved' : 'Offline-First'}
+                </motion.span>
+                <span className="text-vault-border">·</span>
+                <span>Encrypted Storage</span>
+              </div>
             </div>
-            <div>PromptVault — Offline First Encrypted Storage</div>
           </footer>
         )}
       </main>
@@ -629,40 +656,40 @@ export default function App() {
       />
 
       {/* --- MODALS --- */}
-      
+
       {/* Create Modal */}
-      <Modal 
-        isOpen={isNewModalOpen} 
-        onClose={() => setIsNewModalOpen(false)} 
+      <Modal
+        isOpen={isNewModalOpen}
+        onClose={() => setIsNewModalOpen(false)}
         title="New Librarian Entry"
       >
-        <PromptForm 
-          categories={data.categories} 
-          onSubmit={handleAddPrompt} 
-          onCancel={() => setIsNewModalOpen(false)} 
+        <PromptForm
+          categories={data.categories}
+          onSubmit={handleAddPrompt}
+          onCancel={() => setIsNewModalOpen(false)}
         />
       </Modal>
 
       {/* Edit Modal */}
-      <Modal 
-        isOpen={!!editingPrompt} 
-        onClose={() => setEditingPrompt(null)} 
+      <Modal
+        isOpen={!!editingPrompt}
+        onClose={() => setEditingPrompt(null)}
         title="Modify Entry"
       >
         {editingPrompt && (
-          <PromptForm 
+          <PromptForm
             initialData={editingPrompt}
-            categories={data.categories} 
-            onSubmit={handleUpdatePrompt} 
-            onCancel={() => setEditingPrompt(null)} 
+            categories={data.categories}
+            onSubmit={handleUpdatePrompt}
+            onCancel={() => setEditingPrompt(null)}
           />
         )}
       </Modal>
 
       {/* View Modal */}
-      <Modal 
-        isOpen={!!viewingPrompt} 
-        onClose={() => setViewingPrompt(null)} 
+      <Modal
+        isOpen={!!viewingPrompt}
+        onClose={() => setViewingPrompt(null)}
         title="Vault Record"
         footer={viewingPrompt && (
           <div className="flex items-center justify-between">
@@ -704,9 +731,9 @@ export default function App() {
               </div>
             ) : (
               <button
-                 onClick={() => setConfirmDeleteId(viewingPrompt.id)}
-                 className="p-2.5 text-red-500/50 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
-                 title="Delete Prompt"
+                onClick={() => setConfirmDeleteId(viewingPrompt.id)}
+                className="p-2.5 text-red-500/50 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
+                title="Delete Prompt"
               >
                 <AlertCircle size={20} />
               </button>
@@ -722,12 +749,12 @@ export default function App() {
                 {data.categories.find(c => c.id === viewingPrompt.categoryId)?.name}
               </div>
             </div>
-            
+
             <div className="space-y-2">
-               <label className="text-[10px] font-mono text-vault-text-muted uppercase tracking-[0.2em]">Prompt Body</label>
-               <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-xl font-mono text-sm leading-relaxed whitespace-pre-wrap select-text">
+              <label className="text-[10px] font-mono text-vault-text-muted uppercase tracking-[0.2em]">Prompt Body</label>
+              <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-xl font-mono text-sm leading-relaxed whitespace-pre-wrap select-text">
                 {viewingPrompt.body}
-               </div>
+              </div>
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -753,19 +780,19 @@ export default function App() {
       </Modal>
 
       {/* Variables Modal */}
-      <Modal 
-        isOpen={!!variablePrompt} 
-        onClose={() => setVariablePrompt(null)} 
+      <Modal
+        isOpen={!!variablePrompt}
+        onClose={() => setVariablePrompt(null)}
         title="Dynamic Injection"
       >
         {variablePrompt && (
-          <VariableForm 
+          <VariableForm
             prompt={variablePrompt.prompt}
             variables={variablePrompt.vars}
             onCopy={(body) => handleCopyPrompt(variablePrompt.prompt, body)}
             onCancel={() => {
-               // If skipped, use default body but still record usage
-               handleCopyPrompt(variablePrompt.prompt, variablePrompt.prompt.body);
+              // If skipped, use default body but still record usage
+              handleCopyPrompt(variablePrompt.prompt, variablePrompt.prompt.body);
             }}
           />
         )}
@@ -788,14 +815,14 @@ export default function App() {
               <p className="text-xs text-vault-text-muted font-mono">{data.settings.pinHash ? 'Vault is currently protected by hash logic.' : 'Security is currently disabled.'}</p>
             </div>
             {data.settings.pinHash ? (
-              <button 
+              <button
                 onClick={handleClearPin}
                 className="px-4 py-2 border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white rounded-lg text-[10px] font-mono tracking-widest uppercase transition-all"
               >
                 Disable
               </button>
             ) : (
-              <button 
+              <button
                 onClick={() => {
                   setShowLockModal(false);
                   setIsLocked(true);
@@ -817,34 +844,34 @@ export default function App() {
       >
         <div className="space-y-8">
           <section className="space-y-4">
-             <div className="flex items-center gap-2 text-vault-accent font-mono uppercase tracking-widest text-[10px] font-bold">
-               <ShieldCheck size={14} />
-               <span>Privacy Layer</span>
-             </div>
-             <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl flex items-center justify-between">
-               <div className="space-y-1">
-                 <p className="text-sm font-medium">Access PIN Lock</p>
-                 <p className="text-xs text-vault-text-muted font-mono">{data.settings.pinHash ? 'Vault is currently protected by hash logic.' : 'Security is currently disabled.'}</p>
-               </div>
-               {data.settings.pinHash ? (
-                 <button 
-                   onClick={handleClearPin}
-                   className="px-4 py-2 border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white rounded-lg text-[10px] font-mono tracking-widest uppercase transition-all"
-                 >
-                   Disable
-                 </button>
-               ) : (
-                 <button 
-                    onClick={() => {
-                      setShowSettings(false);
-                      setIsLocked(true);
-                    }}
-                    className="px-4 py-2 bg-vault-accent text-vault-bg rounded-lg text-[10px] font-mono font-bold tracking-widest uppercase transition-all"
-                 >
-                   Enable PIN
-                 </button>
-               )}
-             </div>
+            <div className="flex items-center gap-2 text-vault-accent font-mono uppercase tracking-widest text-[10px] font-bold">
+              <ShieldCheck size={14} />
+              <span>Privacy Layer</span>
+            </div>
+            <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-sm font-medium">Access PIN Lock</p>
+                <p className="text-xs text-vault-text-muted font-mono">{data.settings.pinHash ? 'Vault is currently protected by hash logic.' : 'Security is currently disabled.'}</p>
+              </div>
+              {data.settings.pinHash ? (
+                <button
+                  onClick={handleClearPin}
+                  className="px-4 py-2 border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white rounded-lg text-[10px] font-mono tracking-widest uppercase transition-all"
+                >
+                  Disable
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    setShowSettings(false);
+                    setIsLocked(true);
+                  }}
+                  className="px-4 py-2 bg-vault-accent text-vault-bg rounded-lg text-[10px] font-mono font-bold tracking-widest uppercase transition-all"
+                >
+                  Enable PIN
+                </button>
+              )}
+            </div>
           </section>
 
           <section className="space-y-4">
@@ -862,7 +889,7 @@ export default function App() {
                   <Upload size={14} /> Import
                   <input type="file" accept=".json" onChange={handleImport} className="hidden" />
                 </label>
-                <button 
+                <button
                   onClick={handleExport}
                   className="px-4 py-2 bg-vault-border text-vault-text hover:bg-vault-accent hover:text-vault-bg rounded-lg text-[10px] font-mono font-bold tracking-widest uppercase transition-all flex items-center gap-2"
                 >
@@ -873,72 +900,72 @@ export default function App() {
           </section>
 
           <section className="space-y-4">
-             <div className="flex items-center gap-2 text-vault-accent-blue font-mono uppercase tracking-widest text-[10px] font-bold">
-               <Command size={14} />
-               <span>Architecture Details</span>
-             </div>
-             <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl space-y-4">
-               <div className="flex justify-between items-center text-xs">
-                 <span className="text-vault-text-muted font-mono">Schema Version</span>
-                 <span className="font-mono text-vault-accent-blue">{SCHEMA_VERSION}</span>
-               </div>
-               <div className="flex justify-between items-center text-xs">
-                 <span className="text-vault-text-muted font-mono">Storage Engine</span>
-                 <span className="font-mono">Web LocalStorage</span>
-               </div>
-               <div className="flex justify-between items-center text-xs">
-                 <span className="text-vault-text-muted font-mono">Encryption</span>
-                 <span className="font-mono opacity-50 italic">SHA-256 Hashed PIN</span>
-               </div>
-             </div>
+            <div className="flex items-center gap-2 text-vault-accent-blue font-mono uppercase tracking-widest text-[10px] font-bold">
+              <Command size={14} />
+              <span>Architecture Details</span>
+            </div>
+            <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl space-y-4">
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-vault-text-muted font-mono">Schema Version</span>
+                <span className="font-mono text-vault-accent-blue">{SCHEMA_VERSION}</span>
+              </div>
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-vault-text-muted font-mono">Storage Engine</span>
+                <span className="font-mono">Web LocalStorage</span>
+              </div>
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-vault-text-muted font-mono">Encryption</span>
+                <span className="font-mono opacity-50 italic">SHA-256 Hashed PIN</span>
+              </div>
+            </div>
           </section>
         </div>
       </Modal>
 
       {/* Shortcuts Modal */}
-      <Modal 
-        isOpen={showShortcuts} 
-        onClose={() => setShowShortcuts(false)} 
+      <Modal
+        isOpen={showShortcuts}
+        onClose={() => setShowShortcuts(false)}
         title="Protocol Shortcuts"
       >
         <div className="space-y-6">
           <div className="grid grid-cols-1 gap-3">
-             <div className="flex items-center justify-between p-4 bg-vault-bg border border-vault-border rounded-xl">
-               <span className="text-xs font-mono uppercase tracking-widest text-vault-text-muted">Spotlight Search</span>
-               <div className="flex gap-1">
-                 <kbd className="px-2 py-1 bg-vault-panel border border-vault-border rounded-md text-[10px] font-mono shadow-sm">⌘</kbd>
-                 <kbd className="px-2 py-1 bg-vault-panel border border-vault-border rounded-md text-[10px] font-mono shadow-sm">K</kbd>
-               </div>
-             </div>
-             <div className="flex items-center justify-between p-4 bg-vault-bg border border-vault-border rounded-xl">
-               <span className="text-xs font-mono uppercase tracking-widest text-vault-text-muted">New Entry</span>
-               <div className="flex gap-1">
-                 <kbd className="px-2 py-1 bg-vault-panel border border-vault-border rounded-md text-[10px] font-mono shadow-sm">⌘</kbd>
-                 <kbd className="px-2 py-1 bg-vault-panel border border-vault-border rounded-md text-[10px] font-mono shadow-sm">N</kbd>
-               </div>
-             </div>
-             <div className="flex items-center justify-between p-4 bg-vault-bg border border-vault-border rounded-xl">
-               <span className="text-xs font-mono uppercase tracking-widest text-vault-text-muted">Close Interface</span>
-               <kbd className="px-2 py-1 bg-vault-panel border border-vault-border rounded-md text-[10px] font-mono shadow-sm uppercase">Esc</kbd>
-             </div>
-             <div className="flex items-center justify-between p-4 bg-vault-bg border border-vault-border rounded-xl">
-               <span className="text-xs font-mono uppercase tracking-widest text-vault-text-muted">Toggle Manual</span>
-               <kbd className="px-2 py-1 bg-vault-panel border border-vault-border rounded-md text-[10px] font-mono shadow-sm">?</kbd>
-             </div>
+            <div className="flex items-center justify-between p-4 bg-vault-bg border border-vault-border rounded-xl">
+              <span className="text-xs font-mono uppercase tracking-widest text-vault-text-muted">Spotlight Search</span>
+              <div className="flex gap-1">
+                <kbd className="px-2 py-1 bg-vault-panel border border-vault-border rounded-md text-[10px] font-mono shadow-sm">⌘</kbd>
+                <kbd className="px-2 py-1 bg-vault-panel border border-vault-border rounded-md text-[10px] font-mono shadow-sm">K</kbd>
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-4 bg-vault-bg border border-vault-border rounded-xl">
+              <span className="text-xs font-mono uppercase tracking-widest text-vault-text-muted">New Entry</span>
+              <div className="flex gap-1">
+                <kbd className="px-2 py-1 bg-vault-panel border border-vault-border rounded-md text-[10px] font-mono shadow-sm">⌘</kbd>
+                <kbd className="px-2 py-1 bg-vault-panel border border-vault-border rounded-md text-[10px] font-mono shadow-sm">N</kbd>
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-4 bg-vault-bg border border-vault-border rounded-xl">
+              <span className="text-xs font-mono uppercase tracking-widest text-vault-text-muted">Close Interface</span>
+              <kbd className="px-2 py-1 bg-vault-panel border border-vault-border rounded-md text-[10px] font-mono shadow-sm uppercase">Esc</kbd>
+            </div>
+            <div className="flex items-center justify-between p-4 bg-vault-bg border border-vault-border rounded-xl">
+              <span className="text-xs font-mono uppercase tracking-widest text-vault-text-muted">Toggle Manual</span>
+              <kbd className="px-2 py-1 bg-vault-panel border border-vault-border rounded-md text-[10px] font-mono shadow-sm">?</kbd>
+            </div>
           </div>
           <div className="flex items-center gap-3 p-4 bg-vault-accent/10 border border-vault-accent/20 rounded-xl">
-             <Command size={18} className="text-vault-accent" />
-             <p className="text-[10px] font-mono text-vault-text-muted uppercase leading-relaxed">System-wide hotkeys active while vault is decrypted.</p>
+            <Command size={18} className="text-vault-accent" />
+            <p className="text-[10px] font-mono text-vault-text-muted uppercase leading-relaxed">System-wide hotkeys active while vault is decrypted.</p>
           </div>
         </div>
       </Modal>
 
-      <div className="fixed bottom-6 right-8 pointer-events-none group">
-        <button 
+      <div className="fixed bottom-19.5 right-30 pointer-events-none group">
+        <button
           onClick={() => setShowShortcuts(true)}
-          className="pointer-events-auto w-10 h-10 bg-vault-panel border border-vault-border rounded-full flex items-center justify-center text-vault-text-muted hover:text-vault-accent hover:border-vault-accent transition-all shadow-lg"
+          className="pointer-events-auto w-9 h-9 bg-vault-panel/80 border border-vault-border rounded-full flex items-center justify-center text-vault-text-muted/50 hover:text-vault-accent hover:border-vault-accent/30 transition-all shadow-lg backdrop-blur-sm"
         >
-          <HelpCircle size={18} />
+          <HelpCircle size={15} />
         </button>
       </div>
     </div>

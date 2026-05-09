@@ -27,6 +27,8 @@ export function PromptForm({ initialData, categories, onSubmit, onCancel }: Prom
     return Array.from(new Set(matches.map(m => m.replace(/{{|}}/g, ''))));
   }, [body]);
 
+  const wordCount = useMemo(() => body.trim().split(/\s+/).filter(Boolean).length, [body]);
+
   const handleAddTag = () => {
     if (tagsInput.trim() && !tags.includes(tagsInput.trim())) {
       setTags([...tags, tagsInput.trim()]);
@@ -50,27 +52,27 @@ export function PromptForm({ initialData, categories, onSubmit, onCancel }: Prom
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-2">
-        <label className="text-[10px] font-mono text-vault-text-muted uppercase tracking-widest pl-1">Title</label>
+        <label className="text-[10px] font-mono text-vault-text-muted uppercase tracking-[0.1em] pl-1 font-semibold">Title</label>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Friendly display name"
+          placeholder="A descriptive name for your prompt"
           required
-          className="w-full bg-vault-bg border border-vault-border rounded-lg px-4 py-3 focus:border-vault-accent outline-none transition-all"
+          className="w-full bg-vault-bg/60 border border-vault-border rounded-xl px-4 py-3 focus:border-vault-accent/50 focus:shadow-[0_0_0_3px_rgba(245,158,11,0.08)] outline-none transition-all text-sm"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className="text-[10px] font-mono text-vault-text-muted uppercase tracking-widest pl-1">Category</label>
+          <label className="text-[10px] font-mono text-vault-text-muted uppercase tracking-[0.1em] pl-1 font-semibold">Category</label>
           <div className="relative">
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="w-full bg-vault-bg border border-vault-border rounded-lg px-4 py-3 focus:border-vault-accent outline-none transition-all appearance-none"
+              className="w-full bg-vault-bg/60 border border-vault-border rounded-xl px-4 py-3 focus:border-vault-accent/50 focus:shadow-[0_0_0_3px_rgba(245,158,11,0.08)] outline-none transition-all appearance-none text-sm"
             >
               {categories.map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
@@ -83,7 +85,7 @@ export function PromptForm({ initialData, categories, onSubmit, onCancel }: Prom
         </div>
 
         <div className="space-y-2">
-          <label className="text-[10px] font-mono text-vault-text-muted uppercase tracking-widest pl-1">Tags</label>
+          <label className="text-[10px] font-mono text-vault-text-muted uppercase tracking-[0.1em] pl-1 font-semibold">Tags</label>
           <div className="flex gap-2">
             <input
               type="text"
@@ -91,14 +93,14 @@ export function PromptForm({ initialData, categories, onSubmit, onCancel }: Prom
               onChange={(e) => setTagsInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
               placeholder="Add tag..."
-              className="flex-1 bg-vault-bg border border-vault-border rounded-lg px-4 py-3 focus:border-vault-accent outline-none transition-all"
+              className="flex-1 bg-vault-bg/60 border border-vault-border rounded-xl px-4 py-3 focus:border-vault-accent/50 focus:shadow-[0_0_0_3px_rgba(245,158,11,0.08)] outline-none transition-all text-sm"
             />
             <button
               type="button"
               onClick={handleAddTag}
-              className="p-3 bg-vault-panel-bright hover:bg-vault-accent hover:text-vault-bg rounded-lg transition-all"
+              className="p-3 bg-vault-panel-bright hover:bg-vault-accent hover:text-vault-bg rounded-xl transition-all border border-vault-border hover:border-vault-accent"
             >
-              <Plus size={18} />
+              <Plus size={16} />
             </button>
           </div>
         </div>
@@ -110,7 +112,7 @@ export function PromptForm({ initialData, categories, onSubmit, onCancel }: Prom
             <span key={tag} className="flex items-center gap-1.5 px-3 py-1.5 bg-vault-accent/10 border border-vault-accent/20 text-vault-accent rounded-full text-xs font-mono">
               <TagIcon size={10} />
               {tag}
-              <button onClick={() => removeTag(tag)} className="hover:text-vault-text transition-colors">
+              <button onClick={() => removeTag(tag)} className="hover:text-vault-text transition-colors ml-0.5">
                 <X size={10} />
               </button>
             </span>
@@ -119,28 +121,35 @@ export function PromptForm({ initialData, categories, onSubmit, onCancel }: Prom
       )}
 
       <div className="space-y-2">
-        <label className="text-[10px] font-mono text-vault-text-muted uppercase tracking-widest pl-1 flex justify-between">
+        <label className="text-[10px] font-mono text-vault-text-muted uppercase tracking-[0.1em] pl-1 flex justify-between font-semibold">
           <span>Prompt Content</span>
-          <span className="text-[8px] opacity-60">Use &#123;&#123;variable&#125;&#125; syntax for dynamic fields</span>
+          <span className="text-[9px] opacity-50 font-normal">Use &#123;&#123;variable&#125;&#125; for dynamic fields</span>
         </label>
-        <textarea
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          required
-          rows={8}
-          placeholder="Type your prompt here..."
-          className="w-full bg-vault-bg border border-vault-border rounded-lg px-4 py-3 focus:border-vault-accent outline-none transition-all font-mono text-sm leading-relaxed"
-        />
+        <div className="relative">
+          <textarea
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            required
+            rows={8}
+            placeholder="Type your prompt here..."
+            className="w-full bg-vault-bg/60 border border-vault-border rounded-xl px-4 py-3 focus:border-vault-accent/50 focus:shadow-[0_0_0_3px_rgba(245,158,11,0.08)] outline-none transition-all font-mono text-sm leading-relaxed resize-none"
+          />
+          <div className="absolute bottom-3 right-3 text-[9px] font-mono text-vault-text-muted/40 tabular-nums">
+            {wordCount} words
+          </div>
+        </div>
       </div>
 
       {detectedVariables.length > 0 && (
-        <div className="flex items-start gap-3 p-4 bg-vault-accent-blue/10 border border-vault-accent-blue/20 rounded-lg">
-          <Info size={16} className="text-vault-accent-blue mt-0.5 shrink-0" />
-          <div className="space-y-1">
-            <p className="text-xs font-medium text-vault-accent-blue font-mono uppercase tracking-tight">Variables Detected</p>
-            <div className="flex flex-wrap gap-2 pt-1">
+        <div className="flex items-start gap-3 p-4 bg-vault-accent-blue/8 border border-vault-accent-blue/15 rounded-xl">
+          <div className="w-7 h-7 rounded-lg bg-vault-accent-blue/15 flex items-center justify-center shrink-0">
+            <Info size={14} className="text-vault-accent-blue" />
+          </div>
+          <div className="space-y-1.5">
+            <p className="text-xs font-semibold text-vault-accent-blue">Variables Detected</p>
+            <div className="flex flex-wrap gap-2">
               {detectedVariables.map(v => (
-                <code key={v} className="text-[10px] bg-vault-accent-blue/20 px-1.5 py-0.5 rounded text-vault-accent-blue border border-vault-accent-blue/30">
+                <code key={v} className="text-[10px] bg-vault-accent-blue/15 px-2 py-0.5 rounded-md text-vault-accent-blue border border-vault-accent-blue/20 font-mono">
                   {v}
                 </code>
               ))}
@@ -149,17 +158,17 @@ export function PromptForm({ initialData, categories, onSubmit, onCancel }: Prom
         </div>
       )}
 
-      <div className="flex gap-4 pt-4">
+      <div className="flex gap-3 pt-3">
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 px-6 py-3 border border-vault-border rounded-lg font-bold uppercase tracking-widest text-xs transition-all"
+          className="flex-1 px-6 py-3 border border-vault-border hover:border-vault-text-muted/30 rounded-xl font-bold uppercase tracking-widest text-xs transition-all text-vault-text-muted hover:text-vault-text"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="flex-1 px-6 py-3 bg-vault-accent text-vault-bg hover:opacity-90 rounded-lg font-bold uppercase tracking-widest text-xs transition-all shadow-lg shadow-vault-accent/10"
+          className="flex-1 btn-primary !rounded-xl !py-3"
         >
           Save Prompt
         </button>

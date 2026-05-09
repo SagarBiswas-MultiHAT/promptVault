@@ -242,18 +242,21 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
             className="fixed bottom-24 right-4 z-[9999] w-[400px] max-w-[calc(100vw-2rem)] max-h-[70vh] glass-panel rounded-2xl shadow-2xl flex flex-col overflow-hidden"
           >
+            {/* Top accent line — indigo for AI */}
+            <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
+
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-vault-border">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-vault-border/50">
               <div>
-                <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">AI Librarian</p>
-                <h3 className="text-lg font-mono font-bold text-vault-accent">Prompt Assistant</h3>
+                <p className="text-[10px] font-mono uppercase tracking-[0.1em] text-vault-text-muted font-semibold">AI Librarian</p>
+                <h3 className="text-base font-bold tracking-tight text-gradient-blue">Prompt Assistant</h3>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-2 rounded-lg hover:bg-vault-border transition-colors"
+                className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-vault-border/50 text-vault-text-muted hover:text-vault-text transition-all"
                 aria-label="Close assistant"
               >
-                <X size={18} />
+                <X size={14} />
               </button>
             </div>
 
@@ -267,15 +270,15 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                   value={promptInput}
                   onChange={(e) => setPromptInput(e.target.value)}
                   placeholder="Paste your prompt here..."
-                  className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm font-mono focus:border-vault-accent outline-none resize-none"
+                  className="w-full bg-vault-bg/60 border border-vault-border rounded-xl px-3 py-2.5 text-sm font-mono focus:border-indigo-500/50 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.08)] outline-none resize-none transition-all"
                 />
               </div>
 
               {/* Loading State */}
               {isLoading && (
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-vault-accent/5 border border-vault-accent/10">
-                  <div className="w-4 h-4 border-2 border-vault-accent/30 border-t-vault-accent rounded-full animate-spin" />
-                  <span className="text-xs font-mono text-vault-text-muted uppercase tracking-widest">Evaluating prompt quality...</span>
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-indigo-500/5 border border-indigo-500/10">
+                  <div className="w-4 h-4 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+                  <span className="text-xs font-mono text-vault-text-muted uppercase tracking-[0.1em]">Evaluating prompt quality...</span>
                 </div>
               )}
 
@@ -337,11 +340,10 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
 
                   {/* Confidence Badge */}
                   <div className="flex items-center gap-2">
-                    <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider ${
-                      evaluation.confidence === 'HIGH'
-                        ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
-                        : 'text-amber-400 bg-amber-500/10 border border-amber-500/20'
-                    }`}>
+                    <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider ${evaluation.confidence === 'HIGH'
+                      ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
+                      : 'text-amber-400 bg-amber-500/10 border border-amber-500/20'
+                      }`}>
                       <span className={`w-1.5 h-1.5 rounded-full ${evaluation.confidence === 'HIGH' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
                       Confidence: {evaluation.confidence}
                     </div>
@@ -352,9 +354,9 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
 
                   {/* Improved Prompt — only shown after IMPROVE button click */}
                   {isImproving && (
-                    <div className="flex items-center gap-3 p-4 rounded-xl bg-vault-accent/5 border border-vault-accent/10">
-                      <div className="w-4 h-4 border-2 border-vault-accent/30 border-t-vault-accent rounded-full animate-spin" />
-                      <span className="text-xs font-mono text-vault-text-muted uppercase tracking-widest">Generating improved prompt...</span>
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-indigo-500/5 border border-indigo-500/10">
+                      <div className="w-4 h-4 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+                      <span className="text-xs font-mono text-vault-text-muted uppercase tracking-[0.1em]">Generating improved prompt...</span>
                     </div>
                   )}
 
@@ -413,7 +415,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                           <input
                             value={suggestedTitle}
                             onChange={(e) => setSuggestedTitle(e.target.value)}
-                            className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm focus:border-vault-accent outline-none"
+                            className="w-full bg-vault-bg/60 border border-vault-border rounded-xl px-3 py-2 text-sm focus:border-indigo-500/50 outline-none transition-all"
                           />
                         </div>
                         <div className="space-y-1">
@@ -422,7 +424,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                             list="ai-category-options"
                             value={suggestedCategory}
                             onChange={(e) => setSuggestedCategory(e.target.value)}
-                            className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm focus:border-vault-accent outline-none"
+                            className="w-full bg-vault-bg/60 border border-vault-border rounded-xl px-3 py-2 text-sm focus:border-indigo-500/50 outline-none transition-all"
                           />
                           <datalist id="ai-category-options">
                             {availableCategoryNames.map((name) => (
@@ -436,7 +438,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                             value={tagsInput}
                             onChange={(e) => setTagsInput(e.target.value)}
                             placeholder="tag1, tag2"
-                            className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm focus:border-vault-accent outline-none"
+                            className="w-full bg-vault-bg/60 border border-vault-border rounded-xl px-3 py-2 text-sm focus:border-indigo-500/50 outline-none transition-all"
                           />
                         </div>
                       </div>
@@ -452,13 +454,13 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                         <div className="flex flex-wrap gap-1.5">
                           {parseTags(tagsInput).length > 0
                             ? parseTags(tagsInput).map((tag) => (
-                                <span
-                                  key={tag}
-                                  className="px-2 py-0.5 bg-vault-border/60 text-vault-text-muted rounded-full text-[10px] font-mono"
-                                >
-                                  #{tag}
-                                </span>
-                              ))
+                              <span
+                                key={tag}
+                                className="px-2 py-0.5 bg-vault-border/60 text-vault-text-muted rounded-full text-[10px] font-mono"
+                              >
+                                #{tag}
+                              </span>
+                            ))
                             : <span className="text-vault-text-muted text-xs">None</span>
                           }
                         </div>
@@ -483,7 +485,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                   <button
                     onClick={() => handleEvaluate()}
                     disabled={isLoading}
-                    className="flex items-center justify-center gap-2 px-3 py-2 bg-vault-accent text-vault-bg rounded-lg text-xs font-bold uppercase tracking-widest disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97]"
+                    className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97] text-white" style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
                   >
                     <Send size={14} /> Analyze
                   </button>
@@ -492,7 +494,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                       resetAssistant();
                       setIsOpen(false);
                     }}
-                    className="flex items-center justify-center gap-2 px-3 py-2 border border-vault-border text-vault-text-muted rounded-lg text-xs font-bold uppercase tracking-widest hover:text-vault-text transition-colors"
+                    className="flex items-center justify-center gap-2 px-3 py-2.5 border border-vault-border text-vault-text-muted rounded-xl text-xs font-bold uppercase tracking-wider hover:text-vault-text hover:border-vault-text-muted/30 transition-all"
                   >
                     Cancel
                   </button>
@@ -502,7 +504,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                   <button
                     onClick={handleConfirm}
                     disabled={!canConfirm || anyLoading}
-                    className="flex items-center justify-center gap-2 px-3 py-2 bg-vault-accent text-vault-bg rounded-lg text-xs font-bold uppercase tracking-widest disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97]"
+                    className="flex items-center justify-center gap-2 px-3 py-2.5 btn-primary !rounded-xl !text-[10px] disabled:opacity-50"
                   >
                     <Check size={14} /> Confirm
                   </button>
@@ -538,10 +540,11 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
 
       <button
         onClick={() => setIsOpen(prev => !prev)}
-        className="fixed bottom-22 right-6 z-[9999] w-12 h-12 rounded-full bg-vault-accent text-vault-bg shadow-xl shadow-vault-accent/30 flex items-center justify-center hover:scale-105 transition-transform"
+        className="fixed bottom-18.5 right-10 z-[9999] w-12 h-12 rounded-full text-white shadow-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all accent-glow-blue"
+        style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
         aria-label="Open prompt assistant"
       >
-        <Sparkles size={22} />
+        <Sparkles size={20} />
       </button>
     </>
   );

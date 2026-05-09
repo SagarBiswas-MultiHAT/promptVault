@@ -34,21 +34,24 @@ export const PromptCard: React.FC<PromptCardProps> = ({ prompt, onCopy, onToggle
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4 }}
+      whileHover={{ y: -3 }}
+      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
       onClick={() => onClick(prompt)}
-      className="group relative flex flex-col h-64 bg-vault-panel border border-vault-border rounded-xl overflow-hidden cursor-pointer transition-all hover:border-vault-accent/50"
+      className="group relative flex flex-col h-64 bg-vault-panel/80 border border-vault-border rounded-2xl overflow-hidden cursor-pointer card-hover-glow card-accent-stripe"
     >
       {/* Header */}
-      <div className="p-5 flex items-center justify-between">
-        <div className="flex items-center gap-2 max-w-[85%]">
-          <h3 className="text-sm font-mono font-bold truncate text-vault-accent uppercase tracking-tight">{prompt.title}</h3>
+      <div className="px-5 pt-5 pb-3 flex items-center justify-between">
+        <div className="flex items-center gap-2.5 max-w-[85%]">
+          <h3 className="text-sm font-bold truncate text-vault-text tracking-tight">{prompt.title}</h3>
         </div>
         <button
           onClick={handleFavorite}
-          className={`p-1.5 transition-colors ${
-            prompt.isFavorite ? 'text-vault-accent' : 'text-vault-text-muted hover:text-vault-accent'
+          className={`p-1.5 rounded-md transition-all ${
+            prompt.isFavorite 
+              ? 'text-vault-accent scale-110' 
+              : 'text-vault-text-muted hover:text-vault-accent opacity-0 group-hover:opacity-100'
           }`}
         >
           <Star size={14} fill={prompt.isFavorite ? "currentColor" : "none"} />
@@ -57,35 +60,46 @@ export const PromptCard: React.FC<PromptCardProps> = ({ prompt, onCopy, onToggle
 
       {/* Body Preview */}
       <div className="px-5 flex-1 relative">
-        <p className="text-xs text-vault-text-muted line-clamp-4 leading-relaxed font-sans">
+        <p className="text-xs text-vault-text-muted line-clamp-4 leading-relaxed">
           {prompt.body.split('{{').map((part, i) => {
             if (i === 0) return part;
             const [varName, ...rest] = part.split('}}');
             return (
               <React.Fragment key={i}>
-                <span className="text-vault-accent bg-vault-accent/10 px-0.5 rounded">{`{{${varName}}}`}</span>
+                <span className="text-vault-accent bg-vault-accent/10 px-1 py-0.5 rounded-md text-[11px] font-mono">{`{{${varName}}}`}</span>
                 {rest.join('}}')}
               </React.Fragment>
             );
           })}
         </p>
+        {/* Fade-out gradient mask */}
+        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-vault-panel/80 to-transparent pointer-events-none" />
       </div>
 
       {/* Footer */}
-      <div className="p-5 flex items-center justify-between mt-auto">
-        <div className="flex gap-2">
+      <div className="px-5 pb-4 pt-2 flex items-center justify-between mt-auto">
+        <div className="flex gap-1.5">
           {prompt.tags.slice(0, 2).map(tag => (
-            <span key={tag} className="text-[9px] bg-vault-panel-bright px-2 py-0.5 rounded-full text-vault-text-muted">#{tag}</span>
+            <span key={tag} className="text-[9px] bg-vault-panel-bright/80 border border-vault-border/50 px-2 py-0.5 rounded-full text-vault-text-muted font-mono">#{tag}</span>
           ))}
+          {prompt.tags.length > 2 && (
+            <span className="text-[9px] text-vault-text-muted/50 font-mono">+{prompt.tags.length - 2}</span>
+          )}
         </div>
         
         <button
           onClick={handleCopy}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-bold uppercase tracking-wider text-[10px] transition-all bg-vault-panel-bright hover:text-vault-accent ${
-            copied ? 'text-vault-accent' : 'text-vault-text'
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold uppercase tracking-wider text-[10px] transition-all ${
+            copied 
+              ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' 
+              : 'text-vault-text-muted bg-vault-bg/50 border border-vault-border hover:text-vault-accent hover:border-vault-accent/30'
           }`}
         >
-          {copied ? 'Copied' : `Copy (${prompt.usageCount})`}
+          {copied ? (
+            <><Check size={11} /> Copied</>
+          ) : (
+            <><Copy size={11} /> Copy{prompt.usageCount > 0 ? ` · ${prompt.usageCount}` : ''}</>
+          )}
         </button>
       </div>
     </motion.div>
