@@ -240,16 +240,19 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
             initial={{ opacity: 0, y: 20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
-            className="fixed bottom-24 right-4 z-[9999] w-[400px] max-w-[calc(100vw-2rem)] max-h-[70vh] glass-panel rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-34 right-4 z-[9999] w-[400px] max-w-[calc(100vw-2rem)] max-h-[70vh] glass-panel rounded-2xl shadow-2xl flex flex-col overflow-hidden"
           >
-            {/* Top accent line — indigo for AI */}
-            <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
+            {/* Top accent line — emerald for AI */}
+            <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
 
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-vault-border/50">
               <div>
-                <p className="text-[10px] font-mono uppercase tracking-[0.1em] text-vault-text-muted font-semibold">AI Librarian</p>
-                <h3 className="text-base font-bold tracking-tight text-gradient-blue">Prompt Assistant</h3>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" />
+                  <p className="text-[10px] font-mono uppercase tracking-[0.1em] text-vault-text-muted font-semibold">AI Librarian</p>
+                </div>
+                <h3 className="text-base font-bold tracking-tight text-emerald-400">Prompt Assistant</h3>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
@@ -270,14 +273,14 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                   value={promptInput}
                   onChange={(e) => setPromptInput(e.target.value)}
                   placeholder="Paste your prompt here..."
-                  className="w-full bg-vault-bg/60 border border-vault-border rounded-xl px-3 py-2.5 text-sm font-mono focus:border-indigo-500/50 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.08)] outline-none resize-none transition-all"
+                  className="w-full bg-vault-bg/60 border border-vault-border rounded-xl px-3 py-2.5 text-sm font-mono focus:border-emerald-500/50 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.08)] outline-none resize-none transition-all"
                 />
               </div>
 
               {/* Loading State */}
               {isLoading && (
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-indigo-500/5 border border-indigo-500/10">
-                  <div className="w-4 h-4 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
+                  <div className="w-4 h-4 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
                   <span className="text-xs font-mono text-vault-text-muted uppercase tracking-[0.1em]">Evaluating prompt quality...</span>
                 </div>
               )}
@@ -354,8 +357,8 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
 
                   {/* Improved Prompt — only shown after IMPROVE button click */}
                   {isImproving && (
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-indigo-500/5 border border-indigo-500/10">
-                      <div className="w-4 h-4 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
+                      <div className="w-4 h-4 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
                       <span className="text-xs font-mono text-vault-text-muted uppercase tracking-[0.1em]">Generating improved prompt...</span>
                     </div>
                   )}
@@ -415,7 +418,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                           <input
                             value={suggestedTitle}
                             onChange={(e) => setSuggestedTitle(e.target.value)}
-                            className="w-full bg-vault-bg/60 border border-vault-border rounded-xl px-3 py-2 text-sm focus:border-indigo-500/50 outline-none transition-all"
+                            className="w-full bg-vault-bg/60 border border-vault-border rounded-xl px-3 py-2 text-sm focus:border-emerald-500/50 outline-none transition-all"
                           />
                         </div>
                         <div className="space-y-1">
@@ -424,7 +427,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                             list="ai-category-options"
                             value={suggestedCategory}
                             onChange={(e) => setSuggestedCategory(e.target.value)}
-                            className="w-full bg-vault-bg/60 border border-vault-border rounded-xl px-3 py-2 text-sm focus:border-indigo-500/50 outline-none transition-all"
+                            className="w-full bg-vault-bg/60 border border-vault-border rounded-xl px-3 py-2 text-sm focus:border-emerald-500/50 outline-none transition-all"
                           />
                           <datalist id="ai-category-options">
                             {availableCategoryNames.map((name) => (
@@ -438,7 +441,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                             value={tagsInput}
                             onChange={(e) => setTagsInput(e.target.value)}
                             placeholder="tag1, tag2"
-                            className="w-full bg-vault-bg/60 border border-vault-border rounded-xl px-3 py-2 text-sm focus:border-indigo-500/50 outline-none transition-all"
+                            className="w-full bg-vault-bg/60 border border-vault-border rounded-xl px-3 py-2 text-sm focus:border-emerald-500/50 outline-none transition-all"
                           />
                         </div>
                       </div>
@@ -485,7 +488,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
                   <button
                     onClick={() => handleEvaluate()}
                     disabled={isLoading}
-                    className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97] text-white" style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
+                    className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97] badge badge-emerald border border-emerald-500/20"
                   >
                     <Send size={14} /> Analyze
                   </button>
@@ -540,11 +543,11 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
 
       <button
         onClick={() => setIsOpen(prev => !prev)}
-        className="fixed bottom-18.5 right-10 z-[9999] w-12 h-12 rounded-full text-white shadow-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all accent-glow-blue"
-        style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
+        className="fixed bottom-18.5 right-10 z-[9999] badge badge-emerald !px-4 !py-3 shadow-xl shadow-emerald-500/10 hover:scale-105 active:scale-95 transition-all cursor-pointer border border-emerald-500/20 flex items-center"
         aria-label="Open prompt assistant"
       >
-        <Sparkles size={20} />
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" />
+        <Sparkles size={16} className="ml-1.5 text-emerald-400" />
       </button>
     </>
   );

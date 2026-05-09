@@ -124,11 +124,7 @@ export function Sidebar({
               >
                 {/* Brand Icon */}
                 <div className="pt-6 pb-4 flex justify-center">
-                  <div className="w-7 h-7 rounded-lg shrink-0 relative overflow-hidden accent-glow"
-                    style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
-                  </div>
+                  <img src="/logo.png" alt="PromptVault Logo" className="w-7 h-7 rounded-lg shrink-0 drop-shadow-[0_0_12px_rgba(245,158,11,0.3)]" />
                 </div>
 
                 {/* Nav Icons */}
@@ -218,11 +214,7 @@ export function Sidebar({
                 {/* Brand */}
                 <div className="p-6 pb-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg shrink-0 relative overflow-hidden accent-glow"
-                      style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
-                    </div>
+                    <img src="/logo.png" alt="PromptVault Logo" className="w-8 h-8 rounded-lg shrink-0 drop-shadow-[0_0_12px_rgba(245,158,11,0.3)]" />
                     <div>
                       <h1 className="text-lg font-bold tracking-tight leading-none">
                         Prompt<span className="text-vault-accent">Vault</span>
