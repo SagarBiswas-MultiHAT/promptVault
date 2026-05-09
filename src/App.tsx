@@ -92,6 +92,7 @@ export default function App() {
   }, [data.settings.isDarkMode]);
 
   const [showSettings, setShowSettings] = useState(false);
+  const [showLockModal, setShowLockModal] = useState(false);
 
   // --- ACTIONS ---
   const handleSetPin = async (hash: string) => {
@@ -111,7 +112,7 @@ export default function App() {
       setIsRemovingLock(true);
     } else if (!data.settings.pinHash) {
       // If no PIN is set, show settings to create one
-      setShowSettings(true);
+      setShowLockModal(true);
     }
   };
 
@@ -496,8 +497,16 @@ export default function App() {
                 <button
                   onClick={handleLockButtonClick}
                   className="p-2.5 border border-vault-border text-vault-text-muted hover:text-vault-accent rounded-lg transition-colors"
+                  title="Vault Lock Settings"
                 >
                   {data.settings.pinHash ? <Lock size={18} /> : <Unlock size={18} />}
+                </button>
+                <button
+                  onClick={() => setShowSettings(true)}
+                  className="p-2.5 border border-vault-border text-vault-text-muted hover:text-vault-accent rounded-lg transition-colors"
+                  title="Vault Protocol Settings"
+                >
+                  <Settings size={18} />
                 </button>
               </div>
             </>
@@ -751,6 +760,44 @@ export default function App() {
         )}
       </Modal>
 
+      {/* Lock Modal */}
+      <Modal
+        isOpen={showLockModal}
+        onClose={() => setShowLockModal(false)}
+        title="Privacy Layer"
+      >
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-vault-accent font-mono uppercase tracking-widest text-[10px] font-bold">
+            <ShieldCheck size={14} />
+            <span>Access PIN Lock</span>
+          </div>
+          <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="text-sm font-medium">Security Status</p>
+              <p className="text-xs text-vault-text-muted font-mono">{data.settings.pinHash ? 'Vault is currently protected by hash logic.' : 'Security is currently disabled.'}</p>
+            </div>
+            {data.settings.pinHash ? (
+              <button 
+                onClick={handleClearPin}
+                className="px-4 py-2 border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white rounded-lg text-[10px] font-mono tracking-widest uppercase transition-all"
+              >
+                Disable
+              </button>
+            ) : (
+              <button 
+                onClick={() => {
+                  setShowLockModal(false);
+                  setIsLocked(true);
+                }}
+                className="px-4 py-2 bg-vault-accent text-vault-bg rounded-lg text-[10px] font-mono font-bold tracking-widest uppercase transition-all"
+              >
+                Enable PIN
+              </button>
+            )}
+          </div>
+        </div>
+      </Modal>
+
       {/* Settings Modal */}
       <Modal
         isOpen={showSettings}
@@ -787,6 +834,31 @@ export default function App() {
                  </button>
                )}
              </div>
+          </section>
+
+          <section className="space-y-4">
+            <div className="flex items-center gap-2 text-vault-accent font-mono uppercase tracking-widest text-[10px] font-bold">
+              <Download size={14} />
+              <span>Data Management</span>
+            </div>
+            <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-sm font-medium">Backup & Restore</p>
+                <p className="text-xs text-vault-text-muted font-mono">Export your vault to a JSON file or import an existing backup.</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="cursor-pointer px-4 py-2 border border-vault-border text-vault-text-muted hover:text-vault-text hover:border-vault-text-muted rounded-lg text-[10px] font-mono font-bold tracking-widest uppercase transition-all flex items-center gap-2">
+                  <Upload size={14} /> Import
+                  <input type="file" accept=".json" onChange={handleImport} className="hidden" />
+                </label>
+                <button 
+                  onClick={handleExport}
+                  className="px-4 py-2 bg-vault-border text-vault-text hover:bg-vault-accent hover:text-vault-bg rounded-lg text-[10px] font-mono font-bold tracking-widest uppercase transition-all flex items-center gap-2"
+                >
+                  <Download size={14} /> Export
+                </button>
+              </div>
+            </div>
           </section>
 
           <section className="space-y-4">
