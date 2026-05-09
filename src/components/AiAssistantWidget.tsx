@@ -5,17 +5,20 @@
 
 import { useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Sparkles, Send, X, AlertTriangle, Wand2, Check, Star } from 'lucide-react';
+import { Sparkles, Send, X, AlertTriangle, Check, Shield, ChevronDown, ChevronUp, Zap } from 'lucide-react';
 import { Category } from '../types.ts';
 
-interface AnalysisResult {
-  rating: number;
-  weaknesses: string[];
-  improvements: string[];
-  title?: string;
-  category?: string;
-  tags?: string[];
-  improvedPrompt?: string;
+interface EvaluationResult {
+  qualityScore: number;
+  scoreLabel: string;
+  weakSpots: string[];
+  improvementsMade: string[];
+  improvedPrompt: string;
+  confidence: string;
+  confidenceNote: string;
+  title: string;
+  category: string;
+  tags: string[];
   provider?: string;
 }
 
@@ -28,30 +31,27 @@ interface AiAssistantWidgetProps {
 export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite }: AiAssistantWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [promptInput, setPromptInput] = useState('');
-  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
-  const [improvedPrompt, setImprovedPrompt] = useState('');
+  const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editingSuggestions, setEditingSuggestions] = useState(false);
   const [suggestedTitle, setSuggestedTitle] = useState('');
   const [suggestedCategory, setSuggestedCategory] = useState('');
   const [tagsInput, setTagsInput] = useState('');
-  const [createdPromptId, setCreatedPromptId] = useState<string | null>(null);
-  const [askFavorite, setAskFavorite] = useState(false);
-  const [improveProvider, setImproveProvider] = useState<string | null>(null);
+  const [showImproved, setShowImproved] = useState(false);
 
   const availableCategoryNames = useMemo(() => categories.map(c => c.name), [categories]);
 
-  const canConfirm = Boolean(analysis && suggestedTitle.trim() && suggestedCategory.trim());
-  const canModify = Boolean(analysis);
+  const canConfirm = Boolean(evaluation && suggestedTitle.trim() && suggestedCategory.trim());
+  const canModify = Boolean(evaluation);
 
-  const ratingColor = analysis
-    ? analysis.rating >= 8
-      ? 'text-emerald-400'
-      : analysis.rating >= 6
-        ? 'text-amber-400'
-        : 'text-red-400'
-    : 'text-vault-text-muted';
+  const scoreLabelConfig: Record<string, { color: string; bg: string; border: string }> = {
+    'EXCELLENT': { color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+    'GOOD': { color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
+    'CONSIDER IMPROVING': { color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20' },
+  };
+
+  const getScoreConfig = (label: string) => scoreLabelConfig[label] || scoreLabelConfig['CONSIDER IMPROVING'];
 
   const formatProvider = (provider?: string) => {
     const normalized = provider?.trim().toLowerCase();
@@ -61,21 +61,16 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
     return normalized;
   };
 
-  const analysisProvider = analysis ? formatProvider(analysis.provider) : '';
-
   const resetAssistant = () => {
     setPromptInput('');
-    setAnalysis(null);
-    setImprovedPrompt('');
+    setEvaluation(null);
     setIsLoading(false);
     setError(null);
     setEditingSuggestions(false);
     setSuggestedTitle('');
     setSuggestedCategory('');
     setTagsInput('');
-    setCreatedPromptId(null);
-    setAskFavorite(false);
-    setImproveProvider(null);
+    setShowImproved(false);
   };
 
   const parseTags = (value: string) => {
@@ -95,28 +90,24 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
     return general?.id || categories[0]?.id || '';
   };
 
-  const handleAnalyze = async (overridePrompt?: string) => {
-    let promptToAnalyze = overridePrompt || promptInput;
-    promptToAnalyze = promptToAnalyze.trim();
+  const handleEvaluate = async (overridePrompt?: string) => {
+    let promptToEvaluate = overridePrompt || promptInput;
+    promptToEvaluate = promptToEvaluate.trim();
 
-    if (!promptToAnalyze) {
-      setError('Please enter a prompt to analyze.');
+    if (!promptToEvaluate) {
+      setError('Please enter a prompt to evaluate.');
       return;
     }
 
     setIsLoading(true);
     setError(null);
-    setAnalysis(null);
-    setImprovedPrompt('');
-    setImproveProvider(null);
-    setCreatedPromptId(null);
-    setAskFavorite(false);
+    setEvaluation(null);
+    setShowImproved(false);
 
     try {
       const payload = {
-        prompt: promptToAnalyze,
+        prompt: promptToEvaluate,
         categories: availableCategoryNames,
-        mode: 'analyze',
       };
 
       const response = await fetch('/api/suggest', {
@@ -127,80 +118,45 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data?.error || 'Failed to analyze prompt.');
+        throw new Error(data?.error || 'Failed to evaluate prompt.');
       }
 
-      const normalized = {
-        rating: Number.isFinite(Number(data?.rating)) ? Number(data.rating) : 0,
-        weaknesses: Array.isArray(data?.weaknesses) ? data.weaknesses : [],
-        improvements: Array.isArray(data?.improvements) ? data.improvements : [],
+      const result: EvaluationResult = {
+        qualityScore: Number.isFinite(Number(data?.qualityScore)) ? Number(data.qualityScore) : 0,
+        scoreLabel: data?.scoreLabel || 'CONSIDER IMPROVING',
+        weakSpots: Array.isArray(data?.weakSpots) ? data.weakSpots : [],
+        improvementsMade: Array.isArray(data?.improvementsMade) ? data.improvementsMade : [],
+        improvedPrompt: data?.improvedPrompt || '',
+        confidence: data?.confidence || 'HIGH',
+        confidenceNote: data?.confidenceNote || '',
         title: data?.title || '',
         category: data?.category || '',
         tags: Array.isArray(data?.tags) ? data.tags : [],
         provider: typeof data?.provider === 'string' ? data.provider : '',
-      } as AnalysisResult;
+      };
 
-      setAnalysis(normalized);
-      setSuggestedTitle(normalized.title || '');
-      setSuggestedCategory(normalized.category || (availableCategoryNames[0] || 'General'));
-      setTagsInput((normalized.tags || []).join(', '));
+      setEvaluation(result);
+      setSuggestedTitle(result.title || '');
+      setSuggestedCategory(result.category || (availableCategoryNames[0] || 'General'));
+      setTagsInput((result.tags || []).join(', '));
       setEditingSuggestions(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to analyze prompt.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleImprove = async () => {
-    if (!promptInput.trim()) {
-      setError('Please enter a prompt to improve.');
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-    setImproveProvider(null);
-
-    try {
-      const response = await fetch('/api/suggest', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt: promptInput.trim(),
-          categories: availableCategoryNames,
-          mode: 'improve',
-        }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data?.error || 'Failed to improve prompt.');
-      }
-
-      setImprovedPrompt(data.improvedPrompt || '');
-      setImproveProvider(typeof data?.provider === 'string' ? data.provider : null);
-      if (data.weaknesses || data.improvements) {
-        setAnalysis(prev => prev ? { ...prev, weaknesses: data.weaknesses || prev.weaknesses, improvements: data.improvements || prev.improvements } : prev);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to improve prompt.');
+      setError(err instanceof Error ? err.message : 'Failed to evaluate prompt.');
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleUseImprovedPrompt = async () => {
-    if (!improvedPrompt.trim()) return;
-    const updatedPrompt = improvedPrompt.trim();
+    if (!evaluation?.improvedPrompt?.trim()) return;
+    const updatedPrompt = evaluation.improvedPrompt.trim();
     setPromptInput(updatedPrompt);
-    setImprovedPrompt('');
-    setImproveProvider(null);
-    await handleAnalyze(updatedPrompt);
+    setShowImproved(false);
+    await handleEvaluate(updatedPrompt);
   };
 
   const handleConfirm = () => {
-    if (!analysis) return;
+    if (!evaluation) return;
 
     const categoryId = resolveCategoryId(suggestedCategory);
     if (!categoryId) {
@@ -221,12 +177,14 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
       return;
     }
 
-    setCreatedPromptId(createdId);
     setEditingSuggestions(false);
     setError(null);
     resetAssistant();
     setIsOpen(false);
   };
+
+  const scoreConfig = evaluation ? getScoreConfig(evaluation.scoreLabel) : null;
+  const providerLabel = evaluation ? formatProvider(evaluation.provider) : '';
 
   return (
     <>
@@ -236,11 +194,12 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
             initial={{ opacity: 0, y: 20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
-            className="fixed bottom-24 right-4 z-[9999] w-[380px] max-w-[calc(100vw-2rem)] max-h-[65vh] glass-panel rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-24 right-4 z-[9999] w-[400px] max-w-[calc(100vw-2rem)] max-h-[70vh] glass-panel rounded-2xl shadow-2xl flex flex-col overflow-hidden"
           >
+            {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-vault-border">
               <div>
-                <p className="text-xs font-mono uppercase tracking-widest text-vault-text-muted">AI Librarian</p>
+                <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">AI Librarian</p>
                 <h3 className="text-lg font-mono font-bold text-vault-accent">Prompt Assistant</h3>
               </div>
               <button
@@ -252,153 +211,201 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
               </button>
             </div>
 
+            {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto p-5 space-y-4">
+              {/* Prompt Input */}
               <div className="space-y-2">
-                <label className="text-[10px] font-mono text-vault-text-muted uppercase tracking-widest">Prompt to Analyze</label>
+                <label className="text-[10px] font-mono text-vault-text-muted uppercase tracking-widest">Prompt to Evaluate</label>
                 <textarea
                   rows={4}
                   value={promptInput}
                   onChange={(e) => setPromptInput(e.target.value)}
-                  placeholder="Paste your prompt here"
-                  className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm font-mono focus:border-vault-accent outline-none"
+                  placeholder="Paste your prompt here..."
+                  className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm font-mono focus:border-vault-accent outline-none resize-none"
                 />
               </div>
 
-              {analysis && (
-                <div className="space-y-3">
+              {/* Loading State */}
+              {isLoading && (
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-vault-accent/5 border border-vault-accent/10">
+                  <div className="w-4 h-4 border-2 border-vault-accent/30 border-t-vault-accent rounded-full animate-spin" />
+                  <span className="text-xs font-mono text-vault-text-muted uppercase tracking-widest">Running 5-step evaluation pipeline...</span>
+                </div>
+              )}
+
+              {/* Evaluation Results */}
+              {evaluation && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-4"
+                >
+                  {/* Quality Score + Label */}
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Quality Score</p>
-                      <p className={`text-xl font-bold ${ratingColor}`}>{analysis.rating.toFixed(1)} / 10</p>
-                      {analysisProvider && (
-                        <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Provider: {analysisProvider}</p>
+                      <p className={`text-2xl font-bold ${scoreConfig?.color}`}>
+                        {evaluation.qualityScore.toFixed(1)} <span className="text-sm opacity-60">/ 10</span>
+                      </p>
+                      {providerLabel && (
+                        <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted mt-0.5">Provider: {providerLabel}</p>
                       )}
                     </div>
-                    {analysis.rating < 8 && (
-                      <div className="flex items-center gap-2 text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-full">
-                        <AlertTriangle size={12} />
-                        Consider improving
-                      </div>
+                    <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider ${scoreConfig?.color} ${scoreConfig?.bg} ${scoreConfig?.border} border`}>
+                      {evaluation.scoreLabel === 'EXCELLENT' && <Shield size={10} />}
+                      {evaluation.scoreLabel === 'GOOD' && <Zap size={10} />}
+                      {evaluation.scoreLabel === 'CONSIDER IMPROVING' && <AlertTriangle size={10} />}
+                      {evaluation.scoreLabel}
+                    </div>
+                  </div>
+
+                  {/* Weak Spots */}
+                  {evaluation.weakSpots.length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted mb-2">Weak Spots</p>
+                      <ul className="space-y-1.5 text-xs text-vault-text-muted">
+                        {evaluation.weakSpots.map((item, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-red-400/70 shrink-0" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Improvements Made */}
+                  {evaluation.improvementsMade.length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted mb-2">Improvements Made</p>
+                      <ul className="space-y-1.5 text-xs text-vault-text-muted">
+                        {evaluation.improvementsMade.map((item, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-vault-accent shrink-0" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Improved Prompt (collapsible) */}
+                  {evaluation.improvedPrompt && (
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => setShowImproved(prev => !prev)}
+                        className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-vault-accent hover:text-vault-text transition-colors"
+                      >
+                        {showImproved ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                        {showImproved ? 'Hide' : 'View'} Improved Prompt
+                      </button>
+                      <AnimatePresence>
+                        {showImproved && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="bg-vault-bg border border-vault-border rounded-lg p-3 text-xs text-vault-text-muted whitespace-pre-wrap max-h-40 overflow-y-auto custom-scrollbar">
+                              {evaluation.improvedPrompt}
+                            </div>
+                            <button
+                              onClick={handleUseImprovedPrompt}
+                              disabled={isLoading}
+                              className="mt-2 flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-vault-accent hover:text-vault-text transition-colors disabled:opacity-50"
+                            >
+                              <Zap size={12} />
+                              Use improved prompt & re-evaluate
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
+
+                  {/* Confidence Badge */}
+                  <div className="flex items-center gap-2">
+                    <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider ${
+                      evaluation.confidence === 'HIGH'
+                        ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
+                        : 'text-amber-400 bg-amber-500/10 border border-amber-500/20'
+                    }`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${evaluation.confidence === 'HIGH' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                      Confidence: {evaluation.confidence}
+                    </div>
+                    {evaluation.confidenceNote && (
+                      <span className="text-[10px] text-vault-text-muted font-mono">{evaluation.confidenceNote}</span>
                     )}
                   </div>
 
-                  {(analysis.weaknesses.length > 0 || analysis.improvements.length > 0) && (
-                    <div className="space-y-3">
-                      {analysis.weaknesses.length > 0 && (
-                        <div>
-                          <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Weak Spots</p>
-                          <ul className="mt-2 space-y-1 text-xs text-vault-text-muted">
-                            {analysis.weaknesses.map((item, index) => (
-                              <li key={index} className="flex items-start gap-2">
-                                <span className="mt-1 h-1.5 w-1.5 rounded-full bg-vault-text-muted" />
-                                <span>{item}</span>
-                              </li>
+                  {/* Suggestions (Title / Category / Tags) */}
+                  <div className="space-y-2 pt-2 border-t border-vault-border/50">
+                    <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Save Details</p>
+
+                    {editingSuggestions ? (
+                      <div className="space-y-3">
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Title</label>
+                          <input
+                            value={suggestedTitle}
+                            onChange={(e) => setSuggestedTitle(e.target.value)}
+                            className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm focus:border-vault-accent outline-none"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Category</label>
+                          <input
+                            list="ai-category-options"
+                            value={suggestedCategory}
+                            onChange={(e) => setSuggestedCategory(e.target.value)}
+                            className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm focus:border-vault-accent outline-none"
+                          />
+                          <datalist id="ai-category-options">
+                            {availableCategoryNames.map((name) => (
+                              <option key={name} value={name} />
                             ))}
-                          </ul>
+                          </datalist>
                         </div>
-                      )}
-
-                      {analysis.improvements.length > 0 && (
-                        <div>
-                          <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Improvements</p>
-                          <ul className="mt-2 space-y-1 text-xs text-vault-text-muted">
-                            {analysis.improvements.map((item, index) => (
-                              <li key={index} className="flex items-start gap-2">
-                                <span className="mt-1 h-1.5 w-1.5 rounded-full bg-vault-accent" />
-                                <span>{item}</span>
-                              </li>
-                            ))}
-                          </ul>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Tags</label>
+                          <input
+                            value={tagsInput}
+                            onChange={(e) => setTagsInput(e.target.value)}
+                            placeholder="tag1, tag2"
+                            className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm focus:border-vault-accent outline-none"
+                          />
                         </div>
-                      )}
-                    </div>
-                  )}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-[72px_1fr] gap-x-3 gap-y-2.5 text-sm items-start">
+                        <span className="text-vault-text-muted text-xs pt-0.5 shrink-0">Title</span>
+                        <span className="text-vault-text font-medium leading-snug">{suggestedTitle || 'Untitled'}</span>
 
-                  {analysis && (
-                    <div className="space-y-2">
-                      <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Suggestions</p>
+                        <span className="text-vault-text-muted text-xs pt-0.5 shrink-0">Category</span>
+                        <span className="text-vault-text">{suggestedCategory || 'General'}</span>
 
-                      {editingSuggestions ? (
-                        <div className="space-y-3">
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Title</label>
-                            <input
-                              value={suggestedTitle}
-                              onChange={(e) => setSuggestedTitle(e.target.value)}
-                              className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm focus:border-vault-accent outline-none"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Category</label>
-                            <input
-                              list="ai-category-options"
-                              value={suggestedCategory}
-                              onChange={(e) => setSuggestedCategory(e.target.value)}
-                              className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm focus:border-vault-accent outline-none"
-                            />
-                            <datalist id="ai-category-options">
-                              {availableCategoryNames.map((name) => (
-                                <option key={name} value={name} />
-                              ))}
-                            </datalist>
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Tags</label>
-                            <input
-                              value={tagsInput}
-                              onChange={(e) => setTagsInput(e.target.value)}
-                              placeholder="tag1, tag2"
-                              className="w-full bg-vault-bg border border-vault-border rounded-lg px-3 py-2 text-sm focus:border-vault-accent outline-none"
-                            />
-                          </div>
+                        <span className="text-vault-text-muted text-xs pt-1 shrink-0">Tags</span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {parseTags(tagsInput).length > 0
+                            ? parseTags(tagsInput).map((tag) => (
+                                <span
+                                  key={tag}
+                                  className="px-2 py-0.5 bg-vault-border/60 text-vault-text-muted rounded-full text-[10px] font-mono"
+                                >
+                                  #{tag}
+                                </span>
+                              ))
+                            : <span className="text-vault-text-muted text-xs">None</span>
+                          }
                         </div>
-                      ) : (
-                        <div className="grid grid-cols-[72px_1fr] gap-x-3 gap-y-2.5 text-sm items-start">
-                          <span className="text-vault-text-muted text-xs pt-0.5 shrink-0">Title</span>
-                          <span className="text-vault-text font-medium leading-snug">{suggestedTitle || 'Untitled'}</span>
-
-                          <span className="text-vault-text-muted text-xs pt-0.5 shrink-0">Category</span>
-                          <span className="text-vault-text">{suggestedCategory || 'General'}</span>
-
-                          <span className="text-vault-text-muted text-xs pt-1 shrink-0">Tags</span>
-                          <div className="flex flex-wrap gap-1.5">
-                            {parseTags(tagsInput).length > 0
-                              ? parseTags(tagsInput).map((tag) => (
-                                  <span
-                                    key={tag}
-                                    className="px-2 py-0.5 bg-vault-border/60 text-vault-text-muted rounded-full text-[10px] font-mono"
-                                  >
-                                    #{tag}
-                                  </span>
-                                ))
-                              : <span className="text-vault-text-muted text-xs">None</span>
-                            }
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {improvedPrompt && (
-                <div className="space-y-2">
-                  <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Improved Prompt</p>
-                  {improveProvider && (
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-vault-text-muted">Provider: {formatProvider(improveProvider)}</p>
-                  )}
-                  <div className="bg-vault-bg border border-vault-border rounded-lg p-3 text-xs text-vault-text-muted whitespace-pre-wrap">
-                    {improvedPrompt}
+                      </div>
+                    )}
                   </div>
-                  <button
-                    onClick={handleUseImprovedPrompt}
-                    className="text-xs font-mono uppercase tracking-widest text-vault-accent hover:text-vault-text"
-                  >
-                    Use improved prompt and re-analyze
-                  </button>
-                </div>
+                </motion.div>
               )}
 
+              {/* Error */}
               {error && (
                 <div className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 px-3 py-2 rounded-lg">
                   {error}
@@ -406,55 +413,49 @@ export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite
               )}
             </div>
 
+            {/* Action Bar */}
             <div className="p-4 border-t border-vault-border bg-vault-panel/70">
-              {!analysis ? (
+              {!evaluation ? (
                 <div className="grid grid-cols-2 gap-2">
                   <button
-                    onClick={() => handleAnalyze()}
+                    onClick={() => handleEvaluate()}
                     disabled={isLoading}
-                    className="flex items-center justify-center gap-2 px-3 py-2 bg-vault-accent text-vault-bg rounded-lg text-xs font-bold uppercase tracking-widest disabled:opacity-50"
+                    className="flex items-center justify-center gap-2 px-3 py-2 bg-vault-accent text-vault-bg rounded-lg text-xs font-bold uppercase tracking-widest disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97]"
                   >
-                    <Send size={14} /> Analyze
+                    <Send size={14} /> Evaluate
                   </button>
                   <button
                     onClick={() => {
                       resetAssistant();
                       setIsOpen(false);
                     }}
-                    className="flex items-center justify-center gap-2 px-3 py-2 border border-vault-border text-vault-text-muted rounded-lg text-xs font-bold uppercase tracking-widest"
+                    className="flex items-center justify-center gap-2 px-3 py-2 border border-vault-border text-vault-text-muted rounded-lg text-xs font-bold uppercase tracking-widest hover:text-vault-text transition-colors"
                   >
                     Cancel
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <button
                     onClick={handleConfirm}
                     disabled={!canConfirm || isLoading}
-                    className="flex items-center justify-center gap-2 px-3 py-2 bg-vault-accent text-vault-bg rounded-lg text-xs font-bold uppercase tracking-widest disabled:opacity-50"
+                    className="flex items-center justify-center gap-2 px-3 py-2 bg-vault-accent text-vault-bg rounded-lg text-xs font-bold uppercase tracking-widest disabled:opacity-50 transition-all hover:opacity-90 active:scale-[0.97]"
                   >
-                    <Check size={14} /> Confirm
+                    <Check size={14} /> Save
                   </button>
                   <button
                     onClick={() => setEditingSuggestions(prev => !prev)}
                     disabled={!canModify || isLoading}
-                    className="flex items-center justify-center gap-2 px-3 py-2 border border-vault-border text-vault-text-muted rounded-lg text-xs font-bold uppercase tracking-widest disabled:opacity-50"
+                    className="flex items-center justify-center gap-2 px-3 py-2 border border-vault-border text-vault-text-muted rounded-lg text-xs font-bold uppercase tracking-widest disabled:opacity-50 hover:text-vault-text transition-colors"
                   >
                     Modify
-                  </button>
-                  <button
-                    onClick={() => handleImprove()}
-                    disabled={isLoading}
-                    className="flex items-center justify-center gap-2 px-3 py-2 border border-vault-border text-vault-text-muted rounded-lg text-xs font-bold uppercase tracking-widest disabled:opacity-50"
-                  >
-                    <Wand2 size={14} /> Improve
                   </button>
                   <button
                     onClick={() => {
                       resetAssistant();
                       setIsOpen(false);
                     }}
-                    className="flex items-center justify-center gap-2 px-3 py-2 border border-vault-border text-vault-text-muted rounded-lg text-xs font-bold uppercase tracking-widest"
+                    className="flex items-center justify-center gap-2 px-3 py-2 border border-vault-border text-vault-text-muted rounded-lg text-xs font-bold uppercase tracking-widest hover:text-vault-text transition-colors"
                   >
                     Cancel
                   </button>
