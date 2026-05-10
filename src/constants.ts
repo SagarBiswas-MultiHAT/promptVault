@@ -25,3 +25,5 @@ export const INITIAL_DATA: VaultData = {
 };
 
 export const LOCAL_STORAGE_KEY = 'prompt-vault-data';
+export const SYNC_META_KEY = 'prompt-vault-sync-meta';
+export const SYNC_TABLE = 'vaults';

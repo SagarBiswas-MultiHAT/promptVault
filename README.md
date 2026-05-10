@@ -20,21 +20,22 @@ A secure, feature-rich prompt management application for organizing, evaluating,
 - **💾 Import / Export** — Full JSON backup and restore for portability
 - **🌗 Light & Dark Mode** — Carefully crafted themes for any lighting
 - **📱 Responsive** — Full mobile support with slide-out sidebar and touch-optimized controls
+- **☁ Cloud Sync** - Sign in with Google to sync across devices (Supabase)
 - **⚡ Offline-First** — All data lives in your browser's localStorage; no account required
 
 ---
 
 ## 🛠 Tech Stack
 
-| Layer     | Technology                       |
-| --------- | -------------------------------- |
-| Frontend  | React 19, TypeScript, Vite 6     |
-| Styling   | Tailwind CSS 4                   |
-| Animation | Motion (Framer Motion)           |
-| Icons     | Lucide React                     |
-| Backend   | Express 4 (API proxy)            |
-| AI        | Google Gemini, Groq (fallback)   |
-| Storage   | Browser localStorage             |
+| Layer     | Technology                     |
+| --------- | ------------------------------ |
+| Frontend  | React 19, TypeScript, Vite 6   |
+| Styling   | Tailwind CSS 4                 |
+| Animation | Motion (Framer Motion)         |
+| Icons     | Lucide React                   |
+| Backend   | Express 4 (API proxy)          |
+| AI        | Google Gemini, Groq (fallback) |
+| Storage   | Browser localStorage, Supabase |
 
 ---
 
@@ -66,6 +67,40 @@ Edit `.env` and add your API keys:
 ```env
 GEMINI_API_KEY="your-gemini-key-here"
 GROQ_API_KEY="your-groq-key-here"
+
+# Optional: Supabase cloud sync
+VITE_SUPABASE_URL="https://your-project.supabase.co"
+VITE_SUPABASE_ANON_KEY="your-anon-key"
+```
+
+### Optional: Enable Cloud Sync (Supabase)
+
+1. Create a Supabase project and enable the **Google** provider in Auth.
+2. Add the redirect URL for local development: `http://localhost:3000`
+3. Create the `vaults` table and RLS policies:
+
+```sql
+create table public.vaults (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  data jsonb not null,
+  schema_version text not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.vaults enable row level security;
+
+create policy "Users can view own vault"
+on public.vaults for select
+using (auth.uid() = user_id);
+
+create policy "Users can insert own vault"
+on public.vaults for insert
+with check (auth.uid() = user_id);
+
+create policy "Users can update own vault"
+on public.vaults for update
+using (auth.uid() = user_id)
+with check (auth.uid() = user_id);
 ```
 
 ### 3. Run Development Server
@@ -101,15 +136,17 @@ The production server serves the built frontend and the API from a single proces
 
 ### Environment Variables
 
-| Variable          | Required | Default                   | Description                                           |
-| ----------------- | -------- | ------------------------- | ----------------------------------------------------- |
-| `GEMINI_API_KEY`  | Yes*     | —                         | Google Gemini API key                                  |
-| `GEMINI_MODEL`    | No       | `gemini-2.0-flash`        | Gemini model to use                                    |
-| `GROQ_API_KEY`    | Yes*     | —                         | Groq API key (fallback provider)                       |
-| `GROQ_MODEL`      | No       | `llama-3.3-70b-versatile` | Groq model to use                                      |
-| `AI_PROXY_PORT`   | No       | `3002`                    | Server port                                            |
-| `NODE_ENV`        | No       | —                         | Set to `production` for production mode                |
-| `ALLOWED_ORIGINS` | No       | —                         | Comma-separated CORS origins (production recommended)  |
+| Variable                 | Required | Default                   | Description                                           |
+| ------------------------ | -------- | ------------------------- | ----------------------------------------------------- |
+| `GEMINI_API_KEY`         | Yes\*    | —                         | Google Gemini API key                                 |
+| `GEMINI_MODEL`           | No       | `gemini-2.0-flash`        | Gemini model to use                                   |
+| `GROQ_API_KEY`           | Yes\*    | —                         | Groq API key (fallback provider)                      |
+| `GROQ_MODEL`             | No       | `llama-3.3-70b-versatile` | Groq model to use                                     |
+| `AI_PROXY_PORT`          | No       | `3002`                    | Server port                                           |
+| `NODE_ENV`               | No       | —                         | Set to `production` for production mode               |
+| `ALLOWED_ORIGINS`        | No       | —                         | Comma-separated CORS origins (production recommended) |
+| `VITE_SUPABASE_URL`      | No       | —                         | Supabase project URL for cloud sync                   |
+| `VITE_SUPABASE_ANON_KEY` | No       | —                         | Supabase anon key for client auth                     |
 
 \* At least one AI provider key is required for the AI Librarian feature.
 
@@ -169,16 +206,16 @@ promptvault/
 
 ## 📜 Available Scripts
 
-| Command          | Description                                    |
-| ---------------- | ---------------------------------------------- |
-| `npm run dev`    | Start Vite dev server (port 3000)              |
-| `npm run dev:api`| Start Express API proxy (port 3002)            |
-| `npm run build`  | Build frontend for production                  |
-| `npm start`      | Run production server (Unix/macOS)             |
-| `npm run start:win` | Run production server (Windows)             |
-| `npm run preview`| Preview the production build locally           |
-| `npm run lint`   | Run TypeScript type checking                   |
-| `npm run clean`  | Remove build artifacts                         |
+| Command             | Description                          |
+| ------------------- | ------------------------------------ |
+| `npm run dev`       | Start Vite dev server (port 3000)    |
+| `npm run dev:api`   | Start Express API proxy (port 3002)  |
+| `npm run build`     | Build frontend for production        |
+| `npm start`         | Run production server (Unix/macOS)   |
+| `npm run start:win` | Run production server (Windows)      |
+| `npm run preview`   | Preview the production build locally |
+| `npm run lint`      | Run TypeScript type checking         |
+| `npm run clean`     | Remove build artifacts               |
 
 ---
 

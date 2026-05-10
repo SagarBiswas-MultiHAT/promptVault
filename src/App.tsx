@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useMemo, useCallback, ChangeEvent } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, ChangeEvent, useRef } from 'react';
+import { Session } from '@supabase/supabase-js';
 import {
   Search,
   Plus,
@@ -21,7 +22,11 @@ import {
   Heart,
   Briefcase,
   AlertCircle,
-  ShieldCheck
+  ShieldCheck,
+  Cloud,
+  LogOut,
+  RefreshCcw,
+  User
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -37,7 +42,62 @@ import { AiAssistantWidget } from './components/AiAssistantWidget.tsx';
 
 // Types and Constants
 import { Prompt, Category, VaultData, SortOption } from './types.ts';
-import { INITIAL_DATA, LOCAL_STORAGE_KEY, SCHEMA_VERSION } from './constants.ts';
+import { INITIAL_DATA, LOCAL_STORAGE_KEY, SCHEMA_VERSION, SYNC_META_KEY, SYNC_TABLE } from './constants.ts';
+import { supabase, isSupabaseConfigured } from './utils/supabase.ts';
+
+type SyncStatus = 'idle' | 'syncing' | 'error';
+
+type SyncMeta = {
+  lastLocalChangeAt: number;
+  lastRemoteChangeAt: number;
+  lastSyncedAt: number | null;
+};
+
+const readSyncMeta = (): SyncMeta => {
+  try {
+    const raw = localStorage.getItem(SYNC_META_KEY);
+    if (!raw) {
+      return { lastLocalChangeAt: 0, lastRemoteChangeAt: 0, lastSyncedAt: null };
+    }
+    const parsed = JSON.parse(raw) as Partial<SyncMeta>;
+    return {
+      lastLocalChangeAt: typeof parsed.lastLocalChangeAt === 'number' ? parsed.lastLocalChangeAt : 0,
+      lastRemoteChangeAt: typeof parsed.lastRemoteChangeAt === 'number' ? parsed.lastRemoteChangeAt : 0,
+      lastSyncedAt: typeof parsed.lastSyncedAt === 'number' ? parsed.lastSyncedAt : null,
+    };
+  } catch {
+    return { lastLocalChangeAt: 0, lastRemoteChangeAt: 0, lastSyncedAt: null };
+  }
+};
+
+const writeSyncMeta = (meta: SyncMeta) => {
+  localStorage.setItem(SYNC_META_KEY, JSON.stringify(meta));
+};
+
+const isValidVaultData = (value: unknown): value is VaultData => {
+  const data = value as VaultData;
+  return Boolean(
+    data &&
+    data.schemaVersion &&
+    Array.isArray(data.prompts) &&
+    Array.isArray(data.categories) &&
+    data.settings &&
+    typeof data.settings.isDarkMode === 'boolean'
+  );
+};
+
+const formatTimestamp = (value: number | null) => {
+  if (!value) return 'Never';
+  return new Date(value).toLocaleString();
+};
+
+const getSyncData = (value: VaultData): VaultData => ({
+  ...value,
+  settings: {
+    ...value.settings,
+    pinHash: null,
+  },
+});
 
 export default function App() {
   // --- STATE ---
@@ -47,7 +107,7 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved) as VaultData;
         // Basic schema guard: ensure required fields exist
-        if (parsed && parsed.schemaVersion && Array.isArray(parsed.prompts) && Array.isArray(parsed.categories)) {
+        if (isValidVaultData(parsed)) {
           return parsed;
         }
       }
@@ -56,6 +116,26 @@ export default function App() {
     }
     return INITIAL_DATA;
   });
+
+  const initialSyncMeta = useMemo(() => readSyncMeta(), []);
+  const lastLocalChangeAtRef = useRef(initialSyncMeta.lastLocalChangeAt);
+  const lastRemoteChangeAtRef = useRef(initialSyncMeta.lastRemoteChangeAt);
+  const lastSyncedAtRef = useRef<number | null>(initialSyncMeta.lastSyncedAt);
+  const [lastSyncedAt, setLastSyncedAt] = useState<number | null>(initialSyncMeta.lastSyncedAt);
+  const [session, setSession] = useState<Session | null>(null);
+  const [authReady, setAuthReady] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const pendingSyncRef = useRef(false);
+  const suppressLocalChangeRef = useRef(false);
+  const hasHydratedRef = useRef(false);
+  const syncTimerRef = useRef<number | null>(null);
+  const syncInFlightRef = useRef(false);
+  const dataRef = useRef(data);
+
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
 
   const [isLocked, setIsLocked] = useState(data.settings.pinHash !== null);
   const [isRemovingLock, setIsRemovingLock] = useState(false);
@@ -78,10 +158,41 @@ export default function App() {
 
   // --- PERSISTENCE ---
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const timer = window.setTimeout(() => {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
       setIsSaved(true);
-      setTimeout(() => setIsSaved(false), 2000);
+      window.setTimeout(() => setIsSaved(false), 2000);
+
+      if (!hasHydratedRef.current) {
+        hasHydratedRef.current = true;
+        writeSyncMeta({
+          lastLocalChangeAt: lastLocalChangeAtRef.current,
+          lastRemoteChangeAt: lastRemoteChangeAtRef.current,
+          lastSyncedAt: lastSyncedAtRef.current,
+        });
+        return;
+      }
+
+      if (suppressLocalChangeRef.current) {
+        suppressLocalChangeRef.current = false;
+        const remoteAt = lastRemoteChangeAtRef.current || Date.now();
+        lastLocalChangeAtRef.current = remoteAt;
+        writeSyncMeta({
+          lastLocalChangeAt: remoteAt,
+          lastRemoteChangeAt: lastRemoteChangeAtRef.current,
+          lastSyncedAt: lastSyncedAtRef.current,
+        });
+        return;
+      }
+
+      const now = Date.now();
+      lastLocalChangeAtRef.current = now;
+      pendingSyncRef.current = true;
+      writeSyncMeta({
+        lastLocalChangeAt: now,
+        lastRemoteChangeAt: lastRemoteChangeAtRef.current,
+        lastSyncedAt: lastSyncedAtRef.current,
+      });
     }, 500);
     return () => clearTimeout(timer);
   }, [data]);
@@ -101,6 +212,240 @@ export default function App() {
       document.documentElement.classList.add('light');
     }
   }, [data.settings.isDarkMode]);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setAuthReady(true);
+      return;
+    }
+
+    let isMounted = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!isMounted) return;
+      setSession(data.session);
+      setAuthReady(true);
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      setSession(currentSession);
+    });
+
+    return () => {
+      isMounted = false;
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const applyRemoteData = useCallback((remoteData: VaultData, remoteUpdatedAt: number) => {
+    const mergedData: VaultData = {
+      ...remoteData,
+      settings: {
+        ...remoteData.settings,
+        pinHash: dataRef.current.settings.pinHash,
+      },
+    };
+    suppressLocalChangeRef.current = true;
+    lastRemoteChangeAtRef.current = remoteUpdatedAt;
+    lastLocalChangeAtRef.current = remoteUpdatedAt;
+    lastSyncedAtRef.current = Date.now();
+    setLastSyncedAt(lastSyncedAtRef.current);
+    writeSyncMeta({
+      lastLocalChangeAt: lastLocalChangeAtRef.current,
+      lastRemoteChangeAt: lastRemoteChangeAtRef.current,
+      lastSyncedAt: lastSyncedAtRef.current,
+    });
+    setData(mergedData);
+  }, []);
+
+  const syncToCloud = useCallback(async (reason: 'auto' | 'manual' | 'bootstrap') => {
+    if (!session || !isSupabaseConfigured) return;
+    if (syncInFlightRef.current) return;
+
+    syncInFlightRef.current = true;
+    setSyncStatus('syncing');
+    setSyncError(null);
+
+    const dataToSync = getSyncData(dataRef.current);
+    const payload = {
+      user_id: session.user.id,
+      data: dataToSync,
+      schema_version: dataToSync.schemaVersion,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { data: row, error } = await supabase
+      .from(SYNC_TABLE)
+      .upsert(payload, { onConflict: 'user_id' })
+      .select('updated_at')
+      .single();
+
+    if (error) {
+      setSyncStatus('error');
+      setSyncError(error.message);
+      syncInFlightRef.current = false;
+      return;
+    }
+
+    const remoteMs = Date.parse(row.updated_at);
+    if (Number.isFinite(remoteMs)) {
+      lastRemoteChangeAtRef.current = remoteMs;
+    }
+
+    const now = Date.now();
+    lastSyncedAtRef.current = now;
+    setLastSyncedAt(now);
+    pendingSyncRef.current = false;
+    writeSyncMeta({
+      lastLocalChangeAt: lastLocalChangeAtRef.current,
+      lastRemoteChangeAt: lastRemoteChangeAtRef.current,
+      lastSyncedAt: lastSyncedAtRef.current,
+    });
+    setSyncStatus('idle');
+    syncInFlightRef.current = false;
+  }, [session]);
+
+  const bootstrapSync = useCallback(async () => {
+    if (!session || !isSupabaseConfigured) return;
+    setSyncStatus('syncing');
+    setSyncError(null);
+
+    const { data: row, error } = await supabase
+      .from(SYNC_TABLE)
+      .select('data, updated_at, schema_version')
+      .eq('user_id', session.user.id)
+      .maybeSingle();
+
+    if (error) {
+      setSyncStatus('error');
+      setSyncError(error.message);
+      return;
+    }
+
+    if (!row) {
+      await syncToCloud('bootstrap');
+      return;
+    }
+
+    const remoteMs = Date.parse(row.updated_at);
+    if (Number.isFinite(remoteMs)) {
+      lastRemoteChangeAtRef.current = remoteMs;
+    }
+
+    if (lastLocalChangeAtRef.current > lastRemoteChangeAtRef.current) {
+      await syncToCloud('bootstrap');
+      return;
+    }
+
+    if (row.data && isValidVaultData(row.data) && lastRemoteChangeAtRef.current > lastLocalChangeAtRef.current) {
+      applyRemoteData(row.data, lastRemoteChangeAtRef.current);
+      setSyncStatus('idle');
+      return;
+    }
+
+    const now = Date.now();
+    lastSyncedAtRef.current = now;
+    setLastSyncedAt(now);
+    writeSyncMeta({
+      lastLocalChangeAt: lastLocalChangeAtRef.current,
+      lastRemoteChangeAt: lastRemoteChangeAtRef.current,
+      lastSyncedAt: lastSyncedAtRef.current,
+    });
+    setSyncStatus('idle');
+  }, [applyRemoteData, session, syncToCloud]);
+
+  const pullIfRemoteNewer = useCallback(async () => {
+    if (!session || !isSupabaseConfigured) return;
+    if (syncInFlightRef.current) return;
+
+    const { data: row, error } = await supabase
+      .from(SYNC_TABLE)
+      .select('data, updated_at')
+      .eq('user_id', session.user.id)
+      .maybeSingle();
+
+    if (error || !row) return;
+
+    const remoteMs = Date.parse(row.updated_at);
+    if (!Number.isFinite(remoteMs)) return;
+
+    if (remoteMs <= lastRemoteChangeAtRef.current) return;
+
+    if (remoteMs > lastLocalChangeAtRef.current && row.data && isValidVaultData(row.data)) {
+      applyRemoteData(row.data, remoteMs);
+      return;
+    }
+
+    if (lastLocalChangeAtRef.current > remoteMs) {
+      pendingSyncRef.current = true;
+      syncToCloud('auto');
+    }
+  }, [applyRemoteData, session, syncToCloud]);
+
+  useEffect(() => {
+    if (!session?.user.id || !isSupabaseConfigured) return;
+    bootstrapSync();
+  }, [bootstrapSync, session?.user.id]);
+
+  useEffect(() => {
+    if (!session?.user.id || !isSupabaseConfigured) return;
+    if (!pendingSyncRef.current) return;
+
+    if (syncTimerRef.current) {
+      window.clearTimeout(syncTimerRef.current);
+    }
+
+    syncTimerRef.current = window.setTimeout(() => {
+      syncToCloud('auto');
+    }, 1000);
+
+    return () => {
+      if (syncTimerRef.current) {
+        window.clearTimeout(syncTimerRef.current);
+      }
+    };
+  }, [data, session?.user.id, syncToCloud]);
+
+  useEffect(() => {
+    if (!session?.user.id || !isSupabaseConfigured) return;
+    const interval = window.setInterval(() => {
+      pullIfRemoteNewer();
+    }, 30000);
+    return () => window.clearInterval(interval);
+  }, [pullIfRemoteNewer, session?.user.id]);
+
+  const handleSignIn = async () => {
+    if (!isSupabaseConfigured) {
+      setSyncStatus('error');
+      setSyncError('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+      return;
+    }
+
+    setSyncError(null);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+
+    if (error) {
+      setSyncStatus('error');
+      setSyncError(error.message);
+    }
+  };
+
+  const handleSignOut = async () => {
+    setSyncError(null);
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      setSyncStatus('error');
+      setSyncError(error.message);
+    }
+  };
+
+  const handleManualSync = async () => {
+    await syncToCloud('manual');
+  };
 
   const [showSettings, setShowSettings] = useState(false);
 
@@ -426,6 +771,29 @@ export default function App() {
                     <span className="text-[9px] font-mono text-emerald-400 uppercase tracking-widest">Encrypted</span>
                   </div>
 
+                  {isSupabaseConfigured && authReady ? (
+                    session ? (
+                      <button
+                        onClick={handleSignOut}
+                        aria-label="Sign out"
+                        className="w-9 h-9 flex items-center justify-center border border-vault-border text-vault-text-muted hover:text-vault-accent hover:border-vault-accent rounded-lg transition-colors"
+                      >
+                        <LogOut size={14} />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleSignIn}
+                        aria-label="Sign in with Google"
+                        className="w-9 h-9 flex items-center justify-center border border-vault-border text-vault-text-muted hover:text-vault-accent hover:border-vault-accent rounded-lg transition-colors"
+                      >
+                        <span
+                          className="w-4 h-4 rounded-full"
+                          style={{ background: 'conic-gradient(#4285F4 0deg 90deg, #34A853 90deg 180deg, #FBBC05 180deg 270deg, #EA4335 270deg 360deg)' }}
+                        />
+                      </button>
+                    )
+                  ) : null}
+
                   <button
                     id="mobile-new-prompt"
                     onClick={() => setIsNewModalOpen(true)}
@@ -490,6 +858,46 @@ export default function App() {
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" />
                   <span>Secured</span>
                 </div>
+
+                {isSupabaseConfigured ? (
+                  authReady ? (
+                    session ? (
+                      <div className="flex items-center gap-2">
+                        <div className="badge badge-emerald">
+                          <User size={12} />
+                          <span>Signed in</span>
+                        </div>
+                        <button
+                          onClick={handleSignOut}
+                          className="px-3 py-2 border border-vault-border text-vault-text-muted hover:text-vault-text hover:border-vault-text-muted rounded-xl transition-all text-[10px] font-mono font-bold tracking-widest uppercase"
+                        >
+                          Sign out
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={handleSignIn}
+                        className="px-3 py-2 border border-vault-border text-vault-text-muted hover:text-vault-text hover:border-vault-text-muted rounded-xl transition-all text-[10px] font-mono font-bold tracking-widest uppercase flex items-center gap-2"
+                      >
+                        <span
+                          className="w-3 h-3 rounded-full"
+                          style={{ background: 'conic-gradient(#4285F4 0deg 90deg, #34A853 90deg 180deg, #FBBC05 180deg 270deg, #EA4335 270deg 360deg)' }}
+                        />
+                        Sign in
+                      </button>
+                    )
+                  ) : (
+                    <div className="badge badge-amber">
+                      <Cloud size={12} />
+                      <span>Checking</span>
+                    </div>
+                  )
+                ) : (
+                  <div className="badge badge-amber">
+                    <Cloud size={12} />
+                    <span>Sync off</span>
+                  </div>
+                )}
 
                 <button
                   onClick={() => setIsNewModalOpen(true)}
@@ -835,6 +1243,103 @@ export default function App() {
           </section>
 
           <section className="space-y-4">
+            <div className="flex items-center gap-2 text-vault-accent-blue font-mono uppercase tracking-widest text-[10px] font-bold">
+              <Cloud size={14} />
+              <span>Cloud Sync</span>
+            </div>
+            <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl space-y-4">
+              {!isSupabaseConfigured ? (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Supabase not configured</p>
+                  <p className="text-xs text-vault-text-muted font-mono">
+                    Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to enable cross-device sync.
+                  </p>
+                </div>
+              ) : !authReady ? (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Checking sign-in status</p>
+                  <p className="text-xs text-vault-text-muted font-mono">Please wait while we load your session.</p>
+                </div>
+              ) : session ? (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between gap-4 flex-wrap">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-vault-panel-bright border border-vault-border flex items-center justify-center">
+                        <User size={16} className="text-vault-text-muted" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <p className="text-sm font-medium">Signed in</p>
+                        <p className="text-xs text-vault-text-muted font-mono">{session.user.email || 'Unknown user'}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={handleSignOut}
+                      className="px-4 py-2 border border-vault-border text-vault-text-muted hover:text-vault-text hover:border-vault-text-muted rounded-lg text-[10px] font-mono font-bold tracking-widest uppercase transition-all flex items-center gap-2"
+                    >
+                      <LogOut size={12} />
+                      Sign out
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="p-3 rounded-lg border border-vault-border bg-vault-panel-bright/40">
+                      <p className="text-[9px] font-mono text-vault-text-muted uppercase tracking-widest">Sync status</p>
+                      <p className={`text-sm font-semibold ${syncStatus === 'error' ? 'text-red-400' : syncStatus === 'syncing' ? 'text-vault-accent-blue' : 'text-vault-text'}`}>
+                        {syncStatus === 'syncing' ? 'Syncing' : syncStatus === 'error' ? 'Error' : 'Idle'}
+                      </p>
+                    </div>
+                    <div className="p-3 rounded-lg border border-vault-border bg-vault-panel-bright/40">
+                      <p className="text-[9px] font-mono text-vault-text-muted uppercase tracking-widest">Last synced</p>
+                      <p className="text-sm font-semibold text-vault-text">{formatTimestamp(lastSyncedAt)}</p>
+                    </div>
+                  </div>
+
+                  {syncError && (
+                    <div className="p-3 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 text-xs font-mono">
+                      {syncError}
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={handleManualSync}
+                      className="px-4 py-2 bg-vault-accent-blue text-vault-bg rounded-lg text-[10px] font-mono font-bold tracking-widest uppercase transition-all flex items-center gap-2"
+                    >
+                      <RefreshCcw size={12} />
+                      Sync now
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium">Sign in to sync your vault</p>
+                    <p className="text-xs text-vault-text-muted font-mono">Continue with Google to keep prompts in sync.</p>
+                  </div>
+                  <div className="grid grid-cols-1 gap-3">
+                    <button
+                      onClick={handleSignIn}
+                      className="px-4 py-2 border border-vault-border text-vault-text-muted hover:text-vault-text hover:border-vault-text-muted rounded-lg text-[10px] font-mono font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-2"
+                    >
+                      <span
+                        className="w-4 h-4 rounded-full"
+                        style={{ background: 'conic-gradient(#4285F4 0deg 90deg, #34A853 90deg 180deg, #FBBC05 180deg 270deg, #EA4335 270deg 360deg)' }}
+                      />
+                      Continue with Google
+                    </button>
+                  </div>
+
+                  {syncError && (
+                    <div className="p-3 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 text-xs font-mono">
+                      {syncError}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </section>
+
+          <section className="space-y-4">
             <div className="flex items-center gap-2 text-vault-accent font-mono uppercase tracking-widest text-[10px] font-bold">
               <Download size={14} />
               <span>Data Management</span>
@@ -871,7 +1376,7 @@ export default function App() {
               </div>
               <div className="flex justify-between items-center text-xs">
                 <span className="text-vault-text-muted font-mono">Storage Engine</span>
-                <span className="font-mono">Web LocalStorage</span>
+                <span className="font-mono">LocalStorage + Supabase (optional)</span>
               </div>
               <div className="flex justify-between items-center text-xs">
                 <span className="text-vault-text-muted font-mono">Encryption</span>
