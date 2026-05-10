@@ -89,16 +89,19 @@ export const PromptCard: React.FC<PromptCardProps> = ({ prompt, onCopy, onToggle
         
         <button
           onClick={handleCopy}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold uppercase tracking-wider text-[10px] transition-all ${
+          className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-bold uppercase tracking-wider text-[10px] transition-all whitespace-nowrap ${
             copied 
               ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' 
               : 'text-vault-text-muted bg-vault-bg/50 border border-vault-border hover:text-vault-accent hover:border-vault-accent/30'
           }`}
         >
           {copied ? (
-            <><Check size={11} /> Copied</>
+            <><Check size={11} /> <span>Copied</span></>
           ) : (
-            <><Copy size={11} /> Copy{prompt.usageCount > 0 ? ` · ${prompt.usageCount}` : ''}</>
+            <>
+              <Copy size={11} />
+              <span>Copy{prompt.usageCount > 0 ? ` · ${prompt.usageCount}` : ''}</span>
+            </>
           )}
         </button>
       </div>
