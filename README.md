@@ -1,54 +1,85 @@
 # PromptVault
 
-> **Your private, offline-first AI prompt library.**
-
-A secure, feature-rich prompt management application for organizing, evaluating, and deploying AI prompts across any workflow. Built with React, TypeScript, and powered by an AI-driven quality analysis engine.
+> **Your personal, private library for AI prompts — organised, rated, and always at hand.**
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Node: 18+](https://img.shields.io/badge/Node-18%2B-green.svg)](https://nodejs.org/)
 
 ---
 
-## ✨ Features
+## What is PromptVault?
 
-- **🔒 PIN-Based Privacy** — SHA-256 hashed PIN lock keeps your vault private
-- **🤖 AI Librarian** — Evaluate prompt quality, get improvement suggestions, and auto-classify prompts using Gemini or Groq
-- **📂 Category Organization** — Group prompts into custom categories with rename/delete support
-- **⭐ Favorites & Search** — Star important prompts and search across titles, bodies, and tags
-- **📊 Vault Intelligence** — Dashboard with usage stats, activity trends, and top prompts
-- **🔄 Dynamic Variables** — Use `{{variable}}` syntax for templated prompts with fill-in-the-blank injection
-- **💾 Import / Export** — Full JSON backup and restore for portability
-- **🌗 Light & Dark Mode** — Carefully crafted themes for any lighting
-- **📱 Responsive** — Full mobile support with slide-out sidebar and touch-optimized controls
-- **☁ Cloud Sync** - Sign in with Google to sync across devices (Supabase)
-- **⚡ Offline-First** — All data lives in your browser's localStorage; no account required
+If you use AI tools like ChatGPT, Gemini, or Claude, you've probably written some really good instructions (called **"prompts"**) that get great results — and then lost them. They end up buried in chat history, scattered across notes apps, or simply forgotten.
 
----
+**PromptVault is a personal library for those prompts.** Think of it like a recipe book, but instead of cooking instructions, it stores your best AI instructions. You can:
 
-## 🛠 Tech Stack
+- Save prompts with a title, category, and tags so you can find them again
+- Rate and improve them using a built-in AI assistant
+- Copy any prompt to your clipboard in one click, ready to paste into any AI tool
+- Access everything privately, from any device, without handing your data to a third party
 
-| Layer     | Technology                     |
-| --------- | ------------------------------ |
-| Frontend  | React 19, TypeScript, Vite 6   |
-| Styling   | Tailwind CSS 4                 |
-| Animation | Motion (Framer Motion)         |
-| Icons     | Lucide React                   |
-| Backend   | Express 4 (API proxy)          |
-| AI        | Google Gemini, Groq (fallback) |
-| Storage   | Browser localStorage, Supabase |
+Everything is stored directly in your browser. No sign-up required. No ads. No data sharing. You own your vault.
 
 ---
 
-## 🚀 Quick Start
+## What Can It Do?
 
-### Prerequisites
+### 🔒 Keep Your Vault Private
+You can set a PIN code to lock the app. Nobody can read your prompts without it. The PIN is scrambled using a one-way security process before it's stored, so even if someone accessed your device, they couldn't recover the original code.
 
-- **Node.js** v18 or higher
-- **API Keys** — at least one of:
-  - [Google Gemini API Key](https://aistudio.google.com/apikey)
-  - [Groq API Key](https://console.groq.com/keys)
+### 🤖 Built-In AI Assistant
+Not sure if your prompt is well-written? The **AI Librarian** can:
+- **Score it** out of 10 and explain what's weak
+- **Rewrite it** into a better, more effective version
+- **Suggest a title, category, and tags** so you don't have to think about filing
 
-### 1. Clone & Install
+The AI assistant works privately through a backend service — your API keys are never exposed to the browser.
+
+### 📂 Organise by Category
+Create your own folders (called categories) — things like *Coding*, *Marketing*, *Writing*, or whatever fits your workflow. Rename or delete them any time. Each category shows a count of how many prompts it contains.
+
+### ⭐ Favourites & Search
+Star your most-used prompts so they're always one click away. A full-text search bar lets you find any prompt by its title, content, or tags — instantly, with no loading.
+
+### 📊 Usage Statistics
+A built-in dashboard shows you which prompts you use most, how active your library is, and your top categories — so you can see what's actually working in your workflow.
+
+### 🔄 Fill-in-the-Blank Templates
+Write a prompt once with placeholders like `{{topic}}` or `{{audience}}`. When you copy it, PromptVault will ask you to fill in each blank before putting it on your clipboard. Great for prompts you reuse with small variations every time.
+
+### 💾 Backup & Restore
+Export your entire vault as a single file at any time. If you ever switch devices or browsers, just import the file and everything is back instantly.
+
+### ☁️ Optional Cloud Sync
+If you want your prompts available on multiple devices (your laptop and phone, for example), you can sign in with Google. Your vault will stay in sync automatically. This is entirely optional — the app works perfectly without it.
+
+### 🌗 Light & Dark Mode
+Switch between a dark theme (easy on the eyes at night) and a light theme (great in sunlight). Your preference is remembered.
+
+### 📱 Works on Mobile Too
+The app is fully usable on phones and tablets. The sidebar slides in and out, buttons are large enough to tap, and the layout adjusts to any screen size.
+
+---
+
+## What Do You Need to Run It?
+
+PromptVault is a web application you run on your own computer (or server). It is **not** a hosted service — you install and run it yourself, which is what makes it private.
+
+To get started you need two things:
+
+1. **Node.js** (version 18 or newer) — a free program that lets your computer run JavaScript applications. [Download it here.](https://nodejs.org/)
+2. **At least one AI API key** — a free-to-obtain password that lets PromptVault connect to an AI service on your behalf. You need one of:
+   - **Google Gemini** — [Get a free key here](https://aistudio.google.com/apikey) (generous free tier)
+   - **Groq** — [Get a free key here](https://console.groq.com/keys) (very fast, free tier)
+
+   PromptVault tries Gemini first and automatically falls back to Groq if it's unavailable. Your keys stay on your own server and are never sent to the browser.
+
+---
+
+## Getting Started (Step by Step)
+
+### Step 1 — Download the project
+
+Open a terminal (Command Prompt on Windows, Terminal on Mac/Linux) and run:
 
 ```bash
 git clone https://github.com/SagarBiswas-MultiHAT/promptVault.git
@@ -56,28 +87,57 @@ cd promptVault
 npm install
 ```
 
-### 2. Configure Environment
+> **What does this do?** It downloads the project files to your computer and installs all the helper packages it depends on. This only needs to be done once.
+
+---
+
+### Step 2 — Add your API keys
+
+Copy the example settings file:
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` and add your API keys:
+Then open the newly created `.env` file in any text editor (Notepad works fine) and fill in your keys:
 
-```env
-GEMINI_API_KEY="your-gemini-key-here"
-GROQ_API_KEY="your-groq-key-here"
-
-# Optional: Supabase cloud sync
-VITE_SUPABASE_URL="https://your-project.supabase.co"
-VITE_SUPABASE_ANON_KEY="your-anon-key"
+```
+GEMINI_API_KEY="paste-your-gemini-key-here"
+GROQ_API_KEY="paste-your-groq-key-here"
 ```
 
-### Optional: Enable Cloud Sync (Supabase)
+> **What is `.env`?** It's a plain text file that holds private settings for the app — like passwords. It stays on your computer and is never uploaded anywhere.
 
-1. Create a Supabase project and enable the **Google** provider in Auth.
-2. Add the redirect URL for local development: `http://localhost:3000`
-3. Create the `vaults` table and RLS policies:
+---
+
+### Step 3 — Start the app
+
+You need two terminal windows open at the same time. In the first, run:
+
+```bash
+npm run dev:api
+```
+
+In the second, run:
+
+```bash
+npm run dev
+```
+
+Then open your browser and go to **http://localhost:3000**. PromptVault will be running.
+
+> **Why two terminals?** One runs the AI assistant service in the background (the part that talks to Gemini/Groq). The other runs the visual app you see in your browser. Both need to be running at the same time.
+
+---
+
+### Optional: Enable Cloud Sync
+
+If you want your vault to stay in sync across multiple devices, you can connect a free [Supabase](https://supabase.com) account. Supabase is a free, open-source service that securely stores your data in the cloud.
+
+1. Create a free account at [supabase.com](https://supabase.com) and start a new project.
+2. In your Supabase project, go to **Authentication → Providers** and enable **Google**.
+3. Add `http://localhost:3000` to your list of allowed redirect URLs (under **Authentication → URL Configuration**).
+4. Go to the **SQL Editor** in Supabase and run this script to create the storage table:
 
 ```sql
 create table public.vaults (
@@ -103,120 +163,89 @@ using (auth.uid() = user_id)
 with check (auth.uid() = user_id);
 ```
 
-### 3. Run Development Server
+5. Copy your **Project URL** and **anon public key** from Supabase → **Project Settings → API**, then add them to your `.env` file:
 
-Open two terminals:
-
-```bash
-# Terminal 1: Start the API proxy
-npm run dev:api
-
-# Terminal 2: Start the frontend
-npm run dev
+```
+VITE_SUPABASE_URL="https://your-project.supabase.co"
+VITE_SUPABASE_ANON_KEY="your-anon-key"
 ```
 
-The app will be available at **http://localhost:3000**.
+Once set up, you'll see a "Sign in with Google" button in the app. After signing in, your vault syncs automatically.
 
 ---
 
-## 🏗 Production Deployment
+## Putting It on the Internet (Deployment)
 
-### Build & Run
+If you want to access PromptVault from anywhere — not just your own computer — you can deploy it to a hosting service. This means running it on a server that's always on and reachable from any browser.
+
+### Step 1 — Build the app for production
 
 ```bash
-# Build the frontend
 npm run build
-
-# Start the production server (serves both API + frontend)
-npm start          # Cross-platform (uses cross-env)
+npm start
 ```
 
-The production server serves the built frontend and the API from a single process on the configured port (default: `3002`).
+This packages all the app files into an optimised bundle and starts a single server that handles everything. The server runs on port `3002` by default.
 
-### Environment Variables
+### Step 2 — Choose a hosting platform
 
-| Variable                 | Required | Default                   | Description                                           |
-| ------------------------ | -------- | ------------------------- | ----------------------------------------------------- |
-| `GEMINI_API_KEY`         | Yes\*    | —                         | Google Gemini API key                                 |
-| `GEMINI_MODEL`           | No       | `gemini-2.0-flash`        | Gemini model to use                                   |
-| `GROQ_API_KEY`           | Yes\*    | —                         | Groq API key (fallback provider)                      |
-| `GROQ_MODEL`             | No       | `llama-3.3-70b-versatile` | Groq model to use                                     |
-| `AI_PROXY_PORT`          | No       | `3002`                    | Server port                                           |
-| `NODE_ENV`               | No       | —                         | Set to `production` for production mode               |
-| `ALLOWED_ORIGINS`        | No       | —                         | Comma-separated CORS origins (production recommended) |
-| `VITE_SUPABASE_URL`      | No       | —                         | Supabase project URL for cloud sync                   |
-| `VITE_SUPABASE_ANON_KEY` | No       | —                         | Supabase anon key for client auth                     |
+Any platform that runs Node.js applications will work. Popular options:
 
-\* At least one AI provider key is required for the AI Librarian feature.
+| Platform | Difficulty | Cost | Best For |
+|---|---|---|---|
+| [Railway](https://railway.app) | Very easy | ~$5–10/mo | Simplest setup |
+| [Render](https://render.com) | Easy | Free tier + paid | Free to start |
+| [Fly.io](https://fly.io) | Moderate | Free tier + paid | More control |
+| A VPS (e.g. DigitalOcean) | Advanced | ~$5/mo | Full control |
 
-### Deployment Platforms
+### Step 3 — Set your environment variables on the platform
 
-The unified server works on any Node.js hosting platform:
+Every hosting platform has a place to enter secret settings (the equivalent of your `.env` file). You'll need to enter these:
 
-- **Railway** — Connect your repo, set environment variables, done
-- **Render** — Use `npm run build && npm start` as the start command
-- **Fly.io** — Deploy with `fly launch`
-- **VPS** — Use PM2 or systemd to manage the process
+| Setting | What it is |
+|---|---|
+| `GEMINI_API_KEY` | Your Google Gemini key |
+| `GROQ_API_KEY` | Your Groq key |
+| `NODE_ENV` | Set this to `production` |
+| `ALLOWED_ORIGINS` | Your website address, e.g. `https://yourdomain.com` |
+| `VITE_SUPABASE_URL` | Your Supabase project URL (if using cloud sync) |
+| `VITE_SUPABASE_ANON_KEY` | Your Supabase anon key (if using cloud sync) |
 
----
-
-## 📁 Project Structure
-
-```
-promptvault/
-├── public/              # Static assets (favicon, manifest, OG image)
-├── server/
-│   └── index.ts         # Express API proxy (AI providers, rate limiting)
-├── src/
-│   ├── components/      # React components
-│   │   ├── AiAssistantWidget.tsx   # AI Librarian prompt evaluator
-│   │   ├── ErrorBoundary.tsx       # Crash recovery boundary
-│   │   ├── Modal.tsx               # Reusable modal
-│   │   ├── PinLock.tsx             # PIN entry screen
-│   │   ├── PromptCard.tsx          # Prompt grid card
-│   │   ├── PromptForm.tsx          # Create/edit prompt form
-│   │   ├── Sidebar.tsx             # Navigation sidebar
-│   │   ├── StatsDashboard.tsx      # Analytics dashboard
-│   │   └── VariableForm.tsx        # Template variable injection
-│   ├── utils/
-│   │   └── crypto.ts    # SHA-256 PIN hashing
-│   ├── App.tsx           # Main application
-│   ├── constants.ts      # Schema version & defaults
-│   ├── index.css         # Global styles & design tokens
-│   ├── main.tsx          # Entry point
-│   └── types.ts          # TypeScript interfaces
-├── index.html            # HTML entry with SEO meta tags
-├── vite.config.ts        # Vite build configuration
-├── tsconfig.json         # TypeScript configuration
-└── package.json          # Dependencies & scripts
-```
+> **Important:** When you deploy to a real domain, you'll also need to update the social sharing links inside `index.html` — specifically the `og:url`, `og:image`, `twitter:image`, and `canonical` lines — to point to your actual domain name.
 
 ---
 
-## 🔐 Security
+## Is My Data Safe?
 
-- **API keys never reach the browser** — all AI calls are proxied through the Express server
-- **Rate limiting** — 30 requests/minute per IP on `/api/suggest`
-- **Security headers** — X-Frame-Options, CSP-compatible headers, HSTS in production
-- **PIN privacy** — SHA-256 hashed, stored locally, never transmitted
-- **Input validation** — Prompt length capped at 10,000 characters
+Yes. Here's how PromptVault protects you:
 
----
-
-## 📜 Available Scripts
-
-| Command           | Description                                |
-| ----------------- | ------------------------------------------ |
-| `npm run dev`     | Start Vite dev server (port 3000)          |
-| `npm run dev:api` | Start Express API proxy (port 3002)        |
-| `npm run build`   | Build frontend for production              |
-| `npm start`       | Run production server (cross-platform)     |
-| `npm run preview` | Preview the production build locally       |
-| `npm run lint`    | Run TypeScript type checking               |
-| `npm run clean`   | Remove build artifacts                     |
+| What | How |
+|---|---|
+| **Your AI keys are private** | They're stored on the server, never sent to your browser |
+| **Your PIN is protected** | It's scrambled using a one-way process — not stored as plain text |
+| **Your prompts stay local** | Everything lives in your browser unless you choose to enable cloud sync |
+| **The app can't be embedded** | Security headers prevent the app from being loaded inside other websites |
+| **Abuse prevention** | The AI assistant is limited to 30 requests per minute per user |
+| **Connections are restricted** | In production, only your own domain can talk to the server |
 
 ---
 
-## 📄 License
+## Available Commands
 
-[Apache License 2.0](https://opensource.org/licenses/Apache-2.0)
+Run these in your terminal from the project folder:
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Starts the app for local development (port 3000) |
+| `npm run dev:api` | Starts the AI assistant service (port 3002) |
+| `npm run build` | Packages the app ready for deployment |
+| `npm start` | Runs the packaged app in production mode |
+| `npm run preview` | Previews the packaged app locally before deploying |
+| `npm run lint` | Checks the code for errors |
+| `npm run clean` | Deletes the packaged build files |
+
+---
+
+## License
+
+PromptVault is free and open source, released under the [Apache License 2.0](https://opensource.org/licenses/Apache-2.0). You're free to use, modify, and distribute it.
