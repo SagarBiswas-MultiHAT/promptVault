@@ -5,6 +5,7 @@
 
 import express from 'express';
 import dotenv from 'dotenv';
+import compression from 'compression';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -53,6 +54,9 @@ if (!GEMINI_API_KEY && !GROQ_API_KEY) {
 // Middleware
 // ---------------------------------------------------------------------------
 
+// Gzip / Brotli compression
+app.use(compression());
+
 // JSON body parser
 app.use(express.json({ limit: '1mb' }));
 
@@ -65,6 +69,15 @@ app.use((_req, res, next) => {
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   if (IS_PRODUCTION) {
     res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+    res.setHeader('Content-Security-Policy', [
+      "default-src 'self'",
+      "script-src 'self'",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com",
+      "img-src 'self' data: blob:",
+      "connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://*.supabase.co",
+      "frame-ancestors 'none'",
+    ].join('; '));
   }
   next();
 });
@@ -179,10 +192,27 @@ app.get('/api/health', (_req, res) => {
 
 if (IS_PRODUCTION) {
   const distPath = path.resolve(__dirname, '..', 'dist');
-  app.use(express.static(distPath, { maxAge: '1y', immutable: true }));
+
+  // Hashed assets (JS/CSS with content hashes) — aggressive immutable caching
+  app.use('/assets', express.static(path.join(distPath, 'assets'), {
+    maxAge: '1y',
+    immutable: true,
+  }));
+
+  // Other static files (logo, manifest, og-image) — moderate caching
+  app.use(express.static(distPath, {
+    maxAge: '1h',
+    setHeaders: (res, filePath) => {
+      // Never cache index.html — ensures users always get the latest version
+      if (filePath.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'no-cache');
+      }
+    },
+  }));
 
   // SPA fallback — serve index.html for any unmatched route
   app.get('*', (_req, res) => {
+    res.setHeader('Cache-Control', 'no-cache');
     res.sendFile(path.join(distPath, 'index.html'));
   });
 

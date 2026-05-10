@@ -128,8 +128,7 @@ The app will be available at **http://localhost:3000**.
 npm run build
 
 # Start the production server (serves both API + frontend)
-npm start          # Linux / macOS
-npm run start:win  # Windows
+npm start          # Cross-platform (uses cross-env)
 ```
 
 The production server serves the built frontend and the API from a single process on the configured port (default: `3002`).
@@ -206,16 +205,15 @@ promptvault/
 
 ## 📜 Available Scripts
 
-| Command             | Description                          |
-| ------------------- | ------------------------------------ |
-| `npm run dev`       | Start Vite dev server (port 3000)    |
-| `npm run dev:api`   | Start Express API proxy (port 3002)  |
-| `npm run build`     | Build frontend for production        |
-| `npm start`         | Run production server (Unix/macOS)   |
-| `npm run start:win` | Run production server (Windows)      |
-| `npm run preview`   | Preview the production build locally |
-| `npm run lint`      | Run TypeScript type checking         |
-| `npm run clean`     | Remove build artifacts               |
+| Command           | Description                                |
+| ----------------- | ------------------------------------------ |
+| `npm run dev`     | Start Vite dev server (port 3000)          |
+| `npm run dev:api` | Start Express API proxy (port 3002)        |
+| `npm run build`   | Build frontend for production              |
+| `npm start`       | Run production server (cross-platform)     |
+| `npm run preview` | Preview the production build locally       |
+| `npm run lint`    | Run TypeScript type checking               |
+| `npm run clean`   | Remove build artifacts                     |
 
 ---
 
