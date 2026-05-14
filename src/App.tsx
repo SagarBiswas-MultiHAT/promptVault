@@ -1435,6 +1435,7 @@ export default function App() {
       <div className="fixed bottom-19.5 right-30 pointer-events-none group">
         <button
           onClick={() => setShowShortcuts(true)}
+          aria-label="Keyboard shortcuts help"
           className="pointer-events-auto w-9 h-9 bg-vault-panel/80 border border-vault-border rounded-full flex items-center justify-center text-vault-text-muted/50 hover:text-vault-accent hover:border-vault-accent/30 transition-all shadow-lg backdrop-blur-sm"
         >
           <HelpCircle size={15} />

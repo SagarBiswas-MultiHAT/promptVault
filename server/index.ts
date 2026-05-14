@@ -72,11 +72,11 @@ app.use((_req, res, next) => {
     res.setHeader('X-Robots-Tag', 'index, follow');
     res.setHeader('Content-Security-Policy', [
       "default-src 'self'",
-      "script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com",
+      "script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://static.cloudflareinsights.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https://www.google-analytics.com https://www.googletagmanager.com",
-      "connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://*.supabase.co https://www.google-analytics.com https://analytics.google.com https://*.google-analytics.com https://*.analytics.google.com",
+      "connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://*.supabase.co https://www.google-analytics.com https://analytics.google.com https://*.google-analytics.com https://*.analytics.google.com https://cloudflareinsights.com",
       "frame-ancestors 'none'",
     ].join('; '));
   }

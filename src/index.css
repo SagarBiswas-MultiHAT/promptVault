@@ -32,7 +32,7 @@
     --v-panel-bright: #1A1C20;
     --v-border: #252830;
     --v-text: #EAEDF3;
-    --v-muted: #6B7280;
+    --v-muted: #9CA3AF;
 
     /* Animation tokens */
     --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
@@ -68,46 +68,44 @@
     position: relative;
   }
 
-  /* ── Ambient Gradient Mesh Background ── */
-  body::before {
+  /* ── Ambient Gradient Mesh Background (GPU-composited) ── */
+  body::before,
+  body::after {
     content: '';
     position: fixed;
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    will-change: background;
+    will-change: opacity;
+    transform: translateZ(0);
+  }
+
+  body::before {
     background:
       radial-gradient(ellipse 80% 60% at 10% 20%, var(--mesh-1) 0%, transparent 60%),
       radial-gradient(ellipse 60% 80% at 90% 80%, var(--mesh-2) 0%, transparent 60%),
       radial-gradient(ellipse 70% 50% at 50% 50%, var(--mesh-3) 0%, transparent 60%);
-    animation: meshDrift 25s ease-in-out infinite alternate;
+    animation: meshFadeA 25s ease-in-out infinite alternate;
   }
 
-  @keyframes meshDrift {
-    0% {
-      background:
-        radial-gradient(ellipse 80% 60% at 10% 20%, var(--mesh-1) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 80% at 90% 80%, var(--mesh-2) 0%, transparent 60%),
-        radial-gradient(ellipse 70% 50% at 50% 50%, var(--mesh-3) 0%, transparent 60%);
-    }
-    33% {
-      background:
-        radial-gradient(ellipse 70% 70% at 30% 70%, var(--mesh-2) 0%, transparent 60%),
-        radial-gradient(ellipse 80% 50% at 80% 20%, var(--mesh-1) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 60% at 50% 40%, var(--mesh-3) 0%, transparent 60%);
-    }
-    66% {
-      background:
-        radial-gradient(ellipse 60% 80% at 70% 30%, var(--mesh-3) 0%, transparent 60%),
-        radial-gradient(ellipse 70% 60% at 20% 60%, var(--mesh-1) 0%, transparent 60%),
-        radial-gradient(ellipse 80% 50% at 60% 80%, var(--mesh-2) 0%, transparent 60%);
-    }
-    100% {
-      background:
-        radial-gradient(ellipse 80% 60% at 10% 20%, var(--mesh-1) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 80% at 90% 80%, var(--mesh-2) 0%, transparent 60%),
-        radial-gradient(ellipse 70% 50% at 50% 50%, var(--mesh-3) 0%, transparent 60%);
-    }
+  body::after {
+    background:
+      radial-gradient(ellipse 70% 70% at 30% 70%, var(--mesh-2) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 50% at 80% 20%, var(--mesh-1) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 60% at 50% 40%, var(--mesh-3) 0%, transparent 60%);
+    animation: meshFadeB 25s ease-in-out infinite alternate;
+  }
+
+  @keyframes meshFadeA {
+    0%   { opacity: 1; }
+    50%  { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes meshFadeB {
+    0%   { opacity: 0; }
+    50%  { opacity: 1; }
+    100% { opacity: 0; }
   }
 
   /* ── Focus Ring System ── */

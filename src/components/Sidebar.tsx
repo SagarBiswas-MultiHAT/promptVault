@@ -265,9 +265,10 @@ export function Sidebar({
                   {/* Categories Section */}
                   <div className="space-y-1">
                     <div className="flex items-center justify-between px-3 mb-2">
-                      <h3 className="text-[10px] font-mono text-vault-text-muted uppercase tracking-[0.15em] font-semibold">Categories</h3>
+                      <h2 className="text-[10px] font-mono text-vault-text-muted uppercase tracking-[0.15em] font-semibold">Categories</h2>
                       <button
                         onClick={onAddCategory}
+                        aria-label="Add new category"
                         className="p-1 hover:bg-vault-panel-bright text-vault-text-muted hover:text-vault-accent rounded-md transition-all"
                       >
                         <Plus size={14} />
