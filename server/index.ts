@@ -69,13 +69,14 @@ app.use((_req, res, next) => {
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   if (IS_PRODUCTION) {
     res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+    res.setHeader('X-Robots-Tag', 'index, follow');
     res.setHeader('Content-Security-Policy', [
       "default-src 'self'",
-      "script-src 'self'",
+      "script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob:",
-      "connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://*.supabase.co",
+      "img-src 'self' data: blob: https://www.google-analytics.com https://www.googletagmanager.com",
+      "connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://*.supabase.co https://www.google-analytics.com https://analytics.google.com https://*.google-analytics.com https://*.analytics.google.com",
       "frame-ancestors 'none'",
     ].join('; '));
   }

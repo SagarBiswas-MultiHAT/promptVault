@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* Fonts loaded via <link preload> in index.html for non-blocking rendering */
 @import "tailwindcss";
 
 @theme {
@@ -75,6 +75,7 @@
     inset: 0;
     z-index: 0;
     pointer-events: none;
+    will-change: background;
     background:
       radial-gradient(ellipse 80% 60% at 10% 20%, var(--mesh-1) 0%, transparent 60%),
       radial-gradient(ellipse 60% 80% at 90% 80%, var(--mesh-2) 0%, transparent 60%),

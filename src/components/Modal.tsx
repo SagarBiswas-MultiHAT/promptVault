@@ -36,6 +36,9 @@ export function Modal({ isOpen, onClose, title, children, footer }: ModalProps) 
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 16 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
             className="relative w-full max-w-2xl overflow-hidden glass-panel rounded-2xl shadow-2xl flex flex-col max-h-[90vh]"
           >
             {/* Top accent line */}
@@ -43,7 +46,7 @@ export function Modal({ isOpen, onClose, title, children, footer }: ModalProps) 
             
             <div className="flex items-center justify-between px-6 py-5">
               <div>
-                <h2 className="text-lg font-bold text-vault-text tracking-tight">{title}</h2>
+                <h2 id="modal-title" className="text-lg font-bold text-vault-text tracking-tight">{title}</h2>
               </div>
               <button
                 onClick={onClose}

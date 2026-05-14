@@ -124,7 +124,7 @@ export function Sidebar({
               >
                 {/* Brand Icon */}
                 <div className="pt-6 pb-4 flex justify-center">
-                  <img src="/logo.png" alt="PromptVault Logo" className="w-7 h-7 rounded-lg shrink-0 drop-shadow-[0_0_12px_rgba(245,158,11,0.3)]" />
+                  <img src="/favicon.svg" alt="PromptVault Logo" width="28" height="28" className="w-7 h-7 rounded-lg shrink-0 drop-shadow-[0_0_12px_rgba(245,158,11,0.3)]" />
                 </div>
 
                 {/* Nav Icons */}
@@ -214,7 +214,7 @@ export function Sidebar({
                 {/* Brand */}
                 <div className="p-6 pb-6">
                   <div className="flex items-center gap-3">
-                    <img src="/logo.png" alt="PromptVault Logo" className="w-8 h-8 rounded-lg shrink-0 drop-shadow-[0_0_12px_rgba(245,158,11,0.3)]" />
+                    <img src="/favicon.svg" alt="PromptVault Logo" width="32" height="32" className="w-8 h-8 rounded-lg shrink-0 drop-shadow-[0_0_12px_rgba(245,158,11,0.3)]" />
                     <div>
                       <h1 className="text-lg font-bold tracking-tight leading-none">
                         Prompt<span className="text-vault-accent">Vault</span>

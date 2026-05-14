@@ -39,7 +39,11 @@ export const PromptCard: React.FC<PromptCardProps> = ({ prompt, onCopy, onToggle
       whileHover={{ y: -3 }}
       transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
       onClick={() => onClick(prompt)}
-      className="group relative flex flex-col h-64 bg-vault-panel/80 border border-vault-border rounded-2xl overflow-hidden cursor-pointer card-hover-glow card-accent-stripe"
+      onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(prompt); } }}
+      role="article"
+      tabIndex={0}
+      aria-label={`Prompt: ${prompt.title}`}
+      className="group relative flex flex-col h-64 bg-vault-panel/80 border border-vault-border rounded-2xl overflow-hidden cursor-pointer card-hover-glow card-accent-stripe focus:outline-none focus-visible:ring-2 focus-visible:ring-vault-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-vault-bg"
     >
       {/* Header */}
       <div className="px-5 pt-5 pb-3 flex items-center justify-between">
@@ -48,10 +52,11 @@ export const PromptCard: React.FC<PromptCardProps> = ({ prompt, onCopy, onToggle
         </div>
         <button
           onClick={handleFavorite}
+          aria-label={prompt.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           className={`p-1.5 rounded-md transition-all ${
             prompt.isFavorite 
               ? 'text-vault-accent scale-110' 
-              : 'text-vault-text-muted hover:text-vault-accent opacity-0 group-hover:opacity-100'
+              : 'text-vault-text-muted hover:text-vault-accent opacity-0 group-hover:opacity-100 focus:opacity-100'
           }`}
         >
           <Star size={14} fill={prompt.isFavorite ? "currentColor" : "none"} />
@@ -89,6 +94,7 @@ export const PromptCard: React.FC<PromptCardProps> = ({ prompt, onCopy, onToggle
         
         <button
           onClick={handleCopy}
+          aria-label={copied ? 'Copied to clipboard' : 'Copy prompt to clipboard'}
           className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-bold uppercase tracking-wider text-[10px] transition-all whitespace-nowrap ${
             copied 
               ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' 

@@ -1,12 +1,21 @@
 {
-  "name": "PromptVault",
+  "name": "PromptVault — Your Private AI Prompt Library",
   "short_name": "PromptVault",
-  "description": "A private, offline-first prompt manager for organizing and deploying AI prompts across any workflow.",
+  "description": "A private, offline-first prompt manager for organizing, evaluating, and deploying AI prompts across any workflow.",
   "start_url": "/",
+  "id": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#08090A",
   "theme_color": "#08090A",
+  "orientation": "any",
+  "categories": ["productivity", "utilities"],
   "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    },
     {
       "src": "/logo.png",
       "sizes": "512x512",

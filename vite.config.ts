@@ -35,6 +35,7 @@ export default defineConfig(({mode}) => {
             'vendor-react': ['react', 'react-dom'],
             'vendor-motion': ['motion/react'],
             'vendor-icons': ['lucide-react'],
+            'vendor-supabase': ['@supabase/supabase-js'],
           },
         },
       },

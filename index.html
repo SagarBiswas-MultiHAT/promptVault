@@ -7,30 +7,35 @@
     <!-- Primary Meta -->
     <title>PromptVault — Your Private AI Prompt Library</title>
     <meta name="description" content="A private, offline-first prompt manager for organizing, evaluating, and deploying AI prompts across any workflow. Secure, fast, and beautiful." />
-    <meta name="keywords" content="prompt manager, AI prompts, prompt library, prompt engineering, ChatGPT prompts, offline prompt vault" />
+    <meta name="keywords" content="prompt manager, AI prompts, prompt library, prompt engineering, ChatGPT prompts, offline prompt vault, AI prompt organizer, prompt template manager" />
     <meta name="author" content="PromptVault" />
     <meta name="theme-color" content="#08090A" />
     <meta name="color-scheme" content="dark light" />
+    <meta name="robots" content="index, follow" />
 
     <!-- Open Graph / Social -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://promptvault.app/" />
+    <meta property="og:url" content="https://promptvault.multihat.dev/" />
     <meta property="og:title" content="PromptVault — Your Private AI Prompt Library" />
     <meta property="og:description" content="A private, offline-first prompt manager for organizing, evaluating, and deploying AI prompts across any workflow." />
-    <meta property="og:image" content="https://promptvault.app/og-image.png" />
+    <meta property="og:image" content="https://promptvault.multihat.dev/og-image.png" />
     <meta property="og:site_name" content="PromptVault" />
+    <meta property="og:locale" content="en_US" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@SagarBiswasMH" />
     <meta name="twitter:title" content="PromptVault — Your Private AI Prompt Library" />
     <meta name="twitter:description" content="A private, offline-first prompt manager for organizing, evaluating, and deploying AI prompts across any workflow." />
-    <meta name="twitter:image" content="https://promptvault.app/og-image.png" />
+    <meta name="twitter:image" content="https://promptvault.multihat.dev/og-image.png" />
 
     <!-- Canonical -->
-    <link rel="canonical" href="https://promptvault.app/" />
+    <link rel="canonical" href="https://promptvault.multihat.dev/" />
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/logo.png" />
+    <!-- Favicon & Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/logo.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/logo.png" />
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/manifest.json" />
@@ -38,12 +43,71 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="PromptVault" />
 
-    <!-- Preconnect for performance -->
+    <!-- Preconnect & Preload Fonts for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" media="print" onload="this.media='all'" />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" />
+    </noscript>
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "PromptVault",
+      "url": "https://promptvault.multihat.dev/",
+      "description": "A private, offline-first prompt manager for organizing, evaluating, and deploying AI prompts across any workflow. Secure, fast, and beautiful.",
+      "applicationCategory": "ProductivityApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Offline-first prompt storage",
+        "AI-powered prompt analysis and improvement",
+        "PIN-protected encrypted vault",
+        "Cloud sync via Supabase",
+        "Category organization",
+        "Variable template system",
+        "Import/Export functionality"
+      ],
+      "screenshot": "https://promptvault.multihat.dev/og-image.png",
+      "softwareVersion": "1.0.0",
+      "creator": {
+        "@type": "Organization",
+        "name": "PromptVault"
+      }
+    }
+    </script>
+
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FRRJNDG53X"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FRRJNDG53X');
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="max-width: 600px; margin: 80px auto; padding: 40px; font-family: system-ui, sans-serif; text-align: center; color: #EAEDF3; background: #111214; border-radius: 16px; border: 1px solid #252830;">
+        <h1 style="font-size: 24px; margin-bottom: 16px;">PromptVault</h1>
+        <p style="color: #6B7280; line-height: 1.6;">
+          PromptVault is a private, offline-first AI prompt manager for organizing, evaluating, and deploying prompts across any workflow.
+          Features include AI-powered prompt analysis, PIN-protected encrypted storage, cloud sync, and variable template injection.
+        </p>
+        <p style="color: #6B7280; margin-top: 16px;">
+          Please enable JavaScript to use PromptVault.
+        </p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

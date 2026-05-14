@@ -629,7 +629,7 @@ export default function App() {
         setSidebarCollapsed(prev => !prev);
       } else if (isCmdOrCtrl && e.key === 'k') {
         e.preventDefault();
-        document.getElementById('main-search')?.focus();
+        document.getElementById('main-search-desktop')?.focus() || document.getElementById('main-search')?.focus();
       } else if (isCmdOrCtrl && e.key === 'n') {
         e.preventDefault();
         setIsNewModalOpen(true);
@@ -704,6 +704,9 @@ export default function App() {
 
   return (
     <div className="flex h-screen w-full bg-vault-bg text-vault-text overflow-hidden transition-colors duration-300 relative z-[1]">
+      {/* Skip Navigation — accessibility for keyboard users */}
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-vault-accent focus:text-vault-bg focus:rounded-lg focus:text-sm focus:font-bold">Skip to main content</a>
+
       {/* Sidebar Overlay for Mobile/Smaller Screens could go here */}
       <Sidebar
         categories={data.categories}
@@ -729,7 +732,9 @@ export default function App() {
         onToggleSidebar={() => setSidebarCollapsed(prev => !prev)}
       />
 
-      <main className="flex-1 flex flex-col min-w-0 h-full">
+      <main id="main-content" className="flex-1 flex flex-col min-w-0 h-full">
+        {/* Visually hidden h1 for proper heading hierarchy — SEO & accessibility */}
+        <h1 className="sr-only">PromptVault — Your Private AI Prompt Library</h1>
         {/* Header — Desktop: single-row | Mobile: two-row */}
         <header className={`border-b border-vault-border bg-vault-panel/70 backdrop-blur-xl z-10 shrink-0 ${isMobile ? 'flex flex-col' : 'h-[72px] flex items-center justify-between px-8'
           }`}>
@@ -822,6 +827,7 @@ export default function App() {
                     id="main-search"
                     type="text"
                     placeholder="Search prompts..."
+                    aria-label="Search prompts"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full bg-vault-bg/80 border border-vault-border rounded-xl pl-9 pr-4 py-2.5 focus:border-vault-accent/50 focus:shadow-[0_0_0_3px_rgba(245,158,11,0.08)] outline-none transition-all font-mono text-sm placeholder:text-vault-text-muted/40"
@@ -841,9 +847,10 @@ export default function App() {
             <>
               <div className="w-[400px] relative group/search">
                 <input
-                  id="main-search"
+                  id="main-search-desktop"
                   type="text"
                   placeholder="Search prompts..."
+                  aria-label="Search prompts"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-vault-bg/60 border border-vault-border rounded-xl pl-10 pr-12 py-2.5 focus:border-vault-accent/50 focus:shadow-[0_0_0_3px_rgba(245,158,11,0.08)] outline-none transition-all font-mono text-sm placeholder:text-vault-text-muted/40"
@@ -1300,7 +1307,7 @@ export default function App() {
                     </div>
                   )}
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center">
                     <button
                       onClick={handleManualSync}
                       className="px-4 py-2 bg-vault-accent-blue text-vault-bg rounded-lg text-[10px] font-mono font-bold tracking-widest uppercase transition-all flex items-center gap-2"
