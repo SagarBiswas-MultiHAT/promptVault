@@ -830,7 +830,7 @@ export default function App() {
                     aria-label="Search prompts"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-vault-bg/80 border border-vault-border rounded-xl pl-9 pr-4 py-2.5 focus:border-vault-accent/50 focus:shadow-[0_0_0_3px_rgba(245,158,11,0.08)] outline-none transition-all font-mono text-sm placeholder:text-vault-text-muted/40"
+                    className="w-full bg-vault-bg/80 border border-vault-border rounded-xl pl-9 pr-4 py-2.5 focus:border-vault-accent/50 focus:shadow-[0_0_0_3px_rgba(245,158,11,0.08)] outline-none transition-all font-mono text-sm placeholder:text-vault-text-muted/60"
                   />
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-vault-text-muted" size={14} />
                   {searchQuery && (
@@ -853,10 +853,10 @@ export default function App() {
                   aria-label="Search prompts"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-vault-bg/60 border border-vault-border rounded-xl pl-10 pr-12 py-2.5 focus:border-vault-accent/50 focus:shadow-[0_0_0_3px_rgba(245,158,11,0.08)] outline-none transition-all font-mono text-sm placeholder:text-vault-text-muted/40"
+                  className="w-full bg-vault-bg/60 border border-vault-border rounded-xl pl-10 pr-12 py-2.5 focus:border-vault-accent/50 focus:shadow-[0_0_0_3px_rgba(245,158,11,0.08)] outline-none transition-all font-mono text-sm placeholder:text-vault-text-muted/60"
                 />
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-vault-text-muted group-focus-within/search:text-vault-accent transition-colors" size={14} />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 border border-vault-border/60 rounded-md text-[10px] text-vault-text-muted/60 font-mono">⌘K</div>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 border border-vault-border/60 rounded-md text-[10px] text-vault-text-muted font-mono">⌘K</div>
               </div>
 
               <div className="flex items-center gap-3">
@@ -1009,13 +1009,13 @@ export default function App() {
                 key={isSaved ? 'saved' : 'idle'}
                 initial={{ opacity: 0, scale: 0.85 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className={`text-[9px] font-mono uppercase tracking-widest ${isSaved ? 'text-emerald-400' : 'text-vault-text-muted/50'
+                className={`text-[9px] font-mono uppercase tracking-widest ${isSaved ? 'text-emerald-400' : 'text-vault-text-muted'
                   }`}
               >
                 {isSaved ? '✓ Saved' : `v${SCHEMA_VERSION}`}
               </motion.span>
               <span className="text-vault-border">·</span>
-              <span className="text-[9px] font-mono text-vault-text-muted/40 uppercase tracking-widest">Offline</span>
+              <span className="text-[9px] font-mono text-vault-text-muted uppercase tracking-widest">Offline</span>
             </div>
 
             {/* Center: prompt count pill */}
@@ -1039,7 +1039,7 @@ export default function App() {
           /* ─── Desktop Footer ─── */
           <footer className="h-10 shrink-0 relative">
             <div className="divider-glow" />
-            <div className="h-full px-8 flex items-center justify-between text-[10px] font-mono text-vault-text-muted/60 uppercase tracking-widest bg-vault-panel/50">
+            <div className="h-full px-8 flex items-center justify-between text-[10px] font-mono text-vault-text-muted uppercase tracking-widest bg-vault-panel/50">
               <div className="flex items-center gap-3">
                 <span className="font-semibold text-vault-text-muted">PromptVault</span>
                 <span className="text-vault-border">·</span>
