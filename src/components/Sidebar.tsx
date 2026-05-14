@@ -43,7 +43,7 @@ export function Sidebar({
 }: SidebarProps) {
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
 
   // Detect mobile viewport
   useEffect(() => {

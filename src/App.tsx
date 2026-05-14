@@ -145,7 +145,7 @@ export default function App() {
   const [showStats, setShowStats] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>('RECENTLY_ADDED');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.innerWidth <= 768);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
 
   // Modal states
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);

@@ -43,10 +43,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="PromptVault" />
 
-    <!-- Preconnect & Fonts — preconnect ensures fast loading without render-blocking inline handlers -->
+    <!-- Preconnect & Fonts — loaded non-blocking to avoid mobile render delay -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=optional" media="print" data-fonts />
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -81,9 +81,9 @@
     }
     </script>
 
-    <!-- Google Analytics 4 — external file to comply with CSP -->
+    <!-- Google Analytics 4 — external file, deferred to avoid render blocking -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-6NXF69ERP4"></script>
-    <script src="/gtag-init.js"></script>
+    <script defer src="/gtag-init.js"></script>
   </head>
   <body>
     <div id="root"></div>
