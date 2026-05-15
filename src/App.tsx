@@ -863,7 +863,7 @@ export default function App() {
 
                   {/* Brand wordmark */}
                   <div className="flex items-center gap-2">
-                    <img src="/favicon.svg" alt="PromptVault Logo" width="20" height="20" className="w-5 h-5 rounded-md shrink-0 drop-shadow-[0_0_10px_rgba(245,158,11,0.35)]" />
+                    <img src="/logo.png" alt="PromptVault Logo" width="20" height="20" className="w-5 h-5 rounded-md shrink-0 drop-shadow-[0_0_10px_rgba(245,158,11,0.35)]" />
                     <span className="text-sm font-bold tracking-tight">Prompt<span className="text-vault-accent">Vault</span></span>
                   </div>
                 </div>
