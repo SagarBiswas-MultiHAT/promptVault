@@ -208,6 +208,10 @@ if (IS_PRODUCTION) {
       if (filePath.endsWith('.html')) {
         res.setHeader('Cache-Control', 'no-cache');
       }
+      // Long cache for stable assets that rarely change
+      if (/\.(svg|png|ico|json|webmanifest)$/.test(filePath)) {
+        res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+      }
     },
   }));
 

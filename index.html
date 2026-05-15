@@ -43,6 +43,20 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="PromptVault" />
 
+    <!-- Critical CSS — inlined for instant first paint without waiting for external stylesheet -->
+    <style>
+      :root{--v-bg:#08090A;--v-panel:#111214;--v-panel-bright:#1A1C20;--v-border:#252830;--v-text:#EAEDF3;--v-muted:#9CA3AF}
+      .light{--v-bg:#F8F9FB;--v-panel:#FFFFFF;--v-panel-bright:#F3F4F6;--v-border:#E5E7EB;--v-text:#111827;--v-muted:#6B7280}
+      html,body{margin:0;padding:0;overflow-x:hidden}
+      body{background:var(--v-bg);color:var(--v-text);font-family:"Inter",ui-sans-serif,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+      #root{min-height:100vh}
+      .shell-flex{display:flex;height:100vh;background:var(--v-bg);color:var(--v-text)}
+      .shell-sidebar{width:280px;background:var(--v-panel);border-right:1px solid var(--v-border);flex-shrink:0}
+      .shell-main{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column}
+      .shell-text{font-size:14px;color:var(--v-muted);max-width:22rem;text-align:center;line-height:1.6}
+      @media(max-width:768px){.shell-sidebar{display:none}}
+    </style>
+
     <!-- Preconnect & Fonts — loaded non-blocking to avoid mobile render delay -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -81,12 +95,19 @@
     }
     </script>
 
-    <!-- Google Analytics 4 — external file, deferred to avoid render blocking -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6NXF69ERP4"></script>
+    <!-- Google Analytics 4 — loaded after page is interactive to avoid blocking FCP/LCP -->
     <script defer src="/gtag-init.js"></script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static shell — painted instantly, replaced by React on hydrate -->
+      <div class="shell-flex">
+        <div class="shell-sidebar"></div>
+        <main class="shell-main">
+          <p class="shell-text">Loading PromptVault…</p>
+        </main>
+      </div>
+    </div>
     <noscript>
       <div style="max-width: 600px; margin: 80px auto; padding: 40px; font-family: system-ui, sans-serif; text-align: center; color: #EAEDF3; background: #111214; border-radius: 16px; border: 1px solid #252830;">
         <h1 style="font-size: 24px; margin-bottom: 16px;">PromptVault</h1>

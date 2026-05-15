@@ -78,6 +78,7 @@
     pointer-events: none;
     will-change: opacity;
     transform: translateZ(0);
+    contain: strict;
   }
 
   body::before {

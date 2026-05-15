@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useMemo, useCallback, ChangeEvent, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, ChangeEvent, useRef, Suspense, lazy } from 'react';
 import { Session } from '@supabase/supabase-js';
 import {
   Search,
@@ -36,9 +36,9 @@ import { PromptCard } from './components/PromptCard.tsx';
 import { Modal } from './components/Modal.tsx';
 import { PromptForm } from './components/PromptForm.tsx';
 import { PinLock } from './components/PinLock.tsx';
-import { StatsDashboard } from './components/StatsDashboard.tsx';
+const StatsDashboard = lazy(() => import('./components/StatsDashboard.tsx').then(m => ({ default: m.StatsDashboard })));
 import { VariableForm } from './components/VariableForm.tsx';
-import { AiAssistantWidget } from './components/AiAssistantWidget.tsx';
+const AiAssistantWidget = lazy(() => import('./components/AiAssistantWidget.tsx').then(m => ({ default: m.AiAssistantWidget })));
 
 // Types and Constants
 import { Prompt, Category, VaultData, SortOption } from './types.ts';
@@ -941,7 +941,9 @@ export default function App() {
                 <h2 className="text-2xl font-bold tracking-tight">Vault <span className="text-gradient">Intelligence</span></h2>
                 <button onClick={() => setShowStats(false)} className="text-[11px] font-mono text-vault-text-muted hover:text-vault-accent uppercase px-4 py-2 border border-vault-border hover:border-vault-accent/30 rounded-xl transition-all">Back to Prompts</button>
               </div>
-              <StatsDashboard prompts={data.prompts} categories={data.categories} />
+              <Suspense fallback={<div className="flex items-center justify-center py-20 text-vault-text-muted text-sm font-mono">Loading analytics…</div>}>
+                <StatsDashboard prompts={data.prompts} categories={data.categories} />
+              </Suspense>
             </div>
           ) : (
             <div className="space-y-6 max-w-7xl mx-auto">
@@ -1057,11 +1059,13 @@ export default function App() {
         )}
       </main>
 
-      <AiAssistantWidget
-        categories={data.categories}
-        onCreatePrompt={handleCreatePromptFromAi}
-        onToggleFavorite={handleToggleFavorite}
-      />
+      <Suspense fallback={null}>
+        <AiAssistantWidget
+          categories={data.categories}
+          onCreatePrompt={handleCreatePromptFromAi}
+          onToggleFavorite={handleToggleFavorite}
+        />
+      </Suspense>
 
       {/* --- MODALS --- */}
 
