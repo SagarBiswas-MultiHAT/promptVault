@@ -99,6 +99,43 @@ const getSyncData = (value: VaultData): VaultData => ({
   },
 });
 
+function ShellEmptyState() {
+  return (
+    <div className="shell-flex">
+      <div className="shell-sidebar"></div>
+      <main className="shell-main">
+        <div className="flex flex-col items-center justify-center py-28 space-y-8">
+          <div className="relative w-32 h-32">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-2xl border border-vault-border bg-vault-panel/50 flex items-center justify-center"></div>
+            </div>
+            <div className="absolute top-0 right-2 w-6 h-6 rounded-lg border border-vault-accent/20 bg-vault-accent/5"></div>
+            <div className="absolute bottom-2 left-0 w-4 h-4 rounded-md border border-vault-accent-blue/20 bg-vault-accent-blue/5"></div>
+            <div className="absolute top-4 left-3 w-3 h-3 rounded-full border border-emerald-500/20 bg-emerald-500/5"></div>
+          </div>
+          <div className="text-center space-y-2">
+            <h3 className="text-xl font-bold tracking-tight" style={{ fontSize: '20px', color: '#EAEDF3' }}>Start Your Collection</h3>
+            <p
+              className="text-sm text-vault-text-muted max-w-sm leading-relaxed"
+              style={{ maxWidth: '22rem', fontSize: '14px', color: '#9CA3AF' }}
+            >
+              Your prompt library is empty. Add your first prompt to begin building your vault.
+            </p>
+          </div>
+          <button
+            className="btn-primary flex items-center gap-2 !rounded-full !px-8"
+            disabled
+            aria-disabled="true"
+            style={{ width: '180px', height: '36px', fontSize: '12px', color: '#111827' }}
+          >
+            Add First Prompt
+          </button>
+        </div>
+      </main>
+    </div>
+  );
+}
+
 export default function App() {
   // --- STATE ---
   const [data, setData] = useState<VaultData>(() => {
@@ -116,6 +153,8 @@ export default function App() {
     }
     return INITIAL_DATA;
   });
+
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const initialSyncMeta = useMemo(() => readSyncMeta(), []);
   const lastLocalChangeAtRef = useRef(initialSyncMeta.lastLocalChangeAt);
@@ -136,6 +175,10 @@ export default function App() {
   useEffect(() => {
     dataRef.current = data;
   }, [data]);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   const [isLocked, setIsLocked] = useState(data.settings.pinHash !== null);
   const [isRemovingLock, setIsRemovingLock] = useState(false);
@@ -685,7 +728,14 @@ export default function App() {
     return result;
   }, [data.prompts, searchQuery, selectedCategoryId, showFavorites, sortBy]);
 
+  const hasStoredPrompts = data.prompts.length > 0;
+  const shouldShowShell = !isHydrated && !hasStoredPrompts;
+
   // --- RENDER ---
+  if (shouldShowShell) {
+    return <ShellEmptyState />;
+  }
+
   if (isLocked || isRemovingLock) {
     return (
       <PinLock
