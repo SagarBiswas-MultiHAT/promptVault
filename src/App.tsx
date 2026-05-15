@@ -778,7 +778,7 @@ export default function App() {
   );
   const pinLockFallback = <div className="min-h-screen w-full bg-vault-bg" />;
   const isEmptyState = !showStats && filteredPrompts.length === 0;
-  const contentAreaClassName = `flex-1 ${isEmptyState ? 'overflow-hidden flex flex-col' : 'overflow-y-auto'} ${isMobile ? 'p-4' : 'px-10 py-8'}`;
+  const contentAreaClassName = `flex-1 min-h-0 ${isEmptyState ? 'overflow-hidden flex flex-col' : 'overflow-y-auto'} ${isMobile ? (isEmptyState ? 'px-4 py-3' : 'p-4') : (isEmptyState ? 'px-10 py-6' : 'px-10 py-8')}`;
   const contentWrapperClassName = isEmptyState
     ? 'flex flex-1 flex-col max-w-7xl mx-auto w-full'
     : 'space-y-6 max-w-7xl mx-auto';
@@ -803,7 +803,7 @@ export default function App() {
   const currentViewLabel = showFavorites ? '⭐ Favorites' : selectedCategoryId ? `# ${data.categories.find(c => c.id === selectedCategoryId)?.name || 'Unknown'}` : 'All Prompts';
 
   return (
-    <div className="flex h-screen w-full bg-vault-bg text-vault-text overflow-hidden transition-colors duration-300 relative z-[1]">
+    <div className="flex h-[100dvh] min-h-[100dvh] w-full bg-vault-bg text-vault-text overflow-hidden transition-colors duration-300 relative z-[1]">
       {/* Skip Navigation — accessibility for keyboard users */}
       <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-vault-accent focus:text-vault-bg focus:rounded-lg focus:text-sm focus:font-bold">Skip to main content</a>
 
@@ -832,7 +832,7 @@ export default function App() {
         onToggleSidebar={() => setSidebarCollapsed(prev => !prev)}
       />
 
-      <main id="main-content" className="flex-1 flex flex-col min-w-0 h-full">
+      <main id="main-content" className="flex-1 flex flex-col min-w-0 h-full min-h-0">
         {/* Visually hidden h1 for proper heading hierarchy — SEO & accessibility */}
         <h1 className="sr-only">PromptVault — Your Private AI Prompt Library</h1>
         {/* Header — Desktop: single-row | Mobile: two-row */}
@@ -863,7 +863,7 @@ export default function App() {
 
                   {/* Brand wordmark */}
                   <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-md shrink-0 accent-glow" style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' }} />
+                    <img src="/favicon.svg" alt="PromptVault Logo" width="20" height="20" className="w-5 h-5 rounded-md shrink-0 drop-shadow-[0_0_10px_rgba(245,158,11,0.35)]" />
                     <span className="text-sm font-bold tracking-tight">Prompt<span className="text-vault-accent">Vault</span></span>
                   </div>
                 </div>
@@ -1074,17 +1074,17 @@ export default function App() {
               ) : (
                 <MotionDiv
                   {...emptyStateMotionProps}
-                  className="flex flex-1 flex-col items-center justify-center space-y-8"
+                  className="flex flex-1 flex-col items-center justify-center space-y-6 md:space-y-8"
                 >
                   {/* Animated geometric illustration */}
-                  <div className="relative w-32 h-32">
+                  <div className="relative w-24 h-24 md:w-32 md:h-32">
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-20 h-20 rounded-2xl border border-vault-border bg-vault-panel/50 flex items-center justify-center geo-float">
+                      <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl border border-vault-border bg-vault-panel/50 flex items-center justify-center geo-float">
                         {searchQuery ? <Search size={32} className="text-vault-text-muted/30" /> : <Briefcase size={32} className="text-vault-text-muted/30" />}
                       </div>
                     </div>
-                    <div className="absolute top-0 right-2 w-6 h-6 rounded-lg border border-vault-accent/20 bg-vault-accent/5 geo-float-delay" />
-                    <div className="absolute bottom-2 left-0 w-4 h-4 rounded-md border border-vault-accent-blue/20 bg-vault-accent-blue/5 geo-float-delay-2" />
+                    <div className="absolute top-0 right-2 w-5 h-5 md:w-6 md:h-6 rounded-lg border border-vault-accent/20 bg-vault-accent/5 geo-float-delay" />
+                    <div className="absolute bottom-2 left-0 w-3 h-3 md:w-4 md:h-4 rounded-md border border-vault-accent-blue/20 bg-vault-accent-blue/5 geo-float-delay-2" />
                     <div className="absolute top-4 left-3 w-3 h-3 rounded-full border border-emerald-500/20 bg-emerald-500/5 geo-float-delay" />
                   </div>
                   <div className="text-center space-y-2">
