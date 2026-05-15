@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useMemo, useCallback, ChangeEvent, useRef, Suspense, lazy } from 'react';
-import { Session } from '@supabase/supabase-js';
+import type { Session } from '@supabase/supabase-js';
 import {
   Search,
   Plus,
@@ -28,22 +28,19 @@ import {
   RefreshCcw,
   User
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-
 // Sub-components
 import { Sidebar } from './components/Sidebar.tsx';
-import { PromptCard } from './components/PromptCard.tsx';
-import { Modal } from './components/Modal.tsx';
-import { PromptForm } from './components/PromptForm.tsx';
-import { PinLock } from './components/PinLock.tsx';
 const StatsDashboard = lazy(() => import('./components/StatsDashboard.tsx').then(m => ({ default: m.StatsDashboard })));
-import { VariableForm } from './components/VariableForm.tsx';
 const AiAssistantWidget = lazy(() => import('./components/AiAssistantWidget.tsx').then(m => ({ default: m.AiAssistantWidget })));
+const PromptCard = lazy(() => import('./components/PromptCard.tsx').then(m => ({ default: m.PromptCard })));
+const Modal = lazy(() => import('./components/Modal.tsx').then(m => ({ default: m.Modal })));
+const PromptForm = lazy(() => import('./components/PromptForm.tsx').then(m => ({ default: m.PromptForm })));
+const PinLock = lazy(() => import('./components/PinLock.tsx').then(m => ({ default: m.PinLock })));
+const VariableForm = lazy(() => import('./components/VariableForm.tsx').then(m => ({ default: m.VariableForm })));
 
 // Types and Constants
 import { Prompt, Category, VaultData, SortOption } from './types.ts';
 import { INITIAL_DATA, LOCAL_STORAGE_KEY, SCHEMA_VERSION, SYNC_META_KEY, SYNC_TABLE } from './constants.ts';
-import { supabase, isSupabaseConfigured } from './utils/supabase.ts';
 
 type SyncStatus = 'idle' | 'syncing' | 'error';
 
@@ -52,6 +49,10 @@ type SyncMeta = {
   lastRemoteChangeAt: number;
   lastSyncedAt: number | null;
 };
+
+type MotionModule = typeof import('motion/react');
+type SupabaseModule = typeof import('./utils/supabase.ts');
+type SupabaseClient = SupabaseModule['supabase'];
 
 const readSyncMeta = (): SyncMeta => {
   try {
@@ -99,43 +100,6 @@ const getSyncData = (value: VaultData): VaultData => ({
   },
 });
 
-function ShellEmptyState() {
-  return (
-    <div className="shell-flex">
-      <div className="shell-sidebar"></div>
-      <main className="shell-main">
-        <div className="flex flex-col items-center justify-center py-28 space-y-8">
-          <div className="relative w-32 h-32">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-20 h-20 rounded-2xl border border-vault-border bg-vault-panel/50 flex items-center justify-center"></div>
-            </div>
-            <div className="absolute top-0 right-2 w-6 h-6 rounded-lg border border-vault-accent/20 bg-vault-accent/5"></div>
-            <div className="absolute bottom-2 left-0 w-4 h-4 rounded-md border border-vault-accent-blue/20 bg-vault-accent-blue/5"></div>
-            <div className="absolute top-4 left-3 w-3 h-3 rounded-full border border-emerald-500/20 bg-emerald-500/5"></div>
-          </div>
-          <div className="text-center space-y-2">
-            <h3 className="text-xl font-bold tracking-tight" style={{ fontSize: '20px', color: '#EAEDF3' }}>Start Your Collection</h3>
-            <p
-              className="text-sm text-vault-text-muted max-w-sm leading-relaxed"
-              style={{ maxWidth: '22rem', fontSize: '14px', color: '#9CA3AF' }}
-            >
-              Your prompt library is empty. Add your first prompt to begin building your vault.
-            </p>
-          </div>
-          <button
-            className="btn-primary flex items-center gap-2 !rounded-full !px-8"
-            disabled
-            aria-disabled="true"
-            style={{ width: '180px', height: '36px', fontSize: '12px', color: '#111827' }}
-          >
-            Add First Prompt
-          </button>
-        </div>
-      </main>
-    </div>
-  );
-}
-
 export default function App() {
   // --- STATE ---
   const [data, setData] = useState<VaultData>(() => {
@@ -154,7 +118,6 @@ export default function App() {
     return INITIAL_DATA;
   });
 
-  const [isHydrated, setIsHydrated] = useState(false);
 
   const initialSyncMeta = useMemo(() => readSyncMeta(), []);
   const lastLocalChangeAtRef = useRef(initialSyncMeta.lastLocalChangeAt);
@@ -176,9 +139,69 @@ export default function App() {
     dataRef.current = data;
   }, [data]);
 
+  const [motionModule, setMotionModule] = useState<MotionModule | null>(null);
+  const [supabaseClient, setSupabaseClient] = useState<SupabaseClient | null>(null);
+  const [supabaseConfigured, setSupabaseConfigured] = useState(false);
+
   useEffect(() => {
-    setIsHydrated(true);
+    let cancelled = false;
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (cb: IdleRequestCallback, options?: IdleRequestOptions) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    const loadMotion = () => {
+      import('motion/react').then((mod) => {
+        if (!cancelled) {
+          setMotionModule(mod);
+        }
+      });
+    };
+
+    if (idleWindow.requestIdleCallback) {
+      const id = idleWindow.requestIdleCallback(loadMotion, { timeout: 2000 });
+      return () => {
+        cancelled = true;
+        idleWindow.cancelIdleCallback?.(id);
+      };
+    }
+
+    const timeoutId = window.setTimeout(loadMotion, 0);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+    };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (cb: IdleRequestCallback, options?: IdleRequestOptions) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    const loadSupabase = () => {
+      import('./utils/supabase.ts').then(({ supabase, isSupabaseConfigured }) => {
+        if (!cancelled) {
+          setSupabaseClient(supabase);
+          setSupabaseConfigured(isSupabaseConfigured);
+        }
+      });
+    };
+
+    if (idleWindow.requestIdleCallback) {
+      const id = idleWindow.requestIdleCallback(loadSupabase, { timeout: 2000 });
+      return () => {
+        cancelled = true;
+        idleWindow.cancelIdleCallback?.(id);
+      };
+    }
+
+    const timeoutId = window.setTimeout(loadSupabase, 0);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+    };
+  }, []);
+
 
   const [isLocked, setIsLocked] = useState(data.settings.pinHash !== null);
   const [isRemovingLock, setIsRemovingLock] = useState(false);
@@ -257,19 +280,24 @@ export default function App() {
   }, [data.settings.isDarkMode]);
 
   useEffect(() => {
-    if (!isSupabaseConfigured) {
+    if (!supabaseConfigured) {
       setAuthReady(true);
       return;
     }
 
+    if (!supabaseClient) {
+      return;
+    }
+
+    setAuthReady(false);
     let isMounted = true;
-    supabase.auth.getSession().then(({ data }) => {
+    supabaseClient.auth.getSession().then(({ data }) => {
       if (!isMounted) return;
       setSession(data.session);
       setAuthReady(true);
     });
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+    const { data: authListener } = supabaseClient.auth.onAuthStateChange((_event, currentSession) => {
       setSession(currentSession);
     });
 
@@ -277,7 +305,7 @@ export default function App() {
       isMounted = false;
       authListener.subscription.unsubscribe();
     };
-  }, []);
+  }, [supabaseClient, supabaseConfigured]);
 
   const applyRemoteData = useCallback((remoteData: VaultData, remoteUpdatedAt: number) => {
     const mergedData: VaultData = {
@@ -301,7 +329,7 @@ export default function App() {
   }, []);
 
   const syncToCloud = useCallback(async (reason: 'auto' | 'manual' | 'bootstrap') => {
-    if (!session || !isSupabaseConfigured) return;
+    if (!session || !supabaseConfigured || !supabaseClient) return;
     if (syncInFlightRef.current) return;
 
     syncInFlightRef.current = true;
@@ -316,7 +344,7 @@ export default function App() {
       updated_at: new Date().toISOString(),
     };
 
-    const { data: row, error } = await supabase
+    const { data: row, error } = await supabaseClient
       .from(SYNC_TABLE)
       .upsert(payload, { onConflict: 'user_id' })
       .select('updated_at')
@@ -345,14 +373,14 @@ export default function App() {
     });
     setSyncStatus('idle');
     syncInFlightRef.current = false;
-  }, [session]);
+  }, [session, supabaseClient, supabaseConfigured]);
 
   const bootstrapSync = useCallback(async () => {
-    if (!session || !isSupabaseConfigured) return;
+    if (!session || !supabaseConfigured || !supabaseClient) return;
     setSyncStatus('syncing');
     setSyncError(null);
 
-    const { data: row, error } = await supabase
+    const { data: row, error } = await supabaseClient
       .from(SYNC_TABLE)
       .select('data, updated_at, schema_version')
       .eq('user_id', session.user.id)
@@ -394,13 +422,13 @@ export default function App() {
       lastSyncedAt: lastSyncedAtRef.current,
     });
     setSyncStatus('idle');
-  }, [applyRemoteData, session, syncToCloud]);
+  }, [applyRemoteData, session, supabaseClient, supabaseConfigured, syncToCloud]);
 
   const pullIfRemoteNewer = useCallback(async () => {
-    if (!session || !isSupabaseConfigured) return;
+    if (!session || !supabaseConfigured || !supabaseClient) return;
     if (syncInFlightRef.current) return;
 
-    const { data: row, error } = await supabase
+    const { data: row, error } = await supabaseClient
       .from(SYNC_TABLE)
       .select('data, updated_at')
       .eq('user_id', session.user.id)
@@ -422,15 +450,15 @@ export default function App() {
       pendingSyncRef.current = true;
       syncToCloud('auto');
     }
-  }, [applyRemoteData, session, syncToCloud]);
+  }, [applyRemoteData, session, supabaseClient, supabaseConfigured, syncToCloud]);
 
   useEffect(() => {
-    if (!session?.user.id || !isSupabaseConfigured) return;
+    if (!session?.user.id || !supabaseConfigured || !supabaseClient) return;
     bootstrapSync();
-  }, [bootstrapSync, session?.user.id]);
+  }, [bootstrapSync, session?.user.id, supabaseClient, supabaseConfigured]);
 
   useEffect(() => {
-    if (!session?.user.id || !isSupabaseConfigured) return;
+    if (!session?.user.id || !supabaseConfigured || !supabaseClient) return;
     if (!pendingSyncRef.current) return;
 
     if (syncTimerRef.current) {
@@ -446,25 +474,25 @@ export default function App() {
         window.clearTimeout(syncTimerRef.current);
       }
     };
-  }, [data, session?.user.id, syncToCloud]);
+  }, [data, session?.user.id, supabaseClient, supabaseConfigured, syncToCloud]);
 
   useEffect(() => {
-    if (!session?.user.id || !isSupabaseConfigured) return;
+    if (!session?.user.id || !supabaseConfigured || !supabaseClient) return;
     const interval = window.setInterval(() => {
       pullIfRemoteNewer();
     }, 30000);
     return () => window.clearInterval(interval);
-  }, [pullIfRemoteNewer, session?.user.id]);
+  }, [pullIfRemoteNewer, session?.user.id, supabaseClient, supabaseConfigured]);
 
   const handleSignIn = async () => {
-    if (!isSupabaseConfigured) {
+    if (!supabaseConfigured || !supabaseClient) {
       setSyncStatus('error');
-      setSyncError('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+      setSyncError('Supabase is not configured or still initializing. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
       return;
     }
 
     setSyncError(null);
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: window.location.origin,
@@ -479,7 +507,8 @@ export default function App() {
 
   const handleSignOut = async () => {
     setSyncError(null);
-    const { error } = await supabase.auth.signOut();
+    if (!supabaseClient) return;
+    const { error } = await supabaseClient.auth.signOut();
     if (error) {
       setSyncStatus('error');
       setSyncError(error.message);
@@ -728,24 +757,40 @@ export default function App() {
     return result;
   }, [data.prompts, searchQuery, selectedCategoryId, showFavorites, sortBy]);
 
-  const hasStoredPrompts = data.prompts.length > 0;
-  const shouldShowShell = !isHydrated && !hasStoredPrompts;
+  const isMotionReady = Boolean(motionModule);
+  const MotionDiv: React.ElementType = isMotionReady ? motionModule!.motion.div : 'div';
+  const MotionSpan = motionModule?.motion.span;
+  const emptyStateMotionProps = isMotionReady
+    ? { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.5 } }
+    : {};
+  const promptGridFallback = (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div key={index} className="h-64 rounded-2xl border border-vault-border bg-vault-panel/50" />
+      ))}
+    </div>
+  );
+  const modalFallback = (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/80" />
+      <div className="relative w-full max-w-2xl h-[70vh] rounded-2xl border border-vault-border bg-vault-panel/80" />
+    </div>
+  );
+  const pinLockFallback = <div className="min-h-screen w-full bg-vault-bg" />;
 
   // --- RENDER ---
-  if (shouldShowShell) {
-    return <ShellEmptyState />;
-  }
-
   if (isLocked || isRemovingLock) {
     return (
-      <PinLock
-        storedHash={data.settings.pinHash}
-        onUnlocked={() => setIsLocked(false)}
-        onSetPin={handleSetPin}
-        isRemovingLock={isRemovingLock}
-        onRemoveLock={handleRemoveLock}
-        onCancelRemove={handleCancelRemoveLock}
-      />
+      <Suspense fallback={pinLockFallback}>
+        <PinLock
+          storedHash={data.settings.pinHash}
+          onUnlocked={() => setIsLocked(false)}
+          onSetPin={handleSetPin}
+          isRemovingLock={isRemovingLock}
+          onRemoveLock={handleRemoveLock}
+          onCancelRemove={handleCancelRemoveLock}
+        />
+      </Suspense>
     );
   }
 
@@ -826,7 +871,7 @@ export default function App() {
                     <span className="text-[9px] font-mono text-emerald-400 uppercase tracking-widest">Encrypted</span>
                   </div>
 
-                  {isSupabaseConfigured && authReady ? (
+                  {supabaseConfigured && authReady ? (
                     session ? (
                       <button
                         onClick={handleSignOut}
@@ -916,7 +961,7 @@ export default function App() {
                   <span>Secured</span>
                 </div>
 
-                {isSupabaseConfigured ? (
+                {supabaseConfigured ? (
                   authReady ? (
                     session ? (
                       <div className="flex items-center gap-2">
@@ -1007,23 +1052,23 @@ export default function App() {
 
               {/* Grid */}
               {filteredPrompts.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {filteredPrompts.map(prompt => (
-                    <PromptCard
-                      key={prompt.id}
-                      prompt={prompt}
-                      onCopy={handleCopyPrompt}
-                      onToggleFavorite={handleToggleFavorite}
-                      onClick={setViewingPrompt}
-                      onDuplicate={handleDuplicatePrompt}
-                    />
-                  ))}
-                </div>
+                <Suspense fallback={promptGridFallback}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {filteredPrompts.map(prompt => (
+                      <PromptCard
+                        key={prompt.id}
+                        prompt={prompt}
+                        onCopy={handleCopyPrompt}
+                        onToggleFavorite={handleToggleFavorite}
+                        onClick={setViewingPrompt}
+                        onDuplicate={handleDuplicatePrompt}
+                      />
+                    ))}
+                  </div>
+                </Suspense>
               ) : (
-                <motion.div
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
+                <MotionDiv
+                  {...emptyStateMotionProps}
                   className="flex flex-col items-center justify-center py-28 space-y-8"
                 >
                   {/* Animated geometric illustration */}
@@ -1047,7 +1092,7 @@ export default function App() {
                   >
                     {searchQuery ? 'Clear Search' : <><Plus size={14} /> Add First Prompt</>}
                   </button>
-                </motion.div>
+                </MotionDiv>
               )}
             </div>
           )}
@@ -1057,15 +1102,24 @@ export default function App() {
           <footer className="border-t border-vault-border bg-vault-panel/95 backdrop-blur-sm shrink-0 px-4 py-2 flex items-center justify-between">
             {/* Left: save indicator + schema */}
             <div className="flex items-center gap-2">
-              <motion.span
-                key={isSaved ? 'saved' : 'idle'}
-                initial={{ opacity: 0, scale: 0.85 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className={`text-[9px] font-mono uppercase tracking-widest ${isSaved ? 'text-emerald-400' : 'text-vault-text-muted'
-                  }`}
-              >
-                {isSaved ? '✓ Saved' : `v${SCHEMA_VERSION}`}
-              </motion.span>
+              {MotionSpan ? (
+                <MotionSpan
+                  key={isSaved ? 'saved' : 'idle'}
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className={`text-[9px] font-mono uppercase tracking-widest ${isSaved ? 'text-emerald-400' : 'text-vault-text-muted'
+                    }`}
+                >
+                  {isSaved ? '✓ Saved' : `v${SCHEMA_VERSION}`}
+                </MotionSpan>
+              ) : (
+                <span
+                  className={`text-[9px] font-mono uppercase tracking-widest ${isSaved ? 'text-emerald-400' : 'text-vault-text-muted'
+                    }`}
+                >
+                  {isSaved ? '✓ Saved' : `v${SCHEMA_VERSION}`}
+                </span>
+              )}
               <span className="text-vault-border">·</span>
               <span className="text-[9px] font-mono text-vault-text-muted uppercase tracking-widest">Offline</span>
             </div>
@@ -1098,9 +1152,15 @@ export default function App() {
                 <span>v{SCHEMA_VERSION}</span>
               </div>
               <div className="flex items-center gap-3">
-                <motion.span key={isSaved ? 'saved' : 'idle'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={isSaved ? 'text-emerald-400/80' : ''}>
-                  {isSaved ? '✓ Saved' : 'Offline-First'}
-                </motion.span>
+                {MotionSpan ? (
+                  <MotionSpan key={isSaved ? 'saved' : 'idle'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={isSaved ? 'text-emerald-400/80' : ''}>
+                    {isSaved ? '✓ Saved' : 'Offline-First'}
+                  </MotionSpan>
+                ) : (
+                  <span className={isSaved ? 'text-emerald-400/80' : ''}>
+                    {isSaved ? '✓ Saved' : 'Offline-First'}
+                  </span>
+                )}
                 <span className="text-vault-border">·</span>
                 <span>Encrypted Storage</span>
               </div>
@@ -1120,153 +1180,165 @@ export default function App() {
       {/* --- MODALS --- */}
 
       {/* Create Modal */}
-      <Modal
-        isOpen={isNewModalOpen}
-        onClose={() => setIsNewModalOpen(false)}
-        title="New Librarian Entry"
-      >
-        <PromptForm
-          categories={data.categories}
-          onSubmit={handleAddPrompt}
-          onCancel={() => setIsNewModalOpen(false)}
-        />
-      </Modal>
+      {isNewModalOpen && (
+        <Suspense fallback={modalFallback}>
+          <Modal
+            isOpen={isNewModalOpen}
+            onClose={() => setIsNewModalOpen(false)}
+            title="New Librarian Entry"
+          >
+            <PromptForm
+              categories={data.categories}
+              onSubmit={handleAddPrompt}
+              onCancel={() => setIsNewModalOpen(false)}
+            />
+          </Modal>
+        </Suspense>
+      )}
 
       {/* Edit Modal */}
-      <Modal
-        isOpen={!!editingPrompt}
-        onClose={() => setEditingPrompt(null)}
-        title="Modify Entry"
-      >
-        {editingPrompt && (
-          <PromptForm
-            initialData={editingPrompt}
-            categories={data.categories}
-            onSubmit={handleUpdatePrompt}
-            onCancel={() => setEditingPrompt(null)}
-          />
-        )}
-      </Modal>
+      {editingPrompt && (
+        <Suspense fallback={modalFallback}>
+          <Modal
+            isOpen={true}
+            onClose={() => setEditingPrompt(null)}
+            title="Modify Entry"
+          >
+            <PromptForm
+              initialData={editingPrompt}
+              categories={data.categories}
+              onSubmit={handleUpdatePrompt}
+              onCancel={() => setEditingPrompt(null)}
+            />
+          </Modal>
+        </Suspense>
+      )}
 
       {/* View Modal */}
-      <Modal
-        isOpen={!!viewingPrompt}
-        onClose={() => setViewingPrompt(null)}
-        title="Vault Record"
-        footer={viewingPrompt && (
-          <div className="flex items-center justify-between">
-            <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  setEditingPrompt(viewingPrompt);
-                  setViewingPrompt(null);
-                }}
-                className="flex items-center gap-2 px-6 py-2.5 bg-vault-border text-vault-text hover:bg-vault-accent-blue hover:text-vault-bg rounded-xl font-bold uppercase tracking-widest text-xs transition-all"
-              >
-                Modify
-              </button>
-              <button
-                onClick={() => {
-                  handleDuplicatePrompt(viewingPrompt);
-                  setViewingPrompt(null);
-                }}
-                className="flex items-center gap-2 px-6 py-2.5 border border-vault-border text-vault-text-muted hover:text-vault-text rounded-xl font-bold uppercase tracking-widest text-xs transition-all"
-              >
-                Clone
-              </button>
-            </div>
-            {confirmDeleteId === viewingPrompt.id ? (
-              <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-xl">
-                <span className="text-[10px] font-mono text-red-500 uppercase font-bold tracking-widest">Confirm?</span>
-                <button
-                  onClick={() => handleDeletePrompt(viewingPrompt.id)}
-                  className="px-3 py-1 bg-red-500 text-white rounded-lg text-xs font-bold transition-all hover:bg-red-600 uppercase tracking-widest"
-                >
-                  Yes
-                </button>
-                <button
-                  onClick={() => setConfirmDeleteId(null)}
-                  className="px-3 py-1 text-vault-text-muted hover:text-vault-text text-xs font-bold transition-all uppercase tracking-widest"
-                >
-                  No
-                </button>
+      {viewingPrompt && (
+        <Suspense fallback={modalFallback}>
+          <Modal
+            isOpen={true}
+            onClose={() => setViewingPrompt(null)}
+            title="Vault Record"
+            footer={(
+              <div className="flex items-center justify-between">
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setEditingPrompt(viewingPrompt);
+                      setViewingPrompt(null);
+                    }}
+                    className="flex items-center gap-2 px-6 py-2.5 bg-vault-border text-vault-text hover:bg-vault-accent-blue hover:text-vault-bg rounded-xl font-bold uppercase tracking-widest text-xs transition-all"
+                  >
+                    Modify
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleDuplicatePrompt(viewingPrompt);
+                      setViewingPrompt(null);
+                    }}
+                    className="flex items-center gap-2 px-6 py-2.5 border border-vault-border text-vault-text-muted hover:text-vault-text rounded-xl font-bold uppercase tracking-widest text-xs transition-all"
+                  >
+                    Clone
+                  </button>
+                </div>
+                {confirmDeleteId === viewingPrompt.id ? (
+                  <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-xl">
+                    <span className="text-[10px] font-mono text-red-500 uppercase font-bold tracking-widest">Confirm?</span>
+                    <button
+                      onClick={() => handleDeletePrompt(viewingPrompt.id)}
+                      className="px-3 py-1 bg-red-500 text-white rounded-lg text-xs font-bold transition-all hover:bg-red-600 uppercase tracking-widest"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      onClick={() => setConfirmDeleteId(null)}
+                      className="px-3 py-1 text-vault-text-muted hover:text-vault-text text-xs font-bold transition-all uppercase tracking-widest"
+                    >
+                      No
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setConfirmDeleteId(viewingPrompt.id)}
+                    className="p-2.5 text-red-500/50 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
+                    title="Delete Prompt"
+                  >
+                    <AlertCircle size={20} />
+                  </button>
+                )}
               </div>
-            ) : (
-              <button
-                onClick={() => setConfirmDeleteId(viewingPrompt.id)}
-                className="p-2.5 text-red-500/50 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
-                title="Delete Prompt"
-              >
-                <AlertCircle size={20} />
-              </button>
             )}
-          </div>
-        )}
-      >
-        {viewingPrompt && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between border-b border-vault-border pb-4">
-              <h3 className="text-2xl font-bold text-vault-accent">{viewingPrompt.title}</h3>
-              <div className="flex items-center gap-2 px-3 py-1 bg-vault-accent/10 text-vault-accent rounded-full text-[10px] font-mono font-bold uppercase">
-                {data.categories.find(c => c.id === viewingPrompt.categoryId)?.name}
+          >
+            <div className="space-y-6">
+              <div className="flex items-center justify-between border-b border-vault-border pb-4">
+                <h3 className="text-2xl font-bold text-vault-accent">{viewingPrompt.title}</h3>
+                <div className="flex items-center gap-2 px-3 py-1 bg-vault-accent/10 text-vault-accent rounded-full text-[10px] font-mono font-bold uppercase">
+                  {data.categories.find(c => c.id === viewingPrompt.categoryId)?.name}
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <label className="text-[10px] font-mono text-vault-text-muted uppercase tracking-[0.2em]">Prompt Body</label>
-              <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-xl font-mono text-sm leading-relaxed whitespace-pre-wrap select-text">
-                {viewingPrompt.body}
+              <div className="space-y-2">
+                <label className="text-[10px] font-mono text-vault-text-muted uppercase tracking-[0.2em]">Prompt Body</label>
+                <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-xl font-mono text-sm leading-relaxed whitespace-pre-wrap select-text">
+                  {viewingPrompt.body}
+                </div>
               </div>
-            </div>
 
-            <div className="flex flex-wrap gap-2">
-              {viewingPrompt.tags.map(tag => (
-                <span key={tag} className="px-3 py-1 bg-vault-border/50 text-vault-text-muted rounded-full text-[10px] font-mono">
-                  #{tag}
-                </span>
-              ))}
-            </div>
+              <div className="flex flex-wrap gap-2">
+                {viewingPrompt.tags.map(tag => (
+                  <span key={tag} className="px-3 py-1 bg-vault-border/50 text-vault-text-muted rounded-full text-[10px] font-mono">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
 
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-vault-border h-24">
-              <div className="flex flex-col items-center justify-center p-4 bg-vault-panel/50 rounded-xl border border-vault-border/50">
-                <span className="text-xl font-mono-tight font-bold">{viewingPrompt.usageCount}</span>
-                <span className="text-[9px] font-mono text-vault-text-muted uppercase tracking-widest">Extractions</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-4 bg-vault-panel/50 rounded-xl border border-vault-border/50">
-                <span className="text-[11px] font-mono font-bold">{new Date(viewingPrompt.createdAt).toLocaleDateString()}</span>
-                <span className="text-[9px] font-mono text-vault-text-muted uppercase tracking-widest">Archived On</span>
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-vault-border h-24">
+                <div className="flex flex-col items-center justify-center p-4 bg-vault-panel/50 rounded-xl border border-vault-border/50">
+                  <span className="text-xl font-mono-tight font-bold">{viewingPrompt.usageCount}</span>
+                  <span className="text-[9px] font-mono text-vault-text-muted uppercase tracking-widest">Extractions</span>
+                </div>
+                <div className="flex flex-col items-center justify-center p-4 bg-vault-panel/50 rounded-xl border border-vault-border/50">
+                  <span className="text-[11px] font-mono font-bold">{new Date(viewingPrompt.createdAt).toLocaleDateString()}</span>
+                  <span className="text-[9px] font-mono text-vault-text-muted uppercase tracking-widest">Archived On</span>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </Modal>
+          </Modal>
+        </Suspense>
+      )}
 
       {/* Variables Modal */}
-      <Modal
-        isOpen={!!variablePrompt}
-        onClose={() => setVariablePrompt(null)}
-        title="Dynamic Injection"
-      >
-        {variablePrompt && (
-          <VariableForm
-            prompt={variablePrompt.prompt}
-            variables={variablePrompt.vars}
-            onCopy={(body) => handleCopyPrompt(variablePrompt.prompt, body)}
-            onCancel={() => {
-              // If skipped, use default body but still record usage
-              handleCopyPrompt(variablePrompt.prompt, variablePrompt.prompt.body);
-            }}
-          />
-        )}
-      </Modal>
+      {variablePrompt && (
+        <Suspense fallback={modalFallback}>
+          <Modal
+            isOpen={true}
+            onClose={() => setVariablePrompt(null)}
+            title="Dynamic Injection"
+          >
+            <VariableForm
+              prompt={variablePrompt.prompt}
+              variables={variablePrompt.vars}
+              onCopy={(body) => handleCopyPrompt(variablePrompt.prompt, body)}
+              onCancel={() => {
+                // If skipped, use default body but still record usage
+                handleCopyPrompt(variablePrompt.prompt, variablePrompt.prompt.body);
+              }}
+            />
+          </Modal>
+        </Suspense>
+      )}
 
       {/* Settings Modal */}
-      <Modal
-        isOpen={showSettings}
-        onClose={() => setShowSettings(false)}
-        title="Vault Protocol Settings"
-      >
-        <div className="space-y-8">
+      {showSettings && (
+        <Suspense fallback={modalFallback}>
+          <Modal
+            isOpen={true}
+            onClose={() => setShowSettings(false)}
+            title="Vault Protocol Settings"
+          >
+            <div className="space-y-8">
           <section className="space-y-4">
             <div className="flex items-center gap-2 text-vault-accent font-mono uppercase tracking-widest text-[10px] font-bold">
               <ShieldCheck size={14} />
@@ -1309,7 +1381,7 @@ export default function App() {
               <span>Cloud Sync</span>
             </div>
             <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl space-y-4">
-              {!isSupabaseConfigured ? (
+              {!supabaseConfigured ? (
                 <div className="space-y-2">
                   <p className="text-sm font-medium">Supabase not configured</p>
                   <p className="text-xs text-vault-text-muted font-mono">
@@ -1445,16 +1517,20 @@ export default function App() {
               </div>
             </div>
           </section>
-        </div>
-      </Modal>
+            </div>
+          </Modal>
+        </Suspense>
+      )}
 
       {/* Shortcuts Modal */}
-      <Modal
-        isOpen={showShortcuts}
-        onClose={() => setShowShortcuts(false)}
-        title="Protocol Shortcuts"
-      >
-        <div className="space-y-6">
+      {showShortcuts && (
+        <Suspense fallback={modalFallback}>
+          <Modal
+            isOpen={true}
+            onClose={() => setShowShortcuts(false)}
+            title="Protocol Shortcuts"
+          >
+            <div className="space-y-6">
           <div className="grid grid-cols-1 gap-3">
             <div className="flex items-center justify-between p-4 bg-vault-bg border border-vault-border rounded-xl">
               <span className="text-xs font-mono uppercase tracking-widest text-vault-text-muted">Spotlight Search</span>
@@ -1483,8 +1559,10 @@ export default function App() {
             <Command size={18} className="text-vault-accent" />
             <p className="text-[10px] font-mono text-vault-text-muted uppercase leading-relaxed">System-wide hotkeys active while vault is decrypted.</p>
           </div>
-        </div>
-      </Modal>
+            </div>
+          </Modal>
+        </Suspense>
+      )}
 
       <div className="fixed bottom-19.5 right-30 pointer-events-none group">
         <button
