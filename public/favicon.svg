@@ -1,3 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <image href="/logo.png" width="512" height="512" preserveAspectRatio="xMidYMid slice" />
+  <defs>
+    <linearGradient id="g" x1=".15" y1="0" x2=".85" y2="1">
+      <stop offset="0%" stop-color="#d4880b"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#f5bb28"/>
+    </linearGradient>
+  </defs>
+  <!-- Outer shield -->
+  <path fill="url(#g)" d="M256 92 L128 137 L128 200 C128 310 170 370 256 418 C342 370 384 310 384 200 L384 137Z"/>
+  <!-- Inner dark area (top pentagon between V arms and shield top) -->
+  <path fill="#0b0c0e" d="M256 125 L213 140 L158 162 L158 200 C158 300 190 355 256 400 C322 355 354 300 354 200 L354 162 L299 140Z"/>
+  <!-- V shape: outer arms + inner triangle -->
+  <path fill="url(#g)" d="
+    M213 140 L176 175 L256 390 L336 175 L299 140
+    L268 150 L256 305 L244 150Z"/>
+  <!-- Keyhole circle -->
+  <circle fill="#0b0c0e" cx="256" cy="205" r="20"/>
+  <!-- Keyhole slot -->
+  <path fill="#0b0c0e" d="M248 220 L256 280 L264 220Z"/>
 </svg>
