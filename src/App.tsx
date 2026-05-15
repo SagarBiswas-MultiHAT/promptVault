@@ -777,6 +777,11 @@ export default function App() {
     </div>
   );
   const pinLockFallback = <div className="min-h-screen w-full bg-vault-bg" />;
+  const isEmptyState = !showStats && filteredPrompts.length === 0;
+  const contentAreaClassName = `flex-1 ${isEmptyState ? 'overflow-hidden flex flex-col' : 'overflow-y-auto'} ${isMobile ? 'p-4' : 'px-10 py-8'}`;
+  const contentWrapperClassName = isEmptyState
+    ? 'flex flex-1 flex-col max-w-7xl mx-auto w-full'
+    : 'space-y-6 max-w-7xl mx-auto';
 
   // --- RENDER ---
   if (isLocked || isRemovingLock) {
@@ -1029,7 +1034,7 @@ export default function App() {
         </header>
 
         {/* Content Area */}
-        <div className={`flex-1 overflow-y-auto ${isMobile ? 'p-4' : 'px-10 py-8'}`}>
+        <div className={contentAreaClassName}>
           {showStats ? (
             <div className="max-w-5xl mx-auto">
               <div className="flex items-center justify-between mb-10">
@@ -1041,7 +1046,7 @@ export default function App() {
               </Suspense>
             </div>
           ) : (
-            <div className="space-y-6 max-w-7xl mx-auto">
+            <div className={contentWrapperClassName}>
               {/* Section Header */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -1069,7 +1074,7 @@ export default function App() {
               ) : (
                 <MotionDiv
                   {...emptyStateMotionProps}
-                  className="flex flex-col items-center justify-center py-28 space-y-8"
+                  className="flex flex-1 flex-col items-center justify-center space-y-8"
                 >
                   {/* Animated geometric illustration */}
                   <div className="relative w-32 h-32">
