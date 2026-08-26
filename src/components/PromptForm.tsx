@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo, FormEvent } from 'react';
+import { useState, useMemo, FormEvent } from 'react';
 import { Prompt, Category } from '../types.ts';
 import { Plus, X, Tag as TagIcon, Layout, Info } from 'lucide-react';
 
@@ -134,7 +134,7 @@ export function PromptForm({ initialData, categories, onSubmit, onCancel }: Prom
             placeholder="Type your prompt here..."
             className="w-full bg-vault-bg/60 border border-vault-border rounded-xl px-4 py-3 focus:border-vault-accent/50 focus:shadow-[0_0_0_3px_rgba(245,158,11,0.08)] outline-none transition-all font-mono text-sm leading-relaxed resize-none"
           />
-          <div className="absolute bottom-3 right-3 text-[9px] font-mono text-vault-text-muted/40 tabular-nums">
+          <div className="absolute bottom-3 right-3 text-[9px] font-mono text-vault-text-muted/60 tabular-nums">
             {wordCount} words
           </div>
         </div>

@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Plus, ChevronLeft, ChevronRight, Star, Trash2, Edit2, BarChart3, Hash, FolderOpen, GripVertical } from 'lucide-react';
+import { Plus, ChevronLeft, ChevronRight, Star, Trash2, Edit2, BarChart3, Hash, FolderOpen } from 'lucide-react';
 import { Category, Prompt } from '../types.ts';
 import { motion, AnimatePresence } from 'motion/react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import { useIsMobile } from '../hooks/useMediaQuery.ts';
 
 interface SidebarProps {
   categories: Category[];
@@ -14,12 +15,14 @@ interface SidebarProps {
   selectedCategoryId: string | null;
   onSelectCategory: (id: string | null) => void;
   onAddCategory: () => void;
+  /**
+   * Requests deletion. The confirmation dialog lives in the parent, which owns
+   * the app's `Modal`; the sidebar only reports the intent.
+   */
   onDeleteCategory: (id: string) => void;
   onRenameCategory: (id: string, name: string) => void;
-  onToggleCollapse: (id: string) => void;
   showFavorites: boolean;
   onToggleFavorites: () => void;
-  showStats: boolean;
   onToggleStats: () => void;
   isCollapsed: boolean;
   onToggleSidebar: () => void;
@@ -33,25 +36,15 @@ export function Sidebar({
   onAddCategory,
   onDeleteCategory,
   onRenameCategory,
-  onToggleCollapse,
   showFavorites,
   onToggleFavorites,
-  showStats,
   onToggleStats,
   isCollapsed,
   onToggleSidebar,
 }: SidebarProps) {
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
-
-  // Detect mobile viewport
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  const isMobile = useIsMobile();
 
   // Auto-close sidebar on mobile after selecting a nav item
   const handleMobileAutoClose = useCallback(() => {
@@ -77,12 +70,6 @@ export function Sidebar({
     }
     setEditingCategoryId(null);
     setEditingName('');
-  };
-
-  const handleDeleteCategory = (id: string) => {
-    if (confirm('Delete this category and all its prompts? This cannot be undone.')) {
-      onDeleteCategory(id);
-    }
   };
 
   return (
@@ -321,7 +308,7 @@ export function Sidebar({
                                     <Edit2 size={13} />
                                   </button>
                                   <button
-                                    onClick={() => handleDeleteCategory(category.id)}
+                                    onClick={() => onDeleteCategory(category.id)}
                                     className="p-1.5 hover:bg-vault-panel-bright text-vault-text-muted hover:text-red-400 rounded-md transition-all"
                                     title="Delete category"
                                   >

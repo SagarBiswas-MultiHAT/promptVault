@@ -30,10 +30,9 @@ interface ImproveResult {
 interface AiAssistantWidgetProps {
   categories: Category[];
   onCreatePrompt: (data: { title: string; body: string; categoryId: string; tags: string[] }) => string | null;
-  onToggleFavorite: (id: string) => void;
 }
 
-export function AiAssistantWidget({ categories, onCreatePrompt, onToggleFavorite }: AiAssistantWidgetProps) {
+export function AiAssistantWidget({ categories, onCreatePrompt }: AiAssistantWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [promptInput, setPromptInput] = useState('');
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);

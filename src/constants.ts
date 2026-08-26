@@ -3,15 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { VaultData } from './types.ts';
+import { DEFAULT_SORT, VaultData } from './types.ts';
 
-export const SCHEMA_VERSION = '1.0.0';
+export const SCHEMA_VERSION = '2.0.0';
+const INITIAL_TIMESTAMP = 0;
 
 export const INITIAL_CATEGORIES = [
-  { id: 'cat-1', name: 'Coding', isCollapsed: false },
-  { id: 'cat-2', name: 'Writing', isCollapsed: false },
-  { id: 'cat-3', name: 'Marketing', isCollapsed: false },
-  { id: 'cat-4', name: 'General', isCollapsed: false },
+  { id: 'cat-1', name: 'Coding', updatedAt: INITIAL_TIMESTAMP, deletedAt: null },
+  { id: 'cat-2', name: 'Writing', updatedAt: INITIAL_TIMESTAMP, deletedAt: null },
+  { id: 'cat-3', name: 'Marketing', updatedAt: INITIAL_TIMESTAMP, deletedAt: null },
+  { id: 'cat-4', name: 'General', updatedAt: INITIAL_TIMESTAMP, deletedAt: null },
 ];
 
 export const INITIAL_DATA: VaultData = {
@@ -19,8 +20,8 @@ export const INITIAL_DATA: VaultData = {
   prompts: [],
   categories: INITIAL_CATEGORIES,
   settings: {
-    pinHash: null,
     isDarkMode: true,
+    sortBy: DEFAULT_SORT,
   },
 };
 
