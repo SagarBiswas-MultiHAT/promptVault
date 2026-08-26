@@ -3,27 +3,46 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Copy, Star, ExternalLink, Clock, Hash, Zap, Check, SquarePen, Tags } from 'lucide-react';
+import { Copy, Star, Check } from 'lucide-react';
 import { Prompt } from '../types.ts';
 import { motion } from 'motion/react';
-import React, { useState, MouseEvent } from 'react';
+import React, { useState, useEffect, useRef, MouseEvent } from 'react';
 
 interface PromptCardProps {
   prompt: Prompt;
-  onCopy: (prompt: Prompt) => void;
+  /**
+   * Resolves `true` only when text actually reached the clipboard.
+   *
+   * Resolves `false` when the copy did not happen — either the prompt contains
+   * `{{variables}}` and the caller opened the fill-in form instead, or the
+   * clipboard write was rejected. Both used to render "Copied" anyway.
+   */
+  onCopy: (prompt: Prompt) => Promise<boolean>;
   onToggleFavorite: (id: string) => void;
   onClick: (prompt: Prompt) => void;
-  onDuplicate: (prompt: Prompt) => void;
+  enableLayout?: boolean;
 }
 
-export const PromptCard: React.FC<PromptCardProps> = ({ prompt, onCopy, onToggleFavorite, onClick, onDuplicate }) => {
+export const PromptCard: React.FC<PromptCardProps> = ({ prompt, onCopy, onToggleFavorite, onClick, enableLayout = true }) => {
   const [copied, setCopied] = useState(false);
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // The confirmation is a timer, so it outlives the component if the card is
+  // filtered out of the grid while lit.
+  useEffect(() => () => {
+    if (resetTimer.current !== null) clearTimeout(resetTimer.current);
+  }, []);
 
   const handleCopy = (e: MouseEvent) => {
     e.stopPropagation();
-    onCopy(prompt);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    void onCopy(prompt).then((didCopy) => {
+      if (!didCopy) return;
+      setCopied(true);
+      // Restart the window on a repeat click rather than letting the first
+      // timer clear the badge mid-way through the second copy.
+      if (resetTimer.current !== null) clearTimeout(resetTimer.current);
+      resetTimer.current = setTimeout(() => setCopied(false), 2000);
+    });
   };
 
   const handleFavorite = (e: MouseEvent) => {
@@ -33,7 +52,7 @@ export const PromptCard: React.FC<PromptCardProps> = ({ prompt, onCopy, onToggle
 
   return (
     <motion.div
-      layout
+      layout={enableLayout}
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -3 }}

@@ -4,7 +4,7 @@
  */
 
 import { Prompt, Category } from '../types.ts';
-import { BarChart3, TrendingUp, Hash, Star, Layout, Bookmark, Trophy, Award, Medal } from 'lucide-react';
+import { TrendingUp, Star, Layout, Bookmark, Trophy, Award, Medal } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface StatsDashboardProps {

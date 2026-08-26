@@ -8,3 +8,9 @@ coverage/
 !.env.example
 *.tsbuildinfo
 .vite/
+
+# Test artifacts
+playwright-report/
+test-results/
+blob-report/
+.playwright/

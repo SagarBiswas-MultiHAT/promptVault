@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Prompt } from '../types.ts';
-import { Check, Clipboard, X, Info } from 'lucide-react';
+import { Clipboard, Info } from 'lucide-react';
 
 interface VariableFormProps {
   prompt: Prompt;

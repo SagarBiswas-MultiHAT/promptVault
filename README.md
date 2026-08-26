@@ -28,8 +28,8 @@ Everything is stored directly in your browser. No sign-up required. No ads. No d
 
 ## What Can It Do?
 
-### 🔒 Keep Your Vault Private
-You can set a PIN code to lock the app. Nobody can read your prompts without it. The PIN is scrambled using a one-way security process before it's stored, so even if someone accessed your device, they couldn't recover the original code.
+### 🔒 Encrypt Your Vault
+You can encrypt the local vault with either a numeric PIN or a passphrase. PromptVault uses AES-256-GCM for vault data and PBKDF2-SHA-256 (600,000 iterations) to derive the key that unlocks it. Your secret is never stored. A PIN is convenient but weak against offline guessing; use a long passphrase for meaningful protection, and save the one-time recovery key shown during setup.
 
 ### 🤖 Built-In AI Assistant
 Not sure if your prompt is well-written? The **AI Librarian** can:
@@ -72,8 +72,8 @@ Yes. Here's how PromptVault protects you:
 | What | How |
 |---|---|
 | **Your AI keys are private** | They're stored on the server, never sent to your browser |
-| **Your PIN is protected** | It's scrambled using a one-way process — not stored as plain text |
-| **Your prompts stay local** | Everything lives in your browser unless you choose to enable cloud sync |
+| **Encrypted local vault** | When enabled, prompt data is AES-256-GCM encrypted in browser storage; the secret is never stored |
+| **Your prompts stay local** | Everything lives in your browser unless you choose cloud sync. Sync payloads are plaintext JSON protected by Supabase RLS and TLS so a newly signed-in device can use the vault |
 | **The app can't be embedded** | Security headers prevent the app from being loaded inside other websites |
 | **Abuse prevention** | The AI assistant is limited to 30 requests per minute per user |
 | **Connections are restricted** | In production, only your own domain can talk to the server |

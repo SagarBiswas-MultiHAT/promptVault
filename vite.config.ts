@@ -1,13 +1,13 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import {defineConfig, loadEnv} from 'vite';
+import {defineConfig, type Plugin} from 'vite';
 import {fileURLToPath} from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CSS_PRELOAD_PLACEHOLDER = '<!-- __CSS_PRELOAD__ -->';
 
-function cssPreloadPlugin() {
+function cssPreloadPlugin(): Plugin {
   return {
     name: 'inject-css-preload',
     transformIndexHtml: {
@@ -22,9 +22,10 @@ function cssPreloadPlugin() {
         }
 
         const cssAssets = Object.values(ctx.bundle).filter(
-          (item) => item.type === 'asset' && item.fileName.endsWith('.css')
+          (item): item is Extract<typeof item, {type: 'asset'}> =>
+            item.type === 'asset' && item.fileName.endsWith('.css')
         );
-        const cssAsset = cssAssets.find((item) => item.fileName.startsWith('assets/index-')) || cssAssets[0];
+        const cssAsset = cssAssets.find((item) => item.fileName.startsWith('assets/index-')) ?? cssAssets[0];
 
         if (!cssAsset) {
           return html.replace(CSS_PRELOAD_PLACEHOLDER, '');
@@ -44,39 +45,39 @@ function cssPreloadPlugin() {
   };
 }
 
-export default defineConfig(({mode}) => {
-  const env = loadEnv(mode, process.cwd(), '');
-  return {
-    plugins: [react(), tailwindcss(), cssPreloadPlugin()],
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, 'src'),
+// `loadEnv` used to be called here and its result discarded, so it had no effect.
+// Vite already exposes `VITE_*` vars to the client via `import.meta.env`.
+export default defineConfig({
+  plugins: [react(), tailwindcss(), cssPreloadPlugin()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
+  },
+  server: {
+    // HMR is disabled in AI Studio via DISABLE_HMR env var.
+    // Do not modify—file watching is disabled to prevent flickering during agent edits.
+    hmr: process.env.DISABLE_HMR !== 'true',
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3002',
+        changeOrigin: true,
       },
     },
-    server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modify—file watching is disabled to prevent flickering during agent edits.
-      hmr: process.env.DISABLE_HMR !== 'true',
-      proxy: {
-        '/api': {
-          target: 'http://localhost:3002',
-          changeOrigin: true,
+  },
+  build: {
+    target: 'es2022',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          const normalizedId = id.replace(/\\/g, '/');
+          if (normalizedId.includes('/node_modules/react/') || normalizedId.includes('/node_modules/react-dom/')) return 'vendor-react';
+          if (normalizedId.includes('/node_modules/motion/')) return 'vendor-motion';
+          if (normalizedId.includes('/node_modules/lucide-react/')) return 'vendor-icons';
+          if (normalizedId.includes('/node_modules/@supabase/')) return 'vendor-supabase';
         },
       },
     },
-    build: {
-      target: 'es2022',
-      sourcemap: false,
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            'vendor-react': ['react', 'react-dom'],
-            'vendor-motion': ['motion/react'],
-            'vendor-icons': ['lucide-react'],
-            'vendor-supabase': ['@supabase/supabase-js'],
-          },
-        },
-      },
-    },
-  };
+  },
 });

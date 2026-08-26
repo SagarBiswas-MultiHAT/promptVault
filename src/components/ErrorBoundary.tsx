@@ -29,11 +29,11 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('[PromptVault] Uncaught render error:', error, errorInfo);
   }
 
-  render() {
+  override render() {
     if (!this.state.hasError) {
       return this.props.children;
     }

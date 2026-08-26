@@ -4,6 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!--
+      Applies the saved theme before first paint. Must stay here, high in <head>,
+      and must NOT be deferred: a deferred script runs after parsing, which
+      reintroduces the dark flash this prevents for light-theme users.
+    -->
+    <script src="/theme-init.js"></script>
+
     <!-- Primary Meta -->
     <title>PromptVault — Your Private AI Prompt Library</title>
     <meta name="description" content="A private, offline-first prompt manager for organizing, evaluating, and deploying AI prompts across any workflow. Secure, fast, and beautiful." />
@@ -130,7 +137,7 @@
       "featureList": [
         "Offline-first prompt storage",
         "AI-powered prompt analysis and improvement",
-        "PIN-protected encrypted vault",
+        "Optional AES-256-GCM encrypted local vault",
         "Cloud sync via Supabase",
         "Category organization",
         "Variable template system",
@@ -155,7 +162,7 @@
         <h1 style="font-size: 24px; margin-bottom: 16px;">PromptVault</h1>
         <p style="color: #6B7280; line-height: 1.6;">
           PromptVault is a private, offline-first AI prompt manager for organizing, evaluating, and deploying prompts across any workflow.
-          Features include AI-powered prompt analysis, PIN-protected encrypted storage, cloud sync, and variable template injection.
+          Features include AI-powered prompt analysis, optional AES-256-GCM encrypted storage, cloud sync, and variable template injection.
         </p>
         <p style="color: #6B7280; margin-top: 16px;">
           Please enable JavaScript to use PromptVault.
