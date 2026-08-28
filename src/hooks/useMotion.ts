@@ -29,7 +29,7 @@ export interface MotionKit {
 }
 
 export function useMotion(): MotionKit {
-  const mod = useIdleModule<MotionModule>(() => import('motion/react'));
+  const mod = useIdleModule<MotionModule>(() => import('motion/react'), 800);
   const ready = Boolean(mod);
 
   return {

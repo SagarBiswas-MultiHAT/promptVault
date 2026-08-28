@@ -48,7 +48,7 @@ export interface CloudSyncOptions {
 }
 
 export function useCloudSync({ syncMeta, dataRef, onRemoteData, data, enabled }: CloudSyncOptions): CloudSyncController {
-  const supabaseModule = useIdleModule<SupabaseModule>(() => import('../utils/supabase.ts'));
+  const supabaseModule = useIdleModule<SupabaseModule>(() => import('../utils/supabase.ts'), 1800);
   const supabaseClient: SupabaseClient | null = supabaseModule?.supabase ?? null;
   const configured = supabaseModule?.isSupabaseConfigured ?? false;
 

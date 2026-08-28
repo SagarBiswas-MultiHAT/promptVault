@@ -28,11 +28,12 @@ type IdleWindow = Window & {
  * Safari has no `requestIdleCallback`, hence the `setTimeout(0)` fallback — later
  * than idle scheduling would be under load, but still after the current paint.
  */
-export function useIdleModule<T>(load: () => Promise<T>): T | null {
+export function useIdleModule<T>(load: () => Promise<T>, delayMs = 1200): T | null {
   const [module, setModule] = useState<T | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+    let idleId: number | null = null;
     const idleWindow = window as IdleWindow;
 
     const run = () => {
@@ -43,20 +44,24 @@ export function useIdleModule<T>(load: () => Promise<T>): T | null {
       });
     };
 
-    if (idleWindow.requestIdleCallback) {
-      const id = idleWindow.requestIdleCallback(run, { timeout: 2000 });
-      return () => {
-        cancelled = true;
-        idleWindow.cancelIdleCallback?.(id);
-      };
-    }
+    const schedule = () => {
+      if (idleWindow.requestIdleCallback) {
+        idleId = idleWindow.requestIdleCallback(run, { timeout: 3000 });
+      } else {
+        run();
+      }
+    };
 
-    const timeoutId = window.setTimeout(run, 0);
+    const timerId = window.setTimeout(schedule, delayMs);
+
     return () => {
       cancelled = true;
-      window.clearTimeout(timeoutId);
+      window.clearTimeout(timerId);
+      if (idleId !== null && idleWindow.cancelIdleCallback) {
+        idleWindow.cancelIdleCallback(idleId);
+      }
     };
-  }, []);
+  }, [delayMs]);
 
   return module;
 }

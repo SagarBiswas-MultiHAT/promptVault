@@ -1,5 +1,14 @@
-// Google Analytics 4 — deferred until the browser is idle to avoid blocking FCP/LCP
+// Google Analytics 4 — deferred until after first user interaction or idle timeout
+// to prevent third-party scripts from competing with LCP and main-thread hydration.
 function loadGA() {
+  if (window.__gaLoaded) return;
+  window.__gaLoaded = true;
+
+  // Cleanup interaction listeners once loaded
+  ['pointerdown', 'touchstart', 'scroll', 'keydown'].forEach(function (e) {
+    window.removeEventListener(e, loadGA, { passive: true });
+  });
+
   var s = document.createElement('script');
   s.src = 'https://www.googletagmanager.com/gtag/js?id=G-6NXF69ERP4';
   s.async = true;
@@ -11,10 +20,16 @@ function loadGA() {
   gtag('config', 'G-6NXF69ERP4');
 }
 
+// Attach user interaction listeners with passive flag for zero scroll jank
+['pointerdown', 'touchstart', 'scroll', 'keydown'].forEach(function (e) {
+  window.addEventListener(e, loadGA, { once: true, passive: true });
+});
+
+// Fallback idle timer after 4.5 seconds if no interaction occurs
 if ('requestIdleCallback' in window) {
-  requestIdleCallback(loadGA);
+  setTimeout(function() { requestIdleCallback(loadGA); }, 4500);
 } else {
-  setTimeout(loadGA, 3500);
+  setTimeout(loadGA, 4500);
 }
 
 // Activate non-blocking Google Fonts (CSP-safe alternative to inline onload handler)
