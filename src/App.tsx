@@ -12,7 +12,6 @@
  */
 
 import { ChangeEvent, Suspense, lazy, useCallback, useDeferredValue, useMemo, useRef, useState } from 'react';
-import { HelpCircle } from 'lucide-react';
 
 import { AppFooter } from './components/AppFooter.tsx';
 import { AppHeader } from './components/AppHeader.tsx';
@@ -368,17 +367,7 @@ export default function App() {
 
       {copyError && <CopyErrorToast message={copyError} onDismiss={() => setCopyError(null)} />}
 
-      {!isMobile && !anyModalOpen && (
-        <div className="fixed bottom-[3.5rem] right-30 pointer-events-none group">
-          <button
-            onClick={() => overlays.setShortcuts(true)}
-            aria-label="Keyboard shortcuts help"
-            className="pointer-events-auto w-9 h-9 bg-vault-panel/80 border border-vault-border rounded-full flex items-center justify-center text-vault-text-muted/50 hover:text-vault-accent hover:border-vault-accent/30 transition-all shadow-lg backdrop-blur-sm"
-          >
-            <HelpCircle size={15} />
-          </button>
-        </div>
-      )}
+
     </div>
   );
 }
