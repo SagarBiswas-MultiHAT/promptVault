@@ -101,13 +101,13 @@ export const PromptCard: React.FC<PromptCardProps> = ({ prompt, onCopy, onToggle
       </div>
 
       {/* Footer */}
-      <div className="px-5 pb-4 pt-2 flex items-center justify-between mt-auto">
-        <div className="flex gap-1.5">
+      <div className="px-5 pb-4 pt-2 flex items-center justify-between gap-3 mt-auto">
+        <div className="flex gap-1.5 min-w-0 overflow-hidden">
           {prompt.tags.slice(0, 2).map(tag => (
-            <span key={tag} className="text-[9px] bg-vault-panel-bright/80 border border-vault-border/50 px-2 py-0.5 rounded-full text-vault-text-muted font-mono">#{tag}</span>
+            <span key={tag} className="text-[9px] bg-vault-panel-bright/80 border border-vault-border/50 px-2 py-0.5 rounded-full text-vault-text-muted font-mono truncate max-w-[100px] shrink-0">#{tag}</span>
           ))}
           {prompt.tags.length > 2 && (
-            <span className="text-[9px] text-vault-text-muted/50 font-mono">+{prompt.tags.length - 2}</span>
+            <span className="text-[9px] text-vault-text-muted/50 font-mono shrink-0">+{prompt.tags.length - 2}</span>
           )}
         </div>
         
