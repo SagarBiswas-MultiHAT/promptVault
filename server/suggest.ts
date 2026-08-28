@@ -91,6 +91,17 @@ const lastFailures = new Map<string, { at: string; kind: FailureKind; status: nu
  */
 const rateLimitedUntil = new Map<string, number>(); // slot → epoch ms
 
+/**
+ * Slots currently executing a live network call to Gemini.
+ *
+ * When request A is already awaiting `requestGemini` for slot "gemini[2]",
+ * concurrent request B would also pass `isRateLimited()` (the circuit breaker
+ * hasn't fired yet) and make a second identical call — tripling the 403/429
+ * traffic on startup. Tracking in-flight slots lets B skip the call and fall
+ * through to the next key, eliminating the concurrency pile-on.
+ */
+const inFlight = new Set<string>(); // slots currently awaiting a network call
+
 /** Extract the "retry in X seconds" value from a Gemini 429 body, if present. */
 function parseRetryAfterSeconds(message: string): number | null {
   const match = message.match(/retry in ([\d.]+)s/i);
@@ -188,6 +199,15 @@ async function callProviders(promptText: string, schema: unknown): Promise<Provi
       continue;
     }
 
+    // If another concurrent request is already mid-call on this slot, skip it
+    // rather than piling on — the other call will set the circuit breaker if
+    // it fails, and the next request will skip cleanly via isRateLimited().
+    if (inFlight.has(slot)) {
+      failures.push(`${slot}: skipped (concurrent call in progress)`);
+      continue;
+    }
+
+    inFlight.add(slot);
     try {
       return { provider: slot, rawText: await requestGemini(promptText, schema, apiKey) };
     } catch (error) {
@@ -195,6 +215,12 @@ async function callProviders(promptText: string, schema: unknown): Promise<Provi
         if (error.status === 429) {
           // Honour the retry-after hint from the 429 body.
           markRateLimited(slot, error);
+        } else if (error.status === 401 || error.status === 403) {
+          // Auth failure: the key is revoked, denied, or invalid. Back off for
+          // 1 hour so a dead key doesn't waste a network call on every request
+          // for the entire process lifetime.
+          rateLimitedUntil.set(slot, Date.now() + 3_600_000);
+          console.error(`[ai-proxy] ${slot} auth failure (HTTP ${error.status}); disabling for 1h — check this key`);
         } else if (
           error.message.includes('timed out') ||
           (error.status != null && error.status >= 500)
@@ -207,6 +233,8 @@ async function callProviders(promptText: string, schema: unknown): Promise<Provi
       }
       recordFailure(slot, error);
       failures.push(describe(slot, error));
+    } finally {
+      inFlight.delete(slot);
     }
   }
 
