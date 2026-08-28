@@ -2,12 +2,32 @@
 
 > **Your personal, private library for AI prompts - organised, rated, and always at hand.**
 
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Website Status](https://img.shields.io/website?url=https%3A%2F%2Fpromptvault.multihat.dev&label=Live%20Demo)](https://promptvault.multihat.dev/)
-[![React](https://img.shields.io/badge/React-19.0-61DAFB?logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Supabase](https://img.shields.io/badge/Supabase-Sync_Enabled-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
+<!-- Badges Section -->
+<p align="right">
+  <a href="https://promptvault.multihat.dev/"><img src="https://img.shields.io/website?url=https%3A%2F%2Fpromptvault.multihat.dev&up_message=online&down_message=offline&label=Live%20Demo&color=10B981&logo=vercel" alt="Live Demo" /></a>
+  &nbsp;
+  <a href="https://github.com/SagarBiswas-MultiHAT/promptVault/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/SagarBiswas-MultiHAT/promptVault/ci.yml?branch=main&label=CI%20Build&logo=githubactions&logoColor=white" alt="CI Status" /></a>
+  &nbsp;
+  <a href="https://github.com/SagarBiswas-MultiHAT/promptVault/releases"><img src="https://img.shields.io/badge/Release-v2.1.0-F59E0B?logo=semanticrelease&logoColor=white" alt="Version" /></a>
+  &nbsp;
+  <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg?logo=apache" alt="License" /></a>
+</p>
+<p align="left">
+  <img src="https://img.shields.io/badge/Security-AES--256--GCM%20%2B%20PBKDF2-10b981?logo=lock&logoColor=white" alt="Security" />
+  &nbsp;
+  <img src="https://img.shields.io/badge/AI%20Engine-Gemini%20%2B%20Groq%20Fallback-8B5CF6?logo=google&logoColor=white" alt="AI Engine" />
+  &nbsp;
+  <img src="https://img.shields.io/badge/Sync-Supabase%20RLS-3ECF8E?logo=supabase&logoColor=white" alt="Supabase Sync" />
+  &nbsp;
+  <img src="https://img.shields.io/badge/React-19.0-61DAFB?logo=react&logoColor=black" alt="React 19" />
+  &nbsp;
+  <img src="https://img.shields.io/badge/TypeScript-5.8%20Strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
+  &nbsp;
+  <img src="https://img.shields.io/badge/Tailwind-CSS%20v4-38B2AC?logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+  &nbsp;
+  <img src="https://img.shields.io/badge/Testing-Playwright%20%2B%20Vitest-E33D26?logo=playwright&logoColor=white" alt="Testing" />
+</p>
+
 
 ---
 
