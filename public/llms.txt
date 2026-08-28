@@ -1,0 +1,20 @@
+# PromptVault
+
+> PromptVault is a free, open-source, privacy-first AI prompt management tool and prompt engineering workbench. It offers offline-first browser storage, optional client-side AES-256-GCM encryption, AI-powered prompt evaluation via Google Gemini and Groq, dynamic variable template injection, and cloud sync via Supabase.
+
+## Core Resources
+
+- [Web Application](https://promptvault.multihat.dev/): The live, installable Progressive Web App (PWA)
+- [GitHub Repository](https://github.com/SagarBiswas-MultiHAT/promptVault): Full source code, architecture documentation, and issue tracker
+- [Documentation](https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/README.md): Project overview, developer guide, deployment instructions, and API key setup
+- [Open Source License](https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/LICENSE): Apache-2.0 License
+
+## Key Capabilities & Features
+
+- [Offline-First Storage](https://promptvault.multihat.dev/): Instant local storage in browser localStorage with zero external telemetry
+- [AES-256-GCM Client Encryption](https://promptvault.multihat.dev/): Secure local vault protection with 600k-iteration PBKDF2 key derivation and one-time emergency recovery key
+- [AI Prompt Analysis & Optimization](https://promptvault.multihat.dev/): Structured prompt evaluation, scoring (0-100), and automated improvement using Google Gemini 2.5/2.0 and Groq
+- [Variable Template Injection](https://promptvault.multihat.dev/): Dynamic prompt parameterization with `{{variable_name}}` syntax and real-time form inputs
+- [Supabase Cloud Sync](https://promptvault.multihat.dev/): Optional cross-device sync with Row Level Security (RLS)
+- [Import / Export](https://promptvault.multihat.dev/): Full JSON data portability for prompt libraries and category structures
+- [Usage Analytics](https://promptvault.multihat.dev/): Performance tracking, copy history, and extraction statistics
