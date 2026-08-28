@@ -11,6 +11,25 @@
 
 ---
 
+## 📋 Table of Contents
+
+- [Architecture Overview](#architecture-overview)
+- [What is PromptVault?](#what-is-promptvault)
+- [What Can It Do? (Features)](#what-can-it-do)
+- [Requirements](#what-do-you-need-to-run-it)
+- [Getting Started (Step by Step)](#getting-started-step-by-step)
+  - [Step 1 - Download & Install](#step-1---download-the-project-and-install-dependencies)
+  - [Step 2 - Configure API Keys](#step-2---add-your-api-keys)
+  - [Step 3 - Start the App](#step-3---start-the-app)
+  - [Optional: Cloud Sync (Supabase)](#optional-enable-cloud-sync)
+- [Deployment (Production)](#putting-it-on-the-internet-deployment)
+  - [🔄 Updating on a Droplet / VPS](#-updating-your-project-on-a-droplet--vps)
+- [Security & Privacy](#is-my-data-safe)
+- [Available Commands](#available-commands)
+- [License](#license)
+
+---
+
 ## Architecture Overview
 
 ![Architecture Overview](diagrams/Architecture_Overview.png)
