@@ -14,6 +14,7 @@ import { Settings } from 'lucide-react';
 
 import { APP_VERSION } from '../constants.ts';
 import type { MotionKit } from '../hooks/useMotion.ts';
+import { useOnlineStatus } from '../hooks/useOnlineStatus.ts';
 
 export interface AppFooterProps {
   isMobile: boolean;
@@ -26,6 +27,7 @@ export interface AppFooterProps {
 
 export function AppFooter({ isMobile, isSaved, promptCount, isEncrypted, onOpenSettings, motion }: AppFooterProps) {
   const MotionSpan = motion.Span;
+  const isOnline = useOnlineStatus();
 
   if (isMobile) {
     const mobileClassName = `text-[9px] font-mono uppercase tracking-widest ${
@@ -53,7 +55,11 @@ export function AppFooter({ isMobile, isSaved, promptCount, isEncrypted, onOpenS
             )}
           </span>
           <span className="text-vault-border">·</span>
-          <span className="text-[9px] font-mono text-vault-text-muted uppercase tracking-widest">Offline</span>
+          <span className={`text-[9px] font-mono uppercase tracking-widest ${
+            isOnline ? 'text-emerald-400' : 'text-vault-text-muted'
+          }`}>
+            {isOnline ? 'Online' : 'Offline'}
+          </span>
         </div>
 
         {/* Center: prompt count pill */}
