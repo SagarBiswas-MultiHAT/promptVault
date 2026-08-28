@@ -17,7 +17,8 @@
     "test:e2e": "playwright test",
     "test:keys": "tsx scripts/test-api-keys.ts",
     "test:keys:wait": "tsx scripts/test-api-keys.ts --wait",
-    "generate:og": "tsx scripts/generate-og-image.ts"
+    "generate:og": "tsx scripts/generate-og-image.ts",
+    "optimize:assets": "tsx scripts/optimize-assets.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
