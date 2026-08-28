@@ -82,7 +82,7 @@ To get started you need two things:
 
 ## Getting Started (Step by Step)
 
-### Step 1 — Download the project
+### Step 1 — Download the project and install dependencies
 
 Open a terminal (Command Prompt on Windows, Terminal on Mac/Linux) and run:
 
@@ -92,7 +92,9 @@ cd promptVault
 npm install
 ```
 
-> **What does this do?** It downloads the project files to your computer and installs all the helper packages it depends on. This only needs to be done once.
+> **What does this do?** It downloads the project files to your computer and installs all the helper packages it depends on (including `vite`, `tsx`, and all other tools used to run the app).
+>
+> ⚠️ **`npm install` is required before anything else.** If you skip this step and try to run the app, you'll see errors like `'vite' is not recognized` or `'tsx' is not recognized`. Run `npm install` once and they will go away.
 
 ---
 
@@ -100,8 +102,14 @@ npm install
 
 Copy the example settings file:
 
+**Mac / Linux:**
 ```bash
 cp .env.example .env
+```
+
+**Windows (Command Prompt or PowerShell):**
+```powershell
+copy .env.example .env
 ```
 
 Then open the newly created `.env` file in any text editor (Notepad works fine) and fill in your keys:
@@ -116,6 +124,8 @@ GROQ_API_KEY="paste-your-groq-key-here"
 ---
 
 ### Step 3 — Start the app
+
+> **Before running these commands**, make sure you have completed Step 1 (`npm install`). If you see errors like `'vite' is not recognized` or `'tsx' is not recognized`, it means the install step was skipped — go back and run `npm install` first.
 
 You need two terminal windows open at the same time. In the first, run:
 

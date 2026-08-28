@@ -4,7 +4,6 @@
  */
 
 import {
-  GEMINI_API_KEY,
   GEMINI_MODEL,
   GEMINI_TIMEOUT_MS,
   MAX_OUTPUT_TOKENS,
@@ -45,10 +44,10 @@ export function isStructuredOutputEnabled(): boolean {
   return structuredOutputSupported;
 }
 
-export async function requestGemini(promptText: string, responseSchema: unknown): Promise<string> {
+export async function requestGemini(promptText: string, responseSchema: unknown, apiKey: string): Promise<string> {
   if (structuredOutputSupported) {
     try {
-      return await callGemini(promptText, responseSchema);
+      return await callGemini(promptText, responseSchema, apiKey);
     } catch (error) {
       if (!isSchemaRejection(error)) throw error;
       structuredOutputSupported = false;
@@ -59,7 +58,7 @@ export async function requestGemini(promptText: string, responseSchema: unknown)
     }
   }
 
-  return callGemini(promptText, undefined);
+  return callGemini(promptText, undefined, apiKey);
 }
 
 function isSchemaRejection(error: unknown): boolean {
@@ -70,7 +69,7 @@ function isSchemaRejection(error: unknown): boolean {
   );
 }
 
-async function callGemini(promptText: string, responseSchema: unknown): Promise<string> {
+async function callGemini(promptText: string, responseSchema: unknown, apiKey: string): Promise<string> {
   const response = await fetchWithDeadline(
     GEMINI,
     `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
@@ -81,7 +80,7 @@ async function callGemini(promptText: string, responseSchema: unknown): Promise<
         // Was `?key=…` in the query string, which leaks the key into proxy and
         // CDN access logs, browser history on any accidental GET, and upstream
         // error traces. The header form is the documented one.
-        'x-goog-api-key': GEMINI_API_KEY,
+        'x-goog-api-key': apiKey,
       },
       body: JSON.stringify({
         contents: [{ role: 'user', parts: [{ text: promptText }] }],
