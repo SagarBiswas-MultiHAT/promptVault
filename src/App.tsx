@@ -367,7 +367,7 @@ export default function App() {
 
       {copyError && <CopyErrorToast message={copyError} onDismiss={() => setCopyError(null)} />}
 
-      {!anyModalOpen && (
+      {!isMobile && !anyModalOpen && (
         <div className="fixed bottom-[3.5rem] right-30 pointer-events-none group">
           <button
             onClick={() => overlays.setShortcuts(true)}
