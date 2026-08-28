@@ -94,7 +94,7 @@ const rateLimitedUntil = new Map<string, number>(); // slot → epoch ms
 /** Extract the "retry in X seconds" value from a Gemini 429 body, if present. */
 function parseRetryAfterSeconds(message: string): number | null {
   const match = message.match(/retry in ([\d.]+)s/i);
-  return match ? parseFloat(match[1]) : null;
+  return match ? parseFloat(match[1]!) : null;
 }
 
 /** True when `slot` is currently in its rate-limit cooldown window. */
@@ -178,7 +178,7 @@ async function callProviders(promptText: string, schema: unknown): Promise<Provi
 
   for (let i = 0; i < GEMINI_API_KEYS.length; i++) {
     const slot = geminiSlot(i);
-    const apiKey = GEMINI_API_KEYS[i];
+    const apiKey = GEMINI_API_KEYS[i]!;
 
     if (isRateLimited(slot)) {
       const until = rateLimitedUntil.get(slot)!;
@@ -197,7 +197,7 @@ async function callProviders(promptText: string, schema: unknown): Promise<Provi
           markRateLimited(slot, error);
         } else if (
           error.message.includes('timed out') ||
-          (error.status !== null && error.status >= 500)
+          (error.status != null && error.status >= 500)
         ) {
           // Timeout or upstream 5xx: back off for 60 s so we don't repeatedly
           // spend the full GEMINI_TIMEOUT_MS on a key that is clearly unhealthy.
