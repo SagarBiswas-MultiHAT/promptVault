@@ -3,7 +3,7 @@
 > **Your personal, private library for AI prompts - organised, rated, and always at hand.**
 
 <!-- Badges Section -->
-<p align="right">
+<p align="left">
   <a href="https://promptvault.multihat.dev/"><img src="https://img.shields.io/website?url=https%3A%2F%2Fpromptvault.multihat.dev&up_message=online&down_message=offline&label=Live%20Demo&color=10B981&logo=vercel" alt="Live Demo" /></a>
   &nbsp;
   <a href="https://github.com/SagarBiswas-MultiHAT/promptVault/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/SagarBiswas-MultiHAT/promptVault/ci.yml?branch=main&label=CI%20Build&logo=githubactions&logoColor=white" alt="CI Status" /></a>
@@ -28,12 +28,11 @@
   <img src="https://img.shields.io/badge/Testing-Playwright%20%2B%20Vitest-E33D26?logo=playwright&logoColor=white" alt="Testing" />
 </p>
 
-
 ---
 
 ## 📋 Table of Contents
 
-- [Architecture Overview](#architecture-overview)
+- [Comprehensive Architectural & Feature Synthesis](#comprehensive-architectural--feature-synthesis)
 - [What is PromptVault?](#what-is-promptvault)
 - [What Can It Do? (Features)](#what-can-it-do)
 - [Requirements](#what-do-you-need-to-run-it)
@@ -50,7 +49,33 @@
 
 ---
 
-## Architecture Overview
+<a id="comprehensive-architectural--feature-synthesis"></a>
+## 🏛️ Comprehensive Architectural & Feature Synthesis 
+
+PromptVault is a privacy-first, client-encrypted AI prompt workbench and local library built with an offline-first architecture, an integrated AI Librarian (powered by Google Gemini with multi-key pooling and Groq fallback), dynamic {{variable}} template injection, multi-device cloud synchronization via Supabase, and real-time usage analytics.
+
+### Architectural Breakdown
+
+```text
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                                 PROMPTVAULT ECOSYSTEM                                   │
+├──────────────────────────────────────┬──────────────────────────────────────────────────┤
+│ 🎨 Frontend (Client-Side)            │ 🔒 Cryptography & Storage Layer                 │
+│ • React 19 + TypeScript 5.8 (Strict) │ • AES-256-GCM on-device encryption               │
+│ • Tailwind CSS v4 + Motion           │ • PBKDF2-SHA-256 KDF (600,000 iterations)        │
+│ • Virtualized Grid (>200 items)      │ • 256-bit DEK + KEK key wrapping + Recovery Key  │
+│ • Offline PWA + Pre-paint Theme Init │ • Guarded localStorage with quota-aware error    │
+├──────────────────────────────────────┼──────────────────────────────────────────────────┤
+│ 🧠 AI Librarian Proxy Server         │ ☁️ Cloud Sync & Data Resilience                 │
+│ • Express + TypeScript proxy         │ • Supabase PostgreSQL backend with Google OAuth  │
+│ • Dual-Provider: Gemini + Groq       │ • Per-Entity LWW merge with 30-day tombstones    │
+│ • Multi-Key Pool with 429 Cooldown   │ • Conflict-free cross-device synchronization     │
+│ • SHA-256 LRU Cache & Coalescing     │ • JSON Import/Export with Schema Sanitization    │
+└──────────────────────────────────────┴──────────────────────────────────────────────────┘
+```
+
+
+### Architecture Overview
 
 ![Architecture Overview](diagrams/Architecture_Overview.png)
 
