@@ -47,6 +47,8 @@ PromptVault is a privacy-first, client-encrypted AI prompt workbench and local l
 
 ### Architectural Breakdown
 
+<div align="center">
+
 ```text
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
 │                                 PROMPTVAULT ECOSYSTEM                                   │
@@ -65,6 +67,7 @@ PromptVault is a privacy-first, client-encrypted AI prompt workbench and local l
 └──────────────────────────────────────┴──────────────────────────────────────────────────┘
 ```
 
+</div>
 
 ### Architecture Overview
 
