@@ -11,6 +11,16 @@
 
 ---
 
+## 📋 Table of Contents
+
+- [Architecture Overview](#architecture-overview)
+- [What is PromptVault?](#what-is-promptvault)
+- [What Can It Do? (Features)](#what-can-it-do)
+- [Security & Privacy](#is-my-data-safe)
+- [License](#license)
+
+---
+
 ## Architecture Overview
 
 ![Architecture Overview](diagrams/Architecture_Overview.png)
