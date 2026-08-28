@@ -58,6 +58,7 @@ export interface VaultOverlaysProps {
   onDeleteCategory: () => void;
   onCreatePin: () => void;
   onRemoveLock: () => void;
+  onOpenShortcuts: () => void;
 }
 
 export function VaultOverlays({
@@ -70,6 +71,7 @@ export function VaultOverlays({
   onDeleteCategory,
   onCreatePin,
   onRemoveLock,
+  onOpenShortcuts,
 }: VaultOverlaysProps) {
   const { categories, prompts } = vault.data;
   const liveCategories = categories.filter(category => category.deletedAt === null);
@@ -163,6 +165,7 @@ export function VaultOverlays({
             onImport={onImport}
             onExport={vault.exportVault}
             sync={sync}
+            onOpenShortcuts={onOpenShortcuts}
           />
         </Suspense>
       )}

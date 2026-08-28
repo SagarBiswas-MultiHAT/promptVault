@@ -12,7 +12,7 @@
  */
 
 import { ChangeEvent } from 'react';
-import { Cloud, Command, Download, LogOut, RefreshCcw, ShieldCheck, Upload, User } from 'lucide-react';
+import { Cloud, Command, Download, Keyboard, LogOut, RefreshCcw, ShieldCheck, Upload, User } from 'lucide-react';
 
 import { APP_VERSION, SCHEMA_VERSION } from '../constants.ts';
 import type { CloudSyncController } from '../hooks/useCloudSync.ts';
@@ -28,6 +28,8 @@ export interface SettingsModalProps {
   onImport: (event: ChangeEvent<HTMLInputElement>) => void;
   onExport: () => void;
   sync: CloudSyncController;
+  /** Opens the Protocol Shortcuts modal (used on mobile where the floating button is hidden). */
+  onOpenShortcuts: () => void;
 }
 
 export function SettingsModal({
@@ -38,6 +40,7 @@ export function SettingsModal({
   onImport,
   onExport,
   sync,
+  onOpenShortcuts,
 }: SettingsModalProps) {
   return (
     <Modal isOpen={true} onClose={onClose} title="Vault Protocol Settings">
@@ -215,6 +218,20 @@ export function SettingsModal({
             <div className="flex justify-between items-center text-xs">
               <span className="text-vault-text-muted font-mono">Encryption</span>
               <span className="font-mono opacity-50 italic">{hasPin ? 'AES-256-GCM + PBKDF2' : 'Not enabled'}</span>
+            </div>
+
+            {/* Mobile-only shortcuts entry — desktop uses the floating ? button */}
+            <div className="sm:hidden pt-2 border-t border-vault-border/50">
+              <button
+                onClick={() => { onClose(); onOpenShortcuts(); }}
+                className="w-full flex items-center justify-between text-xs py-1 group"
+              >
+                <span className="text-vault-text-muted font-mono">Protocol Shortcuts</span>
+                <span className="flex items-center gap-1.5 text-vault-text-muted group-hover:text-vault-accent transition-colors">
+                  <Keyboard size={12} />
+                  <span className="font-mono text-[10px] uppercase tracking-widest">View</span>
+                </span>
+              </button>
             </div>
           </div>
         </section>
