@@ -9,7 +9,7 @@
   "background_color": "#08090A",
   "theme_color": "#08090A",
   "orientation": "any",
-  "categories": ["productivity", "utilities"],
+  "categories": ["productivity", "utilities", "developer-tools"],
   "icons": [
     {
       "src": "/favicon.svg",
@@ -22,5 +22,21 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "label": "PromptVault — AI Prompt Manager home screen"
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://promptvault.multihat.dev/"
+    }
+  ],
+  "prefer_related_applications": false
 }
+

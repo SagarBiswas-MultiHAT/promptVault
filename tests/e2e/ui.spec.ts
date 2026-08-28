@@ -38,13 +38,14 @@ test('the sort control reorders the grid and the choice survives a reload', asyn
   const titles = page.locator('[role="article"] h3');
   await expect(titles).toHaveText(['Zulu entry', 'Alpha entry']);
 
-  await page.locator('#sort-prompts').selectOption('A_Z');
+  await page.locator('#sort-prompts').click();
+  await page.getByRole('option', {name: 'Title A–Z'}).click();
   await expect(titles).toHaveText(['Alpha entry', 'Zulu entry']);
 
   await expect.poll(async () => (await readVault(page)).settings).toMatchObject({sortBy: 'A_Z'});
 
   await page.reload();
-  await expect(page.locator('#sort-prompts')).toHaveValue('A_Z');
+  await expect(page.locator('#sort-prompts')).toHaveText('Title A–Z');
   await expect(titles).toHaveText(['Alpha entry', 'Zulu entry']);
 });
 

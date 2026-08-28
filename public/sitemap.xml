@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://promptvault.multihat.dev/</loc>
-    <lastmod>2026-05-14</lastmod>
+    <!-- Updated to v2.1.0 release date 2026-08-28 -->
+    <lastmod>2026-08-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://promptvault.multihat.dev/og-image.png</image:loc>
+      <image:title>PromptVault — Your Private AI Prompt Library</image:title>
+      <image:caption>PromptVault is a private, offline-first AI prompt manager with AES-256-GCM encryption, Gemini-powered analysis, and cloud sync.</image:caption>
+    </image:image>
   </url>
 </urlset>
+
