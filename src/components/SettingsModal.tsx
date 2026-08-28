@@ -174,12 +174,12 @@ export function SettingsModal({
             <Download size={14} />
             <span>Data Management</span>
           </div>
-          <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl flex items-center justify-between">
+          <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="space-y-1">
-              <p className="text-sm font-medium">Backup & Restore</p>
+              <p className="text-sm font-medium">Backup &amp; Restore</p>
               <p className="text-xs text-vault-text-muted font-mono">Export your vault to a JSON file or import an existing backup.</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 shrink-0">
               <label className="cursor-pointer px-4 py-2 border border-vault-border text-vault-text-muted hover:text-vault-text hover:border-vault-text-muted rounded-lg text-[10px] font-mono font-bold tracking-widest uppercase transition-all flex items-center gap-2">
                 <Upload size={14} /> Import
                 <input type="file" accept=".json" onChange={onImport} className="hidden" />
