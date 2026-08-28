@@ -11,6 +11,12 @@
 
 ---
 
+## Architecture Overview
+
+![Architecture Overview](diagrams/Architecture_Overview.png)
+
+---
+
 ## What is PromptVault?
 
 If you use AI tools like ChatGPT, Gemini, or Claude, you've probably written some really good instructions (called **"prompts"**) that get great results — and then lost them. They end up buried in chat history, scattered across notes apps, or simply forgotten.
