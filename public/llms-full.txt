@@ -1,0 +1,17 @@
+# PromptVault — Complete AI Agent Guide
+
+> PromptVault is a private, offline-first AI prompt manager and workbench for AI practitioners, prompt engineers, and developers. It provides zero-telemetry local storage, client-side AES-256-GCM encryption, AI-powered prompt analysis via Google Gemini and Groq, and optional cloud sync via Supabase.
+
+## Architecture
+
+- **Frontend:** React 19, TypeScript 5.8, Tailwind CSS v4, Motion, Lucide React
+- **Backend:** Node.js / Express 4 API proxy with multi-key Gemini pooling and Groq fallback
+- **Storage:** Browser localStorage with optional 600k-iteration PBKDF2 + AES-256-GCM encryption
+- **PWA:** Service Worker offline caching with Web App Manifest
+
+## Links
+
+- [Live Web App](https://promptvault.multihat.dev/)
+- [GitHub Repository](https://github.com/SagarBiswas-MultiHAT/promptVault)
+- [README Documentation](https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/README.md)
+- [Apache-2.0 License](https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/LICENSE)
