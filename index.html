@@ -14,11 +14,13 @@
     <!-- Primary Meta -->
     <title>PromptVault — Your Private AI Prompt Library</title>
     <meta name="description" content="A private, offline-first prompt manager for organizing, evaluating, and deploying AI prompts across any workflow. Secure, fast, and beautiful." />
-    <meta name="keywords" content="prompt manager, AI prompts, prompt library, prompt engineering, ChatGPT prompts, offline prompt vault, AI prompt organizer, prompt template manager" />
-    <meta name="author" content="PromptVault" />
+    <meta name="keywords" content="AI prompt manager, offline prompt vault, prompt engineering workbench, private prompt library, prompt template manager, AI prompt organizer, ChatGPT prompts, prompt engineering tool, encrypted prompt storage" />
+    <meta name="author" content="Sagar Biswas" />
+    <!-- application-name mirrors the PWA short_name for browser chrome (address bar, tab pinning) -->
+    <meta name="application-name" content="PromptVault" />
     <meta name="theme-color" content="#08090A" />
     <meta name="color-scheme" content="dark light" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
 
     <!-- Open Graph / Social -->
     <meta property="og:type" content="website" />
@@ -26,15 +28,23 @@
     <meta property="og:title" content="PromptVault — Your Private AI Prompt Library" />
     <meta property="og:description" content="A private, offline-first prompt manager for organizing, evaluating, and deploying AI prompts across any workflow." />
     <meta property="og:image" content="https://promptvault.multihat.dev/og-image.png" />
+    <!-- og:image dimensions reflect the actual 1024×1024 asset; a 1200×630 crop would be ideal for social unfurling -->
+    <meta property="og:image:width" content="1024" />
+    <meta property="og:image:height" content="1024" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content="PromptVault — AI Prompt Manager screenshot" />
     <meta property="og:site_name" content="PromptVault" />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@SagarBiswasMH" />
+    <!-- twitter:creator distinguishes personal author from site handle for Tweet attribution -->
+    <meta name="twitter:creator" content="@SagarBiswasMH" />
     <meta name="twitter:title" content="PromptVault — Your Private AI Prompt Library" />
     <meta name="twitter:description" content="A private, offline-first prompt manager for organizing, evaluating, and deploying AI prompts across any workflow." />
     <meta name="twitter:image" content="https://promptvault.multihat.dev/og-image.png" />
+    <meta name="twitter:image:alt" content="PromptVault — AI Prompt Manager screenshot" />
 
     <!-- Canonical -->
     <link rel="canonical" href="https://promptvault.multihat.dev/" />
@@ -118,36 +128,93 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=optional" media="print" data-fonts />
 
 
-    <!-- Structured Data (JSON-LD) -->
+    <!-- Structured Data (JSON-LD) — @graph links all entities so crawlers can model the full knowledge graph -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "PromptVault",
-      "url": "https://promptvault.multihat.dev/",
-      "description": "A private, offline-first prompt manager for organizing, evaluating, and deploying AI prompts across any workflow. Secure, fast, and beautiful.",
-      "applicationCategory": "ProductivityApplication",
-      "operatingSystem": "Web",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "featureList": [
-        "Offline-first prompt storage",
-        "AI-powered prompt analysis and improvement",
-        "Optional AES-256-GCM encrypted local vault",
-        "Cloud sync via Supabase",
-        "Category organization",
-        "Variable template system",
-        "Import/Export functionality"
-      ],
-      "screenshot": "https://promptvault.multihat.dev/og-image.png",
-      "softwareVersion": "1.0.0",
-      "creator": {
-        "@type": "Organization",
-        "name": "PromptVault"
-      }
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://promptvault.multihat.dev/#website",
+          "name": "PromptVault",
+          "url": "https://promptvault.multihat.dev/",
+          "description": "A private, offline-first AI prompt manager for organizing, evaluating, and deploying AI prompts across any workflow.",
+          "inLanguage": "en-US",
+          "publisher": {
+            "@id": "https://promptvault.multihat.dev/#organization"
+          }
+        },
+        {
+          "@type": "WebApplication",
+          "@id": "https://promptvault.multihat.dev/#webapp",
+          "name": "PromptVault",
+          "alternateName": "Prompt Vault",
+          "url": "https://promptvault.multihat.dev/",
+          "description": "A private, offline-first prompt manager for organizing, evaluating, and deploying AI prompts across any workflow. Secure, fast, and beautiful.",
+          "applicationCategory": ["ProductivityApplication", "DeveloperApplication"],
+          "operatingSystem": "Web",
+          "browserRequirements": "Requires JavaScript. Compatible with all modern browsers.",
+          "softwareVersion": "2.1.0",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "featureList": [
+            "Offline-first prompt storage with localStorage",
+            "AI-powered prompt analysis and improvement via Google Gemini",
+            "Optional AES-256-GCM client-side encrypted local vault",
+            "PBKDF2 key derivation for PIN/passphrase protection",
+            "Cloud sync via Supabase with Row Level Security",
+            "Category and tag organization",
+            "Variable template injection system",
+            "Import and export functionality (JSON)",
+            "Usage analytics and prompt performance tracking",
+            "Keyboard shortcuts for power users",
+            "Progressive Web App — installable on desktop and mobile",
+            "Dark and light theme support"
+          ],
+          "screenshot": "https://promptvault.multihat.dev/og-image.png",
+          "isAccessibleForFree": true,
+          "creator": {
+            "@id": "https://promptvault.multihat.dev/#organization"
+          },
+          "maintainer": {
+            "@id": "https://promptvault.multihat.dev/#organization"
+          },
+          "isPartOf": {
+            "@id": "https://promptvault.multihat.dev/#website"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://promptvault.multihat.dev/#organization",
+          "name": "PromptVault by MultiHAT",
+          "url": "https://promptvault.multihat.dev/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://promptvault.multihat.dev/logo.png",
+            "width": 512,
+            "height": 512
+          },
+          "sameAs": [
+            "https://github.com/SagarBiswas-MultiHAT/promptVault",
+            "https://twitter.com/SagarBiswasMH"
+          ]
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://promptvault.multihat.dev/#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "PromptVault",
+              "item": "https://promptvault.multihat.dev/"
+            }
+          ]
+        }
+      ]
     }
     </script>
 
@@ -156,17 +223,53 @@
   </head>
   <body>
     <div id="root"></div>
+    <!--
+      Enriched noscript block: semantic HTML5 elements give crawlers keyword-dense,
+      structured content when JavaScript is unavailable (Googlebot renders JS, but
+      other bots such as Bingbot, DuckDuckBot, and social scrapers may not).
+    -->
     <noscript>
-      <div style="max-width: 600px; margin: 80px auto; padding: 40px; font-family: system-ui, sans-serif; text-align: center; color: #EAEDF3; background: #111214; border-radius: 16px; border: 1px solid #252830;">
-        <h1 style="font-size: 24px; margin-bottom: 16px;">PromptVault</h1>
-        <p style="color: #6B7280; line-height: 1.6;">
-          PromptVault is a private, offline-first AI prompt manager for organizing, evaluating, and deploying prompts across any workflow.
-          Features include AI-powered prompt analysis, optional AES-256-GCM encrypted storage, cloud sync, and variable template injection.
-        </p>
-        <p style="color: #6B7280; margin-top: 16px;">
-          Please enable JavaScript to use PromptVault.
-        </p>
-      </div>
+      <main style="max-width:680px;margin:80px auto;padding:40px;font-family:system-ui,sans-serif;color:#EAEDF3;background:#111214;border-radius:16px;border:1px solid #252830;">
+        <header>
+          <h1 style="font-size:28px;margin:0 0 8px;font-weight:700;">PromptVault</h1>
+          <p style="font-size:14px;color:#9CA3AF;margin:0 0 24px;">Your Private AI Prompt Library — v2.1.0</p>
+        </header>
+        <article>
+          <p style="color:#9CA3AF;line-height:1.7;margin:0 0 16px;">
+            <strong style="color:#EAEDF3;">PromptVault</strong> is a free, open-source <strong style="color:#EAEDF3;">AI prompt manager</strong> built for developers,
+            prompt engineers, and AI practitioners. It provides an <strong style="color:#EAEDF3;">offline-first prompt vault</strong> with optional
+            <strong style="color:#EAEDF3;">AES-256-GCM client-side encryption</strong> — your prompts never leave your device unless you choose cloud sync.
+          </p>
+          <section aria-label="Key features">
+            <h2 style="font-size:16px;color:#EAEDF3;margin:0 0 12px;">Key Features</h2>
+            <ul style="color:#9CA3AF;line-height:1.8;padding-left:20px;margin:0 0 20px;">
+              <li>Offline-first <strong style="color:#EAEDF3;">prompt template manager</strong> — works without internet</li>
+              <li>AI-powered prompt analysis and improvement via Google Gemini</li>
+              <li>Optional AES-256-GCM encrypted local vault with PIN/passphrase</li>
+              <li>Cloud sync via Supabase with Row Level Security</li>
+              <li>Category and tag organization for your <strong style="color:#EAEDF3;">ChatGPT prompts</strong> and more</li>
+              <li>Variable template injection — parameterize any prompt</li>
+              <li>Import / Export (JSON) for full data portability</li>
+              <li>Usage analytics and prompt performance tracking</li>
+              <li>Keyboard shortcuts for <strong style="color:#EAEDF3;">prompt engineering workbench</strong> power users</li>
+              <li>Installable Progressive Web App — desktop and mobile</li>
+              <li>Dark and light theme — zero layout shift on load</li>
+            </ul>
+          </section>
+          <nav aria-label="External links">
+            <h2 style="font-size:16px;color:#EAEDF3;margin:0 0 12px;">Links</h2>
+            <ul style="color:#9CA3AF;line-height:2;padding-left:20px;margin:0 0 20px;">
+              <li><a href="https://github.com/SagarBiswas-MultiHAT/promptVault" style="color:#f59e0b;">GitHub Repository — Apache-2.0 Open Source</a></li>
+              <li><a href="https://promptvault.multihat.dev/" style="color:#f59e0b;">Live App — promptvault.multihat.dev</a></li>
+            </ul>
+          </nav>
+        </article>
+        <footer>
+          <p style="color:#6B7280;margin:24px 0 0;font-size:13px;">
+            Please enable JavaScript to use the full PromptVault application.
+          </p>
+        </footer>
+      </main>
     </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>

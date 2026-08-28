@@ -1,5 +1,16 @@
+# Allow all major search engine crawlers full access
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+
+# Generic crawlers — apply a small crawl delay to protect server resources
 User-agent: *
 Allow: /
 Disallow: /api/
+Crawl-delay: 5
 
 Sitemap: https://promptvault.multihat.dev/sitemap.xml
