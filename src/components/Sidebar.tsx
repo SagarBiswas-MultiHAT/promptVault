@@ -203,7 +203,7 @@ export function Sidebar({
                   <div className="flex items-center gap-3">
                     <img src="/logo.png" alt="PromptVault Logo" width="32" height="32" className="w-8 h-8 rounded-lg shrink-0 drop-shadow-[0_0_12px_rgba(245,158,11,0.3)]" />
                     <div>
-                      <h1 className="text-lg font-bold tracking-tight leading-none">
+                      <h1 className="text-lg font-bold tracking-tight leading-tight">
                         Prompt<span className="text-vault-accent">Vault</span>
                       </h1>
                       <p className="text-[9px] font-mono text-vault-text-muted uppercase tracking-[0.15em] mt-0.5">Prompt Intelligence</p>
