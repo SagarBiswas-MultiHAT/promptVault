@@ -34,6 +34,17 @@ export default defineConfig({
   build: {
     target: 'es2022',
     sourcemap: false,
+    modulePreload: {
+      resolveDependencies: (_filename, deps) => {
+        // Exclude heavy lazy chunks (Supabase, Motion) from the critical initial preload list
+        return deps.filter(
+          (dep) =>
+            !dep.includes('vendor-supabase') &&
+            !dep.includes('vendor-motion') &&
+            !dep.includes('supabase-')
+        );
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks(id) {
