@@ -23,7 +23,7 @@
   - [Step 3 - Start the App](#step-3---start-the-app)
   - [Optional: Cloud Sync (Supabase)](#optional-enable-cloud-sync)
 - [Deployment (Production)](#putting-it-on-the-internet-deployment)
-  - [🔄 Updating on a Droplet / VPS](#-updating-your-project-on-a-droplet--vps)
+  - [Updating on a Droplet / VPS](#updating-your-project-on-a-droplet-vps)
 - [Security & Privacy](#is-my-data-safe)
 - [Available Commands](#available-commands)
 - [License](#license)
@@ -268,6 +268,7 @@ Every hosting platform has a place to enter secret settings (the equivalent of y
 
 ---
 
+<a id="updating-your-project-on-a-droplet-vps"></a>
 ### 🔄 Updating Your Project on a Droplet / VPS
 
 When you push new commits to GitHub and want to update your live DigitalOcean Droplet (or any Linux VPS), follow these steps:
