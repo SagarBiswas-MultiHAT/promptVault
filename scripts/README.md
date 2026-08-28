@@ -6,17 +6,18 @@ A zero-token, high-precision health check script to diagnose, validate, and benc
 
 ## 📋 Table of Contents
 
-- [Overview](#-overview)
-- [Quick Start](#-quick-start)
-- [How It Works](#-how-it-works)
-- [Status Codes & Action Matrix](#-status-codes--action-matrix)
-- [Environment Variables Evaluated](#-environment-variables-evaluated)
-- [CLI Options & Flags](#-cli-options--flags)
-- [Best Practices for 100% Accurate Testing](#-best-practices-for-100-accurate-testing)
-- [Troubleshooting & FAQs](#-troubleshooting--faqs)
+- [Overview](#overview)
+- [Quick Start](#quick-start)
+- [How It Works](#how-it-works)
+- [Status Codes & Action Matrix](#status-codes--action-matrix)
+- [Environment Variables Evaluated](#environment-variables-evaluated)
+- [CLI Options & Flags](#cli-options--flags)
+- [Best Practices for 100% Accurate Testing](#best-practices-for-100-accurate-testing)
+- [Troubleshooting & FAQs](#troubleshooting--faqs)
 
 ---
 
+<a id="overview"></a>
 ## 🔍 Overview
 
 PromptVault uses a multi-tier fallback architecture:
@@ -27,6 +28,7 @@ The diagnostic script [`scripts/test-api-keys.ts`](./test-api-keys.ts) validates
 
 ---
 
+<a id="quick-start"></a>
 ## 🚀 Quick Start
 
 ### 1. Standard Fast Check (~1–2 seconds total)
@@ -53,6 +55,7 @@ npx tsx scripts/test-api-keys.ts --wait
 
 ---
 
+<a id="how-it-works"></a>
 ## ⚙️ How It Works
 
 ```
@@ -92,6 +95,8 @@ The script probes `http://localhost:${AI_PROXY_PORT}` (default: `3002`). If your
 
 ---
 
+<a id="status-codes--action-matrix"></a>
+<a id="status-codes-action-matrix"></a>
 ## 📊 Status Codes & Action Matrix
 
 | Status Icon | Status | HTTP Code | Meaning | Recommended Action |
@@ -106,6 +111,7 @@ The script probes `http://localhost:${AI_PROXY_PORT}` (default: `3002`). If your
 
 ---
 
+<a id="environment-variables-evaluated"></a>
 ## 🛠️ Environment Variables Evaluated
 
 The script automatically parses your root [`.env`](../.env) file:
@@ -122,6 +128,8 @@ The script automatically parses your root [`.env`](../.env) file:
 
 ---
 
+<a id="cli-options--flags"></a>
+<a id="cli-options-flags"></a>
 ## 🚩 CLI Options & Flags
 
 ### `--wait`
@@ -136,6 +144,7 @@ If you have just executed high-volume test queries or your server was recently u
 
 ---
 
+<a id="best-practices-for-100-accurate-testing"></a>
 ## 🎯 Best Practices for 100% Accurate Testing
 
 1. **Stop the local API proxy first**:
@@ -153,6 +162,8 @@ If you have just executed high-volume test queries or your server was recently u
 
 ---
 
+<a id="troubleshooting--faqs"></a>
+<a id="troubleshooting-faqs"></a>
 ## ❓ Troubleshooting & FAQs
 
 ### Why did a key show HTTP 403 `Your project has been denied access`?
