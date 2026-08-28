@@ -6,7 +6,7 @@
  * retry) → normalize.
  */
 
-import { CACHE_TTL_MS, GEMINI_API_KEY, GROQ_API_KEY, MAX_CACHE_ENTRIES } from './config.ts';
+import { CACHE_TTL_MS, GEMINI_API_KEYS, HAS_GEMINI, GROQ_API_KEY, MAX_CACHE_ENTRIES } from './config.ts';
 import { createResponseCache, hashKey } from './cache.ts';
 import { HttpError, ProviderError, UpstreamError } from './errors.ts';
 import { extractJson } from './json.ts';
@@ -79,15 +79,74 @@ function classify(error: unknown): { kind: FailureKind; status: number | null } 
 const lastFailures = new Map<string, { at: string; kind: FailureKind; status: number | null }>();
 
 /**
- * Snapshot for `/api/health`. Reporting the last failure per provider is what
- * makes a degraded primary provider visible — otherwise a permanently broken
- * Gemini key looks perfectly healthy because Groq keeps answering every request.
+ * Circuit-breaker state for rate-limited providers / Gemini key slots.
+ *
+ * When a provider returns HTTP 429 the API response often includes a
+ * "retry in N seconds" hint. We honour that hint by refusing to call the
+ * slot again until the deadline passes, avoiding a stream of instant
+ * 429 round-trips that burn quota on every incoming request.
+ *
+ * For the Gemini key pool each slot is keyed as "gemini[0]", "gemini[1]", …
+ * so that independent keys have independent cooldowns.
+ */
+const rateLimitedUntil = new Map<string, number>(); // slot → epoch ms
+
+/** Extract the "retry in X seconds" value from a Gemini 429 body, if present. */
+function parseRetryAfterSeconds(message: string): number | null {
+  const match = message.match(/retry in ([\d.]+)s/i);
+  return match ? parseFloat(match[1]!) : null;
+}
+
+/** True when `slot` is currently in its rate-limit cooldown window. */
+function isRateLimited(slot: string): boolean {
+  const until = rateLimitedUntil.get(slot);
+  if (until === undefined) return false;
+  if (Date.now() < until) return true;
+  rateLimitedUntil.delete(slot); // cooldown expired — reset
+  return false;
+}
+
+/**
+ * Record a rate-limit cooldown for `slot`.
+ *
+ * Falls back to a 60-second window when the error body does not carry an
+ * explicit retry-after hint — the free-tier window is always ≤ 60 s so
+ * this is a safe upper bound.
+ */
+function markRateLimited(slot: string, error: unknown): void {
+  const message = error instanceof Error ? error.message : String(error);
+  const retrySecs = parseRetryAfterSeconds(message) ?? 60;
+  const until = Date.now() + retrySecs * 1_000;
+  rateLimitedUntil.set(slot, until);
+  console.warn(
+    `[ai-proxy] ${slot} rate-limited; skipping for ${Math.ceil(retrySecs)}s ` +
+      `(until ${new Date(until).toISOString()})`
+  );
+}
+
+/**
+ * Snapshot for `/api/health`. Reporting the last failure per provider/slot is
+ * what makes a degraded primary provider visible — otherwise a permanently
+ * broken Gemini key looks perfectly healthy because Groq keeps answering.
  */
 export function getProviderStatus(): Record<string, ProviderStatus> {
-  return {
-    [GEMINI]: { configured: Boolean(GEMINI_API_KEY), lastFailure: lastFailures.get(GEMINI) ?? null },
-    [GROQ]: { configured: Boolean(GROQ_API_KEY), lastFailure: lastFailures.get(GROQ) ?? null },
-  };
+  const result: Record<string, ProviderStatus> = {};
+
+  for (let i = 0; i < GEMINI_API_KEYS.length; i++) {
+    const slot = geminiSlot(i);
+    result[slot] = { configured: true, lastFailure: lastFailures.get(slot) ?? null };
+  }
+  if (!HAS_GEMINI) {
+    result[GEMINI] = { configured: false, lastFailure: null };
+  }
+
+  result[GROQ] = { configured: Boolean(GROQ_API_KEY), lastFailure: lastFailures.get(GROQ) ?? null };
+  return result;
+}
+
+/** Stable label for a Gemini key slot used in logs and health status. */
+function geminiSlot(index: number): string {
+  return GEMINI_API_KEYS.length === 1 ? GEMINI : `${GEMINI}[${index}]`;
 }
 
 export function getCacheStats(): { entries: number; pending: number } {
@@ -107,18 +166,47 @@ interface ProviderOutcome {
 }
 
 /**
- * Try Gemini, then Groq. Each provider's failure is recorded and swallowed so
- * the next one gets a turn; only an empty chain is fatal.
+ * Try each Gemini key in order, then Groq.
+ *
+ * Per-key circuit breakers ("gemini[0]", "gemini[1]", …) mean a rate-limited
+ * key is skipped instantly — no network round-trip — while keys that still
+ * have quota continue to serve requests. Only when every Gemini key is
+ * exhausted does the chain fall through to Groq.
  */
 async function callProviders(promptText: string, schema: unknown): Promise<ProviderOutcome> {
   const failures: string[] = [];
 
-  if (GEMINI_API_KEY) {
+  for (let i = 0; i < GEMINI_API_KEYS.length; i++) {
+    const slot = geminiSlot(i);
+    const apiKey = GEMINI_API_KEYS[i]!;
+
+    if (isRateLimited(slot)) {
+      const until = rateLimitedUntil.get(slot)!;
+      const remainingSecs = Math.ceil((until - Date.now()) / 1_000);
+      console.info(`[ai-proxy] ${slot} still rate-limited; skipping (${remainingSecs}s remaining)`);
+      failures.push(`${slot}: rate-limited (cooldown active)`);
+      continue;
+    }
+
     try {
-      return { provider: GEMINI, rawText: await requestGemini(promptText, schema) };
+      return { provider: slot, rawText: await requestGemini(promptText, schema, apiKey) };
     } catch (error) {
-      recordFailure(GEMINI, error);
-      failures.push(describe(GEMINI, error));
+      if (error instanceof ProviderError) {
+        if (error.status === 429) {
+          // Honour the retry-after hint from the 429 body.
+          markRateLimited(slot, error);
+        } else if (
+          error.message.includes('timed out') ||
+          (error.status != null && error.status >= 500)
+        ) {
+          // Timeout or upstream 5xx: back off for 60 s so we don't repeatedly
+          // spend the full GEMINI_TIMEOUT_MS on a key that is clearly unhealthy.
+          rateLimitedUntil.set(slot, Date.now() + 60_000);
+          console.warn(`[ai-proxy] ${slot} unhealthy (${error.message.includes('timed out') ? 'timeout' : `HTTP ${error.status}`}); backing off 60s`);
+        }
+      }
+      recordFailure(slot, error);
+      failures.push(describe(slot, error));
     }
   }
 

@@ -61,10 +61,33 @@ export const VERSION = readPackageVersion();
 
 // --- Providers -------------------------------------------------------------
 
-export const GEMINI_API_KEY = process.env.GEMINI_API_KEY ?? '';
+/**
+ * Gemini API key pool.
+ *
+ * Accepts either:
+ *   GEMINI_API_KEYS="key1,key2,key3"  ← preferred (multiple keys, higher quota)
+ *   GEMINI_API_KEY="key1"             ← legacy single-key form (still supported)
+ *
+ * Keys are deduplicated and blanks are removed. The order in the env var is
+ * the order they will be tried — put your most-quota-rich key first.
+ */
+function parseGeminiKeys(): string[] {
+  const multi = (process.env.GEMINI_API_KEYS ?? '')
+    .split(',')
+    .map((k) => k.trim())
+    .filter(Boolean);
+  if (multi.length > 0) return [...new Set(multi)];
+  // Fallback: treat the legacy single-key var as a one-element pool.
+  const single = (process.env.GEMINI_API_KEY ?? '').trim();
+  return single ? [single] : [];
+}
+
+export const GEMINI_API_KEYS: readonly string[] = parseGeminiKeys();
+/** Convenience: true when at least one Gemini key is configured. */
+export const HAS_GEMINI = GEMINI_API_KEYS.length > 0;
 export const GROQ_API_KEY = process.env.GROQ_API_KEY ?? '';
 export const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
-export const GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+export const GROQ_MODEL = process.env.GROQ_MODEL || 'qwen/qwen3.8-27b';
 
 /**
  * Upstream request deadlines. Without these a hung connection to the primary
@@ -72,7 +95,7 @@ export const GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
  * client gives up — which silently defeats the whole point of having two
  * providers.
  */
-export const GEMINI_TIMEOUT_MS = num(process.env.GEMINI_TIMEOUT_MS, 20_000);
+export const GEMINI_TIMEOUT_MS = num(process.env.GEMINI_TIMEOUT_MS, 35_000);
 export const GROQ_TIMEOUT_MS = num(process.env.GROQ_TIMEOUT_MS, 20_000);
 
 /**
@@ -137,8 +160,8 @@ export const RATE_LIMIT_MAX = 30;
 export function validateConfig(): void {
   const fatal: string[] = [];
 
-  if (!GEMINI_API_KEY && !GROQ_API_KEY) {
-    const message = 'No API keys configured. Set GEMINI_API_KEY or GROQ_API_KEY in your .env file.';
+  if (!HAS_GEMINI && !GROQ_API_KEY) {
+    const message = 'No API keys configured. Set GEMINI_API_KEYS (or GEMINI_API_KEY) or GROQ_API_KEY in your .env file.';
     if (IS_PRODUCTION) fatal.push(message);
     else console.error(`[ai-proxy] ⚠  ${message} The AI Librarian will not work.`);
   }
