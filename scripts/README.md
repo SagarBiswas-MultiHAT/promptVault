@@ -96,13 +96,13 @@ The script probes `http://localhost:${AI_PROXY_PORT}` (default: `3002`). If your
 
 | Status Icon | Status | HTTP Code | Meaning | Recommended Action |
 |:---:|:---|:---:|:---|:---|
-| ✅ | **OK** | `200` | Key authenticated & configured model is accessible. | **KEEP** — Key is fully operational. |
-| ⏳ | **RATE LIMITED** | `429` | Valid key authentication, but free-tier RPM/TPM quota exhausted. | **KEEP** — Auto-recovers within ~60 seconds. |
-| 🔑 | **AUTH** | `401` / `403` / `API_KEY_INVALID` | Invalid key, deleted in cloud console, or project access revoked. | **REMOVE / ROTATE** — Edit `.env` and delete/replace this key. |
-| 🔍 | **MODEL NOT FOUND** | `404` | Key is valid, but its project tier lacks access to `GEMINI_MODEL`. | **INVESTIGATE / REMOVE** — Check model permissions in Google AI Studio. |
-| ⏱️ | **TIMEOUT** | `—` | Request exceeded deadline twice consecutively. | **REMOVE** — Dead/unresponsive keys waste up to 35s per user request. |
-| ⚠️ | **BAD REQUEST** | `400` | Malformed key syntax or invalid parameter. | **FIX** — Check for trailing commas or whitespace. |
-| 🌐 | **NETWORK** | `—` | DNS resolution failure or connection refused. | **CHECK CONNECTION** — Verify your internet/firewall. |
+| ✅ | **OK** | `200` | Key authenticated & configured model is accessible. | **KEEP** - Key is fully operational. |
+| ⏳ | **RATE LIMITED** | `429` | Valid key authentication, but free-tier RPM/TPM quota exhausted. | **KEEP** - Auto-recovers within ~60 seconds. |
+| 🔑 | **AUTH** | `401` / `403` / `API_KEY_INVALID` | Invalid key, deleted in cloud console, or project access revoked. | **REMOVE / ROTATE** - Edit `.env` and delete/replace this key. |
+| 🔍 | **MODEL NOT FOUND** | `404` | Key is valid, but its project tier lacks access to `GEMINI_MODEL`. | **INVESTIGATE / REMOVE** - Check model permissions in Google AI Studio. |
+| ⏱️ | **TIMEOUT** | `-` | Request exceeded deadline twice consecutively. | **REMOVE** - Dead/unresponsive keys waste up to 35s per user request. |
+| ⚠️ | **BAD REQUEST** | `400` | Malformed key syntax or invalid parameter. | **FIX** - Check for trailing commas or whitespace. |
+| 🌐 | **NETWORK** | `-` | DNS resolution failure or connection refused. | **CHECK CONNECTION** - Verify your internet/firewall. |
 
 ---
 

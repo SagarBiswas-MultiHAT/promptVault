@@ -1,6 +1,6 @@
 # PromptVault
 
-> **Your personal, private library for AI prompts — organised, rated, and always at hand.**
+> **Your personal, private library for AI prompts - organised, rated, and always at hand.**
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Website Status](https://img.shields.io/website?url=https%3A%2F%2Fpromptvault.multihat.dev&label=Live%20Demo)](https://promptvault.multihat.dev/)
@@ -19,7 +19,7 @@
 
 ## What is PromptVault?
 
-If you use AI tools like ChatGPT, Gemini, or Claude, you've probably written some really good instructions (called **"prompts"**) that get great results — and then lost them. They end up buried in chat history, scattered across notes apps, or simply forgotten.
+If you use AI tools like ChatGPT, Gemini, or Claude, you've probably written some really good instructions (called **"prompts"**) that get great results - and then lost them. They end up buried in chat history, scattered across notes apps, or simply forgotten.
 
 **PromptVault is a personal library for those prompts.** Think of it like a recipe book, but instead of cooking instructions, it stores your best AI instructions. You can:
 
@@ -43,16 +43,16 @@ Not sure if your prompt is well-written? The **AI Librarian** can:
 - **Rewrite it** into a better, more effective version
 - **Suggest a title, category, and tags** so you don't have to think about filing
 
-The AI assistant works privately through a backend service — your API keys are never exposed to the browser.
+The AI assistant works privately through a backend service - your API keys are never exposed to the browser.
 
 ### 📂 Organise by Category
-Create your own folders (called categories) — things like *Coding*, *Marketing*, *Writing*, or whatever fits your workflow. Rename or delete them any time. Each category shows a count of how many prompts it contains.
+Create your own folders (called categories) - things like *Coding*, *Marketing*, *Writing*, or whatever fits your workflow. Rename or delete them any time. Each category shows a count of how many prompts it contains.
 
 ### ⭐ Favourites & Search
-Star your most-used prompts so they're always one click away. A full-text search bar lets you find any prompt by its title, content, or tags — instantly, with no loading.
+Star your most-used prompts so they're always one click away. A full-text search bar lets you find any prompt by its title, content, or tags - instantly, with no loading.
 
 ### 📊 Usage Statistics
-A built-in dashboard shows you which prompts you use most, how active your library is, and your top categories — so you can see what's actually working in your workflow.
+A built-in dashboard shows you which prompts you use most, how active your library is, and your top categories - so you can see what's actually working in your workflow.
 
 ### 🔄 Fill-in-the-Blank Templates
 Write a prompt once with placeholders like `{{topic}}` or `{{audience}}`. When you copy it, PromptVault will ask you to fill in each blank before putting it on your clipboard. Great for prompts you reuse with small variations every time.
@@ -61,7 +61,7 @@ Write a prompt once with placeholders like `{{topic}}` or `{{audience}}`. When y
 Export your entire vault as a single file at any time. If you ever switch devices or browsers, just import the file and everything is back instantly.
 
 ### ☁️ Optional Cloud Sync
-If you want your prompts available on multiple devices (your laptop and phone, for example), you can sign in with Google. Your vault will stay in sync automatically. This is entirely optional — the app works perfectly without it.
+If you want your prompts available on multiple devices (your laptop and phone, for example), you can sign in with Google. Your vault will stay in sync automatically. This is entirely optional - the app works perfectly without it.
 
 ### 🌗 Light & Dark Mode
 Switch between a dark theme (easy on the eyes at night) and a light theme (great in sunlight). Your preference is remembered.
