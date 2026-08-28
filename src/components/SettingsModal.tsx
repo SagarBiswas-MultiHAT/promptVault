@@ -14,7 +14,7 @@
 import { ChangeEvent } from 'react';
 import { Cloud, Command, Download, LogOut, RefreshCcw, ShieldCheck, Upload, User } from 'lucide-react';
 
-import { SCHEMA_VERSION } from '../constants.ts';
+import { APP_VERSION, SCHEMA_VERSION } from '../constants.ts';
 import type { CloudSyncController } from '../hooks/useCloudSync.ts';
 import { formatTimestamp } from '../utils/vault.ts';
 import { Modal } from './Modal.tsx';
@@ -201,8 +201,12 @@ export function SettingsModal({
           </div>
           <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl space-y-4">
             <div className="flex justify-between items-center text-xs">
+              <span className="text-vault-text-muted font-mono">App Version</span>
+              <span className="font-mono text-vault-accent-blue">{APP_VERSION}</span>
+            </div>
+            <div className="flex justify-between items-center text-xs">
               <span className="text-vault-text-muted font-mono">Schema Version</span>
-              <span className="font-mono text-vault-accent-blue">{SCHEMA_VERSION}</span>
+              <span className="font-mono text-vault-text-muted">{SCHEMA_VERSION}</span>
             </div>
             <div className="flex justify-between items-center text-xs">
               <span className="text-vault-text-muted font-mono">Storage Engine</span>
