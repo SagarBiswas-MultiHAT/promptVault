@@ -221,7 +221,7 @@ export function SettingsModal({
             </div>
 
             {/* Mobile-only shortcuts entry — desktop uses the floating ? button */}
-            <div className="sm:hidden pt-2 border-t border-vault-border/50">
+            <div className="pt-2 border-t border-vault-border/50">
               <button
                 onClick={() => { onClose(); onOpenShortcuts(); }}
                 className="w-full flex items-center justify-between text-xs py-1 group"
