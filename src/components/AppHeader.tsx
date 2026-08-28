@@ -103,8 +103,8 @@ export function AppHeader({
               </div>
             </div>
 
-            {/* Right: vault status badge + new + lock */}
-            <div className="flex items-center gap-2">
+            {/* Right: vault status badge + sign-out · new · theme · lock */}
+            <div className="flex items-center gap-3">
               <div className={`hidden xs:flex items-center gap-1.5 px-2 py-1 rounded-full border ${hasPin ? 'border-emerald-500/20 bg-emerald-500/8' : 'border-amber-500/20 bg-amber-500/8'}`}>
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.7)]" />
                 <span className={`text-[9px] font-mono uppercase tracking-widest ${hasPin ? 'text-emerald-400' : 'text-amber-400'}`}>{hasPin ? 'Encrypted' : 'Unprotected'}</span>
@@ -134,10 +134,9 @@ export function AppHeader({
                 id="mobile-new-prompt"
                 onClick={onNewPrompt}
                 aria-label="New Prompt"
-                className="btn-primary flex items-center gap-1.5 h-9 px-3 !py-0 !rounded-lg text-[11px]"
+                className="btn-primary w-9 h-9 flex items-center justify-center !p-0 !rounded-lg"
               >
-                <Plus size={13} />
-                <span>New</span>
+                <Plus size={15} />
               </button>
 
               <button

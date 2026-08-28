@@ -38,7 +38,7 @@ export function AppFooter({ isMobile, isSaved, promptCount, isEncrypted, onOpenS
       <footer className="border-t border-vault-border bg-vault-panel/95 backdrop-blur-sm shrink-0 px-4 py-2 flex items-center justify-between">
         {/* Left: save indicator + schema */}
         <div className="flex items-center gap-2">
-          <span aria-live="polite" aria-atomic="true">
+          <span aria-live="polite" aria-atomic="true" className="inline-flex items-center">
             {MotionSpan ? (
               <MotionSpan
                 key={isSaved ? 'saved' : 'idle'}

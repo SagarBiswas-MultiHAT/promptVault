@@ -60,7 +60,9 @@
 
   html,
   body {
-    overflow-x: hidden;
+    overflow: hidden;
+    height: 100dvh;
+    max-height: 100dvh;
   }
 
   body {

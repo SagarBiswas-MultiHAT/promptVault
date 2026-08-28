@@ -7,6 +7,7 @@ import { useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Sparkles, Send, X, AlertTriangle, Check, Shield, Zap, Wand2 } from 'lucide-react';
 import { Category } from '../types.ts';
+import { useIsMobile } from '../hooks/useMediaQuery.ts';
 
 interface EvaluationResult {
   qualityScore: number;
@@ -30,9 +31,12 @@ interface ImproveResult {
 interface AiAssistantWidgetProps {
   categories: Category[];
   onCreatePrompt: (data: { title: string; body: string; categoryId: string; tags: string[] }) => string | null;
+  /** When true, hides the widget entirely on mobile viewports. */
+  hideOnMobile?: boolean;
 }
 
-export function AiAssistantWidget({ categories, onCreatePrompt }: AiAssistantWidgetProps) {
+export function AiAssistantWidget({ categories, onCreatePrompt, hideOnMobile = false }: AiAssistantWidgetProps) {
+  const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
   const [promptInput, setPromptInput] = useState('');
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
@@ -231,6 +235,8 @@ export function AiAssistantWidget({ categories, onCreatePrompt }: AiAssistantWid
   const providerLabel = evaluation ? formatProvider(evaluation.provider) : '';
   const anyLoading = isLoading || isImproving;
 
+  if (hideOnMobile && isMobile) return null;
+
   return (
     <>
       <AnimatePresence>
@@ -239,7 +245,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt }: AiAssistantWid
             initial={{ opacity: 0, y: 20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
-            className="fixed bottom-34 right-4 z-[9999] w-[400px] max-w-[calc(100vw-2rem)] max-h-[70vh] glass-panel rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-[5rem] right-4 z-[9999] w-[400px] max-w-[calc(100vw-2rem)] max-h-[70vh] glass-panel rounded-2xl shadow-2xl flex flex-col overflow-hidden"
           >
             {/* Top accent line — emerald for AI */}
             <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
@@ -542,7 +548,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt }: AiAssistantWid
 
       <button
         onClick={() => setIsOpen(prev => !prev)}
-        className="fixed bottom-18.5 right-10 z-[9999] badge badge-emerald !px-4 !py-3 shadow-xl shadow-emerald-500/10 hover:scale-105 active:scale-95 transition-all cursor-pointer border border-emerald-500/20 flex items-center"
+        className="fixed bottom-[3.5rem] right-10 z-[9999] badge badge-emerald !px-4 !py-3 shadow-xl shadow-emerald-500/10 hover:scale-105 active:scale-95 transition-all cursor-pointer border border-emerald-500/20 flex items-center"
         aria-label="Open prompt assistant"
       >
         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" />
