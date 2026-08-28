@@ -26,8 +26,9 @@
   "screenshots": [
     {
       "src": "/og-image.png",
-      "sizes": "1024x1024",
+      "sizes": "1200x630",
       "type": "image/png",
+      "form_factor": "wide",
       "label": "PromptVault — AI Prompt Manager home screen"
     }
   ],
