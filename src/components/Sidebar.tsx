@@ -180,7 +180,7 @@ export function Sidebar({
                 {/* Footer */}
                 <div className="pb-4 pt-3 border-t border-vault-border w-full flex justify-center">
                   <button
-                    onClick={onToggleStats}
+                    onClick={() => { onToggleStats(); handleMobileAutoClose(); }}
                     data-tooltip="Analytics"
                     className="sidebar-tooltip w-10 h-10 flex items-center justify-center rounded-lg text-vault-text-muted hover:text-vault-accent hover:bg-vault-panel-bright transition-all"
                   >
@@ -342,7 +342,7 @@ export function Sidebar({
                       </div>
                     </div>
                     <button
-                      onClick={onToggleStats}
+                      onClick={() => { onToggleStats(); handleMobileAutoClose(); }}
                       className="w-full flex items-center justify-center gap-2 py-2 rounded-md border border-vault-border text-vault-text-muted hover:text-vault-accent hover:border-vault-accent/30 transition-all text-[10px] font-mono uppercase tracking-widest"
                     >
                       <BarChart3 size={12} />
