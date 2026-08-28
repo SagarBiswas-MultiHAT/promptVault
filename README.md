@@ -231,7 +231,7 @@ Every hosting platform has a place to enter secret settings (the equivalent of y
 
 | Setting | What it is |
 |---|---|
-| `GEMINI_API_KEY` | Your Google Gemini key |
+| `GEMINI_API_KEYS` | Your Google Gemini key(s), comma-separated |
 | `GROQ_API_KEY` | Your Groq key |
 | `NODE_ENV` | Set this to `production` |
 | `ALLOWED_ORIGINS` | Your website address, e.g. `https://yourdomain.com` |
@@ -246,6 +246,59 @@ Every hosting platform has a place to enter secret settings (the equivalent of y
 > restart is sufficient for those.
 
 > **Important:** When you deploy to a real domain, you'll also need to update the social sharing links inside `index.html` — specifically the `og:url`, `og:image`, `twitter:image`, and `canonical` lines — to point to your actual domain name.
+
+---
+
+### 🔄 Updating Your Project on a Droplet / VPS
+
+When you push new commits to GitHub and want to update your live DigitalOcean Droplet (or any Linux VPS), follow these steps:
+
+#### 1. Connect to your Droplet
+```bash
+ssh root@your-droplet-ip
+```
+
+#### 2. Navigate to your project directory
+```bash
+cd /var/www/promptvault
+```
+
+#### 3. Pull the latest changes, rebuild, and restart
+
+**Step-by-step:**
+```bash
+# 1. Pull the latest commits cleanly (avoids accidental local merge conflicts)
+git pull --ff-only origin main
+
+# 2. Clean install dependencies strictly from package-lock.json
+npm ci
+
+# 3. Rebuild the frontend bundle (Vite injects VITE_* variables here)
+npm run build
+
+# 4. (Optional) Run zero-token API key health check on the server
+npm run test:keys
+
+# 5. Restart PM2 with fresh environment variables and persist the process state
+pm2 restart promptvault --update-env
+pm2 save
+```
+
+**⚡ All-in-one bulletproof update command:**
+```bash
+cd /var/www/promptvault && git pull --ff-only origin main && npm ci && npm run build && pm2 restart promptvault --update-env && pm2 save
+```
+
+#### 4. Verify deployment health
+```bash
+pm2 status
+pm2 logs promptvault --lines 20
+```
+
+> 💡 **Browser Cache & Service Worker Notice:** PromptVault is a PWA. If you do not see the newest UI updates immediately after deploying:
+> 1. Open `https://promptvault.multihat.dev` (or your domain).
+> 2. Press `F12` → **Application** → **Service Workers** → click **Unregister**.
+> 3. Perform a hard refresh (`Ctrl + Shift + R` or `Cmd + Shift + R`).
 
 ---
 
