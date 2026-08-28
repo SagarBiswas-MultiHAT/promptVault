@@ -12,7 +12,7 @@
 
 import { Settings } from 'lucide-react';
 
-import { SCHEMA_VERSION } from '../constants.ts';
+import { APP_VERSION } from '../constants.ts';
 import type { MotionKit } from '../hooks/useMotion.ts';
 
 export interface AppFooterProps {
@@ -31,7 +31,7 @@ export function AppFooter({ isMobile, isSaved, promptCount, isEncrypted, onOpenS
     const mobileClassName = `text-[9px] font-mono uppercase tracking-widest ${
       isSaved ? 'text-emerald-400' : 'text-vault-text-muted'
     }`;
-    const mobileLabel = isSaved ? '✓ Saved' : `v${SCHEMA_VERSION}`;
+    const mobileLabel = isSaved ? '✓ Saved' : `v${APP_VERSION}`;
 
     return (
       /* ─── Mobile Footer: compact bottom action bar ─── */
@@ -87,7 +87,7 @@ export function AppFooter({ isMobile, isSaved, promptCount, isEncrypted, onOpenS
         <div className="flex items-center gap-3">
           <span className="font-semibold text-vault-text-muted">PromptVault</span>
           <span className="text-vault-border">·</span>
-          <span>v{SCHEMA_VERSION}</span>
+          <span>v{APP_VERSION}</span>
         </div>
         <div className="flex items-center gap-3">
           <span aria-live="polite" aria-atomic="true">
