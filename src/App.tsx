@@ -359,6 +359,7 @@ export default function App() {
             overlays.setSettings(false);
             setSecurityAction('remove');
           }}
+          onOpenShortcuts={() => overlays.setShortcuts(true)}
       />
 
       {vault.storageError && (
