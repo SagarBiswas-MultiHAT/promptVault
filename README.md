@@ -49,7 +49,7 @@ PromptVault is a privacy-first, client-encrypted AI prompt workbench and local l
 
 <div align="center">
 
-```text
+<pre align="center">
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
 │                                 PROMPTVAULT ECOSYSTEM                                   │
 ├──────────────────────────────────────┬──────────────────────────────────────────────────┤
@@ -65,7 +65,7 @@ PromptVault is a privacy-first, client-encrypted AI prompt workbench and local l
 │ • Multi-Key Pool with 429 Cooldown   │ • Conflict-free cross-device synchronization     │
 │ • SHA-256 LRU Cache & Coalescing     │ • JSON Import/Export with Schema Sanitization    │
 └──────────────────────────────────────┴──────────────────────────────────────────────────┘
-```
+</pre>
 
 </div>
 
