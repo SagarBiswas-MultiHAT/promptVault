@@ -121,11 +121,13 @@ copy .env.example .env
 Then open the newly created `.env` file in any text editor (Notepad works fine) and fill in your keys:
 
 ```
-GEMINI_API_KEY="paste-your-gemini-key-here"
+GEMINI_API_KEYS="paste-your-gemini-key-here"
 GROQ_API_KEY="paste-your-groq-key-here"
 ```
 
 > **What is `.env`?** It's a plain text file that holds private settings for the app — like passwords. It stays on your computer and is never uploaded anywhere.
+>
+> 💡 **Verify your keys:** Run `npm run test:keys` to check that all your keys are authenticated and working. See the [API Key Diagnostic Guide](scripts/README.md) for full details.
 
 ---
 
@@ -270,6 +272,9 @@ Run these in your terminal from the project folder:
 |---|---|
 | `npm run dev` | Starts the app for local development (port 3000) |
 | `npm run dev:api` | Starts the AI assistant service (port 3002) |
+| `npm run test:keys` | Tests and diagnoses all AI API keys ([docs](scripts/README.md)) |
+| `npm run test:keys:wait` | Tests keys with a 60s cooldown for rate-limit recovery |
+| `npm run test` | Runs the test suite |
 | `npm run build` | Packages the app ready for deployment |
 | `npm start` | Runs the packaged app in production mode |
 | `npm run preview` | Previews the packaged app locally before deploying |
