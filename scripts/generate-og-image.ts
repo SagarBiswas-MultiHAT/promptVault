@@ -148,7 +148,7 @@ async function generateOgImage() {
     }
 
     .headline {
-      margin-top: 14px;
+      margin-top: 18px;
       font-size: 38px;
       font-weight: 800;
       line-height: 1.15;
@@ -159,8 +159,8 @@ async function generateOgImage() {
     }
 
     .subheadline {
-      margin-top: 10px;
-      font-size: 16px;
+      margin-top: 12px;
+      font-size: 15px;
       line-height: 1.5;
       color: #9CA3AF;
       max-width: 520px;
@@ -205,6 +205,38 @@ async function generateOgImage() {
       color: #34D399;
     }
 
+    /* Specs Row */
+    .specs-grid {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .spec-card {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .spec-val {
+      font-size: 14px;
+      font-weight: 800;
+      color: #FFFFFF;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.02em;
+    }
+
+    .spec-lbl {
+      font-size: 11px;
+      color: #9CA3AF;
+      font-weight: 500;
+    }
+
     /* Footer meta */
     .footer-bar {
       display: flex;
@@ -243,7 +275,7 @@ async function generateOgImage() {
     }
 
     .card-header {
-      padding: 12px 16px;
+      padding: 12px 18px;
       background: rgba(255, 255, 255, 0.02);
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       display: flex;
@@ -279,25 +311,25 @@ async function generateOgImage() {
       font-weight: 700;
       color: #10B981;
       background: rgba(16, 185, 129, 0.12);
-      padding: 2px 7px;
+      padding: 2px 8px;
       border-radius: 6px;
       border: 1px solid rgba(16, 185, 129, 0.25);
     }
 
     .card-body {
-      padding: 20px;
+      padding: 18px 20px;
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      gap: 12px;
       font-family: 'JetBrains Mono', monospace;
     }
 
     .prompt-title-row {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
+      align-items: center;
     }
 
     .prompt-title {
@@ -311,21 +343,19 @@ async function generateOgImage() {
       font-size: 11px;
       color: #F59E0B;
       background: rgba(245, 158, 11, 0.1);
-      padding: 2px 8px;
+      padding: 3px 9px;
       border-radius: 6px;
       border: 1px solid rgba(245, 158, 11, 0.2);
     }
 
     .code-box {
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.07);
       border-radius: 12px;
-      padding: 14px;
-      font-size: 13px;
-      line-height: 1.6;
+      padding: 14px 16px;
+      font-size: 12.5px;
+      line-height: 1.65;
       color: #D1D5DB;
-      flex: 1;
-      margin-bottom: 14px;
     }
 
     .kw { color: #818CF8; font-weight: 600; }
@@ -340,13 +370,82 @@ async function generateOgImage() {
     .str { color: #34D399; }
     .comment { color: #6B7280; font-style: italic; }
 
+    /* Detected Variables Card */
+    .vars-container {
+      background: rgba(245, 158, 11, 0.04);
+      border: 1px solid rgba(245, 158, 11, 0.14);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .vars-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .vars-label {
+      color: #F59E0B;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .vars-status {
+      color: #9CA3AF;
+      font-size: 10px;
+    }
+
+    .vars-grid {
+      display: flex;
+      gap: 8px;
+    }
+
+    .var-chip {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 7px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .var-chip-key {
+      font-size: 9px;
+      color: #9CA3AF;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .var-chip-val {
+      font-size: 10.5px;
+      color: #FBBF24;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .card-actions {
       display: flex;
       gap: 10px;
+      margin-top: 5px;
     }
 
     .btn-mock {
-      padding: 7px 14px;
+      padding: 8px 14px;
       border-radius: 8px;
       font-size: 12px;
       font-weight: 600;
@@ -393,16 +492,31 @@ async function generateOgImage() {
 
         <h1 class="headline">Your Private AI<br>Prompt Library</h1>
         
-        <p class="subheadline">
+        <p class="subheadline" style="margin-top: 15px;">
           Privacy-first, client-encrypted prompt workbench with AI evaluation, dynamic variables, and offline-first storage.
         </p>
 
-        <div class="badges-grid">
+        <div class="badges-grid" style="margin-top: 25px;">
           <div class="badge badge-amber">🔒 AES-256-GCM Encrypted</div>
           <div class="badge badge-blue">⚡ Offline-First</div>
           <div class="badge badge-emerald">✨ Gemini & Groq AI</div>
           <div class="badge">☁️ Cloud Sync</div>
           <div class="badge">📦 100% Open Source</div>
+        </div>
+
+        <div class="specs-grid" style="margin-top: 25px;">
+          <div class="spec-card">
+            <span class="spec-val">AES-256</span>
+            <span class="spec-lbl">Client Encryption</span>
+          </div>
+          <div class="spec-card">
+            <span class="spec-val">&lt; 1ms</span>
+            <span class="spec-lbl">Offline Cache</span>
+          </div>
+          <div class="spec-card">
+            <span class="spec-val">Zero-Cloud</span>
+            <span class="spec-lbl">Private Keys</span>
+          </div>
         </div>
       </div>
 
@@ -425,12 +539,12 @@ async function generateOgImage() {
           <div class="card-tab-title">
             <span>⚡ system-architect.prompt</span>
           </div>
-          <div class="score-badge">Score: 98/100</div>
+          <div class="score-badge">Score: 9.8/10</div>
         </div>
 
         <div class="card-body">
           <div class="prompt-title-row">
-            <div class="prompt-title">Senior System Architect</div>
+            <div class="prompt-title" style="margin-top: 5px">Senior System Architect</div>
             <div class="prompt-cat">Engineering</div>
           </div>
 
@@ -441,6 +555,27 @@ async function generateOgImage() {
             <span class="var">{{project_name}}</span> using <span class="var">{{stack}}</span>.<br>
             Ensure <span class="str">zero-trust security</span> and<br>
             auto-scaling across <span class="var">{{cloud_region}}</span>.
+          </div>
+
+          <div class="vars-container">
+            <div class="vars-header">
+              <span class="vars-label">⚡ Live Variables (3)</span>
+              <span class="vars-status">Auto-Injected</span>
+            </div>
+            <div class="vars-grid">
+              <div class="var-chip">
+                <span class="var-chip-key">project_name</span>
+                <span class="var-val">"CloudVault"</span>
+              </div>
+              <div class="var-chip">
+                <span class="var-chip-key">stack</span>
+                <span class="var-val">"Kubernetes"</span>
+              </div>
+              <div class="var-chip">
+                <span class="var-chip-key">cloud_region</span>
+                <span class="var-val">"us-east1"</span>
+              </div>
+            </div>
           </div>
 
           <div class="card-actions">
