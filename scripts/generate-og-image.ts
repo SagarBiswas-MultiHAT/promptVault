@@ -375,7 +375,7 @@ async function generateOgImage() {
       background: rgba(245, 158, 11, 0.04);
       border: 1px solid rgba(245, 158, 11, 0.14);
       border-radius: 12px;
-      padding: 10px 14px;
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -405,37 +405,44 @@ async function generateOgImage() {
 
     .vars-grid {
       display: flex;
-      gap: 8px;
+      gap: 6px;
+      width: 100%;
     }
 
     .var-chip {
-      flex: 1;
-      background: rgba(0, 0, 0, 0.35);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      flex: 1 1 0;
+      min-width: 0;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 8px;
-      padding: 7px 10px;
+      padding: 6px 8px;
       display: flex;
       flex-direction: column;
-      gap: 3px;
-      min-width: 0;
+      gap: 2px;
+      box-sizing: border-box;
+      overflow: hidden;
     }
 
     .var-chip-key {
-      font-size: 9px;
+      font-size: 8.5px;
       color: #9CA3AF;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.05em;
       font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .var-chip-val {
-      font-size: 10.5px;
+    .var-chip-val, .var-val {
+      font-size: 10px;
       color: #FBBF24;
       font-weight: 600;
       font-family: 'JetBrains Mono', monospace;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: 1.3;
     }
 
     .card-actions {
@@ -537,24 +544,23 @@ async function generateOgImage() {
             <div class="dot dot-green"></div>
           </div>
           <div class="card-tab-title">
-            <span>⚡ system-architect.prompt</span>
+            <span>⚡ promptvault-core.prompt</span>
           </div>
-          <div class="score-badge">Score: 9.8/10</div>
+          <div class="score-badge">Score: 9.9/10</div>
         </div>
 
         <div class="card-body">
           <div class="prompt-title-row">
-            <div class="prompt-title" style="margin-top: 5px">Senior System Architect</div>
-            <div class="prompt-cat">Engineering</div>
+            <div class="prompt-title" style="margin-top: 5px">PromptVault AI Librarian</div>
+            <div class="prompt-cat">AI Security</div>
           </div>
 
           <div class="code-box">
             <span class="comment">// Dynamic Prompt Template</span><br>
-            <span class="kw">Act as</span> a Principal Cloud Architect.<br>
-            Design a resilient architecture for<br>
-            <span class="var">{{project_name}}</span> using <span class="var">{{stack}}</span>.<br>
-            Ensure <span class="str">zero-trust security</span> and<br>
-            auto-scaling across <span class="var">{{cloud_region}}</span>.
+            <span class="kw">Act as</span> the AI Librarian for <span class="var">{{vault_name}}</span>.<br>
+            Evaluate and optimize prompts with <span class="var">{{ai_engine}}</span>.<br>
+            Enforce <span class="str">AES-256-GCM</span> client encryption and<br>
+            instant variable injection for <span class="var">{{storage_mode}}</span>.
           </div>
 
           <div class="vars-container">
@@ -564,16 +570,16 @@ async function generateOgImage() {
             </div>
             <div class="vars-grid">
               <div class="var-chip">
-                <span class="var-chip-key">project_name</span>
-                <span class="var-val">"CloudVault"</span>
+                <span class="var-chip-key">vault_name</span>
+                <span class="var-chip-val">"PromptVault"</span>
               </div>
               <div class="var-chip">
-                <span class="var-chip-key">stack</span>
-                <span class="var-val">"Kubernetes"</span>
+                <span class="var-chip-key">ai_engine</span>
+                <span class="var-chip-val">"Gemini+Groq"</span>
               </div>
               <div class="var-chip">
-                <span class="var-chip-key">cloud_region</span>
-                <span class="var-val">"us-east1"</span>
+                <span class="var-chip-key">storage_mode</span>
+                <span class="var-chip-val">"Offline-1st"</span>
               </div>
             </div>
           </div>
