@@ -558,9 +558,9 @@ async function generateOgImage() {
           <div class="code-box">
             <span class="comment">// Dynamic Prompt Template</span><br>
             <span class="kw">Act as</span> the AI Librarian for <span class="var">{{vault_name}}</span>.<br>
-            Evaluate and optimize prompts with <span class="var">{{ai_engine}}</span>.<br>
+            Evaluate and optimize prompts with <span class="var">{{tech_engine}}</span>.<br>
             Enforce <span class="str">AES-256-GCM</span> client encryption and<br>
-            instant variable injection for <span class="var">{{storage_mode}}</span>.
+            instant variable injection for <span class="var">{{online_mode}}</span>.
           </div>
 
           <div class="vars-container">
@@ -574,12 +574,12 @@ async function generateOgImage() {
                 <span class="var-chip-val">"PromptVault"</span>
               </div>
               <div class="var-chip">
-                <span class="var-chip-key">ai_engine</span>
-                <span class="var-chip-val">"Gemini+Groq"</span>
+                <span class="var-chip-key">tech_engine</span>
+                <span class="var-chip-val">"Offline PWA"</span>
               </div>
               <div class="var-chip">
-                <span class="var-chip-key">storage_mode</span>
-                <span class="var-chip-val">"Offline-1st"</span>
+                <span class="var-chip-key">online_mode</span>
+                <span class="var-chip-val">"Supabase PostgreSQL"</span>
               </div>
             </div>
           </div>
