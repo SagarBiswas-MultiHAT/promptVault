@@ -3,8 +3,8 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://promptvault.multihat.dev/</loc>
-    <!-- Updated to v2.1.0 release date 2026-08-28 -->
-    <lastmod>2026-08-28</lastmod>
+    <!-- Updated to v2.2.0 release date 2026-08-29 -->
+    <lastmod>2026-08-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>

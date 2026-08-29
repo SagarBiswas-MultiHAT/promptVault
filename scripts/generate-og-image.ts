@@ -485,7 +485,7 @@ async function generateOgImage() {
           <div class="brand-title-wrap">
             <div class="brand-title">
               PromptVault
-              <span class="version-pill">v2.1.0</span>
+              <span class="version-pill">v2.2.0</span>
             </div>
           </div>
         </div>
