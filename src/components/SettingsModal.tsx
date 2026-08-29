@@ -12,7 +12,7 @@
  */
 
 import { ChangeEvent } from 'react';
-import { Cloud, Command, Download, Keyboard, LogOut, RefreshCcw, ShieldCheck, Upload, User } from 'lucide-react';
+import { Cloud, Command, Download, Github, Keyboard, LogOut, Mail, RefreshCcw, ShieldCheck, Upload, User } from 'lucide-react';
 
 import { APP_VERSION, SCHEMA_VERSION } from '../constants.ts';
 import type { CloudSyncController } from '../hooks/useCloudSync.ts';
@@ -233,6 +233,38 @@ export function SettingsModal({
                 </span>
               </button>
             </div>
+          </div>
+        </section>
+
+        {/* About */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2 text-vault-text-muted font-mono uppercase tracking-widest text-[10px] font-bold">
+            <span>About</span>
+          </div>
+          <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl space-y-3">
+            <a
+              href="mailto:sagarbiswas@multihat.dev"
+              className="flex items-center justify-between text-xs group"
+            >
+              <span className="text-vault-text-muted font-mono">Contact</span>
+              <span className="flex items-center gap-1.5 text-vault-text-muted group-hover:text-vault-accent transition-colors font-mono">
+                <Mail size={12} />
+                sagarbiswas@multihat.dev
+              </span>
+            </a>
+            <div className="border-t border-vault-border/50" />
+            <a
+              href="https://github.com/SagarBiswas-MultiHAT/promptVault"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between text-xs group"
+            >
+              <span className="text-vault-text-muted font-mono">Source</span>
+              <span className="flex items-center gap-1.5 text-vault-text-muted group-hover:text-vault-accent transition-colors font-mono">
+                <Github size={12} />
+                SagarBiswas-MultiHAT/promptVault
+              </span>
+            </a>
           </div>
         </section>
       </div>
