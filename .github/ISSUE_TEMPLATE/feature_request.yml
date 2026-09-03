@@ -1,0 +1,40 @@
+name: Feature Request
+description: Suggest an enhancement or new idea for PromptVault
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping make PromptVault even better! We love hearing ideas for improving workflows, ergonomics, and productivity.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or Use Case
+      description: Is your feature request related to an existing limitation, or does it address a specific workflow need?
+      placeholder: As an AI practitioner, I often need to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Solution
+      description: Describe the feature or improvement you would like to see.
+      placeholder: It would be wonderful if PromptVault could...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative workarounds or solutions?
+      placeholder: A clear description of any alternative approaches you have tried or considered.
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Add any mockups, screenshots, or extra context that might help clarify your idea.
