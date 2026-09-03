@@ -10,6 +10,10 @@
   &nbsp;
   <a href="https://github.com/SagarBiswas-MultiHAT/promptVault/releases"><img src="https://img.shields.io/badge/Release-v2.2.0-F59E0B?logo=semanticrelease&logoColor=white" alt="Version" /></a>
   &nbsp;
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Changelog-Keep%20a%20Changelog-blue?logo=git" alt="Changelog" /></a>
+  &nbsp;
+  <a href=".github/CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?logo=github" alt="PRs Welcome" /></a>
+  &nbsp;
   <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg?logo=apache" alt="License" /></a>
 </p>
 <p align="left">
@@ -35,6 +39,7 @@
 - [Comprehensive Architectural & Feature Synthesis](#comprehensive-architectural--feature-synthesis)
 - [What is PromptVault?](#what-is-promptvault)
 - [What Can It Do? (Features)](#what-can-it-do)
+- [How Does It Compare?](#how-does-it-compare)
 - [Requirements](#what-do-you-need-to-run-it)
 - [Getting Started (Step by Step)](#getting-started-step-by-step)
   - [Step 1 - Download & Install](#step-1---download-the-project-and-install-dependencies)
@@ -45,6 +50,7 @@
   - [Updating on a Droplet / VPS](#updating-your-project-on-a-droplet-vps)
 - [Security & Privacy](#is-my-data-safe)
 - [Available Commands](#available-commands)
+- [Contributing & Community](#contributing--community)
 - [License](#license)
 
 ---
@@ -78,7 +84,7 @@ PromptVault is a privacy-first, client-encrypted AI prompt workbench and local l
 
 </div>
 
-### Architecture Overview
+### Architecture Overview (v1.0.0)
 
 ![Architecture Overview](diagrams/Architecture_Overview.png)
 
@@ -135,6 +141,23 @@ Switch between a dark theme (easy on the eyes at night) and a light theme (great
 
 ### 📱 Works on Mobile Too
 The app is fully usable on phones and tablets. The sidebar slides in and out, buttons are large enough to tap, and the layout adjusts to any screen size.
+
+---
+
+## How Does It Compare?
+
+Why choose PromptVault instead of saving prompts in a general note-taking app or on a cloud prompt directory? Here is how it compares across key developer and privacy needs:
+
+| Capability | PromptVault | Notion / Docs | Obsidian | Web Prompt Directories |
+| :--- | :--- | :--- | :--- | :--- |
+| **100% Offline-First** | Yes (zero network requirement) | No (cloud-dependent) | Yes (local markdown) | No (cloud-dependent) |
+| **Client-Side AES-256-GCM Encryption** | Yes (PBKDF2 + recovery key) | No | Community plugins only | No (stored on third-party servers) |
+| **Built-in AI Prompt Refinement** | Yes (Gemini + Groq fallback) | Paid add-on required | Third-party plugin required | Limited or static only |
+| **Variable Template Injection (`{{var}}`)** | Yes (interactive form before copy) | No native support | Templater plugin required | Rare |
+| **Private API Key Proxy** | Yes (keys never reach the browser) | Not applicable | Direct client calls | Centralized / Hosted |
+| **No Mandatory Account or Tracking** | Yes (use instantly with no signup) | Account required | Account not required | Account usually required |
+| **Cross-Device Sync** | Optional (free Supabase backend) | Built-in | Paid or manual Git setup | Built-in (vendor locked) |
+| **Open Source License** | Apache 2.0 | Proprietary | Proprietary | Mostly proprietary |
 
 ---
 
@@ -401,6 +424,18 @@ Run these in your terminal from the project folder:
 | `npm run preview` | Previews the packaged app locally before deploying |
 | `npm run lint` | Checks the code for errors |
 | `npm run clean` | Deletes the packaged build files |
+
+---
+
+## Contributing & Community
+
+PromptVault is an open-source project built for the AI community, and we welcome contributors of all skill levels.
+
+- **Getting Started:** Read our [Contributing Guide](.github/CONTRIBUTING.md) for local setup, development commands, and pull request guidelines.
+- **Security Inquiries:** Review our [Security Policy](.github/SECURITY.md) for responsible vulnerability disclosure and threat model details.
+- **Join the Discussion:** Visit our [GitHub Discussions](https://github.com/SagarBiswas-MultiHAT/promptVault/discussions) to share your favorite prompt workflows, propose ideas, or ask questions.
+- **Good First Issues:** Explore issues labeled `good first issue` on GitHub for well-scoped starter contributions.
+- **Version History:** See [CHANGELOG.md](CHANGELOG.md) for a complete record of releases and changes.
 
 ---
 

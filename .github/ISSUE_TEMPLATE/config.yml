@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Community Discussions
+    url: https://github.com/SagarBiswas-MultiHAT/promptVault/discussions
+    about: Ask questions, share custom prompt collections, or discuss workflow tips with the community.
+  - name: Security Vulnerability Reporting
+    url: https://github.com/SagarBiswas-MultiHAT/promptVault/security/advisories/new
+    about: Please report security vulnerabilities privately rather than via public issues.
+  - name: Live Documentation & Architecture
+    url: https://github.com/SagarBiswas-MultiHAT/promptVault#readme
+    about: Read our comprehensive setup instructions, deployment notes, and architecture guide.

@@ -1,0 +1,78 @@
+name: Bug Report
+description: Report a defect or unexpected behavior in PromptVault
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report an issue. Before submitting, please check existing issues to see if this has already been reported.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Problem Description
+      description: A clear and concise description of the bug.
+      placeholder: What happened? What did you observe?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Please provide clear steps to reproduce the issue.
+      placeholder: |
+        1. Open the application at '...'
+        2. Create a prompt with '...'
+        3. Click on '...'
+        4. Notice the error '...'
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen instead?
+      placeholder: What should have happened?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: vault_mode
+    attributes:
+      label: Vault Mode
+      description: Which storage or encryption mode were you using?
+      options:
+        - Unencrypted local storage (default)
+        - Numeric PIN encrypted (AES-256-GCM)
+        - Passphrase encrypted (AES-256-GCM)
+        - Supabase cloud sync active
+        - Not sure / Not applicable
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment & Browser
+      description: Please share your operating system, browser, and version.
+      placeholder: e.g., Windows 11, Chrome 130 (or macOS Sonoma, Firefox 132)
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Console Logs or Screenshots
+      description: Paste any browser developer console errors or terminal logs here (if applicable).
+      render: shell
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Confirmation
+      options:
+        - label: I have verified that no sensitive credentials, API keys, or private prompt contents are included in this report.
+          required: true
