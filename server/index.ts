@@ -77,9 +77,9 @@ if (IS_PRODUCTION) {
 // registered after a route can catch its errors.
 app.use(errorHandler);
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(
-    `[ai-proxy] listening on http://localhost:${PORT} (${IS_PRODUCTION ? 'production' : 'development'})`
+    `[ai-proxy] listening on http://0.0.0.0:${PORT} (${IS_PRODUCTION ? 'production' : 'development'})`
   );
 });
 
