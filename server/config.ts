@@ -111,7 +111,10 @@ export const TEMPERATURE = 0.3;
 
 // --- Server ----------------------------------------------------------------
 
-export const PORT = num(process.env.AI_PROXY_PORT ?? process.env.PORT, 3002);
+export const PORT = num(
+  process.env.AI_PROXY_PORT ?? process.env.PORT ?? process.env.SERVER_PORT,
+  3002
+);
 
 /**
  * Number of trusted reverse proxies in front of this server.
