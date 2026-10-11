@@ -19,7 +19,7 @@ Please treat fellow contributors and users with kindness, empathy, and respect.
 
 ### Prerequisites
 
-- **Node.js**: Version 18.0.0 or newer (Node 20 or 22 LTS recommended)
+- **Node.js**: Version 20.0.0 or newer (Node 20 or 22 LTS recommended)
 - **npm**: Version 9 or newer
 - **Git**: Configured with your personal name and email
 

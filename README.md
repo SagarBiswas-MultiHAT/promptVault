@@ -167,7 +167,7 @@ PromptVault is a web application you run on your own computer (or server). It is
 
 To get started you need two things:
 
-1. **Node.js** (version 18 or newer) - a free program that lets your computer run JavaScript applications. [Download it here.](https://nodejs.org/)
+1. **Node.js** (version 20 or newer) - a free program that lets your computer run JavaScript applications. [Download it here.](https://nodejs.org/)
 2. **At least one AI API key** - a free-to-obtain password that lets PromptVault connect to an AI service on your behalf. You need one of:
    - **Google Gemini** - [Get a free key here](https://aistudio.google.com/apikey) (generous free tier)
    - **Groq** - [Get a free key here](https://console.groq.com/keys) (very fast, free tier)
