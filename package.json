@@ -22,10 +22,10 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
-    "compression": "^1.8.1",
+    "compression": "^1.8.2",
     "cross-env": "^10.1.0",
     "dotenv": "^17.2.3",
-    "express": "^4.21.2",
+    "express": "^4.22.3",
     "lucide-react": "^0.546.0",
     "motion": "^12.23.24",
     "react": "^19.0.1",
@@ -46,7 +46,7 @@
     "tailwindcss": "^4.1.14",
     "typescript": "~5.8.2",
     "vite": "^6.2.3",
-    "vitest": "^3.2.7"
+    "vitest": "^4.1.11"
   },
   "overrides": {
     "esbuild": ">=0.28.1"
