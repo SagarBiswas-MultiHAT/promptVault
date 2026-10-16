@@ -7,7 +7,7 @@ User-agent: Bingbot
 Allow: /
 Disallow: /api/
 
-# Generic crawlers — apply a small crawl delay to protect server resources
+# Generic crawlers: apply a small crawl delay to protect server resources
 User-agent: *
 Allow: /
 Disallow: /api/

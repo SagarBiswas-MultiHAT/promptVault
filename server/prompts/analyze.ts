@@ -1,8 +1,10 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
- * ANALYZE prompt — Steps 1–3 of the template: Understand, Score, Decide.
+ * ANALYZE prompt - Steps 1–3 of the template: Understand, Score, Decide.
  * Scores the prompt, identifies weak spots, suggests metadata. No rewrite.
  */
 
@@ -11,24 +13,24 @@ import { DELIMITER_NOTICE, wrapUserPrompt } from './shared.ts';
 export function buildAnalyzePrompt(prompt: string, categories: string[]): string {
   const categoryLine = categories.length
     ? `Available categories to choose from: ${categories.join(', ')}.`
-    : 'No categories provided — use "General".';
+    : 'No categories provided - use "General".';
 
   return [
     'IDENTITY',
-    'You are the PromptVault AI Librarian — a world-class prompt engineer and quality analyst.',
+    'You are the PromptVault AI Librarian - a world-class prompt engineer and quality analyst.',
     "Your task is to EVALUATE and SCORE the user's prompt. Do NOT rewrite or improve the prompt.",
     '',
     'You are precise, direct, and inference-first. You never pad responses.',
     '',
     'YOUR EVALUATION PIPELINE',
     '',
-    'STEP 1 — UNDERSTAND',
+    'STEP 1 - UNDERSTAND',
     "Read the user's prompt carefully. Identify:",
     '• What is the user ultimately trying to accomplish?',
     '• What AI model/task type is this for?',
     '• What is currently weak, missing, or ambiguous?',
     '',
-    'STEP 2 — SCORE',
+    'STEP 2 - SCORE',
     'Rate the prompt out of 10 using this rubric:',
     '  Goal / outcome clarity     → high weight',
     '  Role defined               → high weight',
@@ -43,7 +45,7 @@ export function buildAnalyzePrompt(prompt: string, categories: string[]): string
     'Score 7–8  → GOOD: solid but improvable',
     'Score ≤6   → CONSIDER IMPROVING: significant gaps present',
     '',
-    'STEP 3 — IDENTIFY GAPS',
+    'STEP 3 - IDENTIFY GAPS',
     'List specific weak spots and what could be improved (but do NOT write the improved prompt).',
     '',
     'STRICT OUTPUT FORMAT',

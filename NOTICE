@@ -1,0 +1,25 @@
+PromptVault - The Private, Offline-First Prompt Manager for AI Agent Power Users
+Copyright (c) 2026 Sagar Biswas (@SagarBiswas-MultiHAT)
+Canonical Repository: https://github.com/SagarBiswas-MultiHAT/promptVault
+Author Portfolio: https://multihat.dev
+
+This product includes software originally architected, designed, and developed
+by Sagar Biswas (MultiHAT), including:
+- Offline-first AES-256 local encryption and key derivation architecture
+- Built-in AI Librarian evaluation and multi-provider routing engine (Gemini & Groq fallback)
+- Dynamic {{variable}} template parsing and execution engine
+- Supabase cloud synchronization, analytics, and instant command-palette (Cmd/Ctrl+K) search
+
+MANDATORY ATTRIBUTION REQUIREMENT (Apache License 2.0, Section 4(d)):
+Any redistribution, fork, hosted deployment, or derivative work of this software
+(in source or compiled/bundled form) must retain this NOTICE file in full and
+display clear, prominent attribution to the original author:
+Sagar Biswas (@SagarBiswas-MultiHAT) - https://github.com/SagarBiswas-MultiHAT/promptVault
+within both the documentation and the application user interface.
+
+TRADEMARK & BRANDING NOTICE (Apache License 2.0, Section 6):
+The names "PromptVault" and "MultiHAT", along with associated project logos and
+visual branding, are trademarks of Sagar Biswas. The Apache License 2.0 does
+not grant permission to use the "PromptVault" or "MultiHAT" name or branding to
+endorse, promote, or misrepresent derivative works or unauthorized clones as the
+official project.

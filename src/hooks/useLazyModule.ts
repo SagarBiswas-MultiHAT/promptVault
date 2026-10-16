@@ -1,11 +1,13 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
  * Load a module during idle time, after first paint.
  *
- * `App.tsx` carried this block twice — once for `motion/react`, once for
- * `utils/supabase.ts` — character for character apart from the import specifier
+ * `App.tsx` carried this block twice - once for `motion/react`, once for
+ * `utils/supabase.ts` - character for character apart from the import specifier
  * and the setter. Both copies had to get the cancellation right, and only one of
  * them would have been fixed if the pattern needed changing.
  */
@@ -25,7 +27,7 @@ type IdleWindow = Window & {
  * re-import forever. The specifier inside it is static, which is what lets the
  * bundler split the chunk in the first place.
  *
- * Safari has no `requestIdleCallback`, hence the `setTimeout(0)` fallback — later
+ * Safari has no `requestIdleCallback`, hence the `setTimeout(0)` fallback - later
  * than idle scheduling would be under load, but still after the current paint.
  */
 export function useIdleModule<T>(load: () => Promise<T>, delayMs = 1200): T | null {

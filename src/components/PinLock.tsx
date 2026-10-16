@@ -1,4 +1,9 @@
-/** @license SPDX-License-Identifier: Apache-2.0 */
+/**
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
+ */
 
 import { useState, type FormEvent } from 'react';
 import { KeyRound, Lock, ShieldAlert, ShieldCheck } from 'lucide-react';

@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  */
 
 import type { RequestHandler } from 'express';
@@ -10,8 +12,7 @@ import { IS_PRODUCTION } from '../config.ts';
  * The production Content-Security-Policy.
  *
  * `'unsafe-hashes'` and a `'sha256-1jAmyYX…'` script hash used to sit in
- * `script-src`. They covered an inline `onload` handler that no longer exists —
- * `index.html` now loads `/gtag-init.js` as an external file, and its only
+ * `script-src`. They covered an inline `onload` handler that no longer exists - * `index.html` now loads `/gtag-init.js` as an external file, and its only
  * remaining inline `<script>` is `application/ld+json`, which is data and never
  * executed. Both directives were dead config that weakened the policy for
  * nothing, so they are gone.

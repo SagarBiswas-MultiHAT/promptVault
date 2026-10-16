@@ -1,5 +1,8 @@
 /**
- * test-api-keys.ts
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
  * Standalone script to verify every API key in .env is working.
  * Tests all GEMINI_API_KEYS (pool) and GROQ_API_KEY individually using
@@ -20,7 +23,7 @@ import { resolve } from 'path';
 const WAIT_MODE = process.argv.includes('--wait');
 
 /**
- * Minimal .env parser — reads key=value pairs, strips quotes, skips comments.
+ * Minimal .env parser - reads key=value pairs, strips quotes, skips comments.
  * Intentionally self-contained: no dependency on dotenv.
  */
 function loadEnv(): Record<string, string> {
@@ -75,7 +78,7 @@ interface KeyResult {
 // 3. Helpers
 // ---------------------------------------------------------------------------
 
-/** Default 25s — generous enough for slow responses, well under server's 35s. */
+/** Default 25s - generous enough for slow responses, well under server's 35s. */
 const DEFAULT_TIMEOUT_MS = 25_000;
 
 function preview(key: string): string {
@@ -84,7 +87,7 @@ function preview(key: string): string {
 }
 
 function classifyStatus(httpStatus: number | null, body: string): Status {
-  // Auth patterns — Gemini reports invalid keys as 400 with API_KEY_INVALID
+  // Auth patterns - Gemini reports invalid keys as 400 with API_KEY_INVALID
   if (/API_KEY_INVALID|API key not valid|invalid_api_key|Incorrect API key/i.test(body)) {
     return 'auth';
   }
@@ -145,7 +148,7 @@ async function detectDevServer(port: number): Promise<boolean> {
 }
 
 // ---------------------------------------------------------------------------
-// 5. Provider test functions — metadata-only endpoints
+// 5. Provider test functions - metadata-only endpoints
 // ---------------------------------------------------------------------------
 
 /**
@@ -211,7 +214,7 @@ async function testGeminiKey(
  * Wrapper: test a Gemini key with automatic retry on rate-limit or timeout.
  *
  * - Rate-limited: retry after 3s (or 60s in --wait mode).
- * - Timeout: retry once immediately — transient slowness shouldn't condemn a key.
+ * - Timeout: retry once immediately - transient slowness shouldn't condemn a key.
  */
 async function testGeminiKeyWithRetry(
   apiKey: string,
@@ -253,7 +256,7 @@ async function testGeminiKeyWithRetry(
 /**
  * Test a Groq key using the models list endpoint.
  *
- * `GET /openai/v1/models` is a lightweight auth check — it returns the list
+ * `GET /openai/v1/models` is a lightweight auth check - it returns the list
  * of available models. If the key is invalid, it returns 401. If the model
  * we need isn't in the list, we flag it.
  */
@@ -369,7 +372,7 @@ function printSummary(results: KeyResult[]): void {
     r.status === 'auth' ||
     r.status === 'bad_request' ||
     r.status === 'unknown' ||
-    r.status === 'timeout' ||           // timed out twice — consistently dead
+    r.status === 'timeout' ||           // timed out twice - consistently dead
     r.status === 'model_not_found'      // key's project can't access the model
   );
 
@@ -433,7 +436,7 @@ function printSummary(results: KeyResult[]): void {
 // 7. Main
 // ---------------------------------------------------------------------------
 
-// Defaults match server/config.ts — keep in sync.
+// Defaults match server/config.ts - keep in sync.
 const DEFAULT_GEMINI_MODEL = 'gemini-3.6-flash';
 const DEFAULT_GROQ_MODEL   = 'qwen/qwen3.8-27b';
 

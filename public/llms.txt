@@ -8,6 +8,7 @@
 - [GitHub Repository](https://github.com/SagarBiswas-MultiHAT/promptVault): Full source code, architecture documentation, and issue tracker
 - [Documentation](https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/README.md): Project overview, developer guide, deployment instructions, and API key setup
 - [Open Source License](https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/LICENSE): Apache-2.0 License
+- [Attribution Notice](https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/NOTICE): Apache-2.0 Section 4(d) Mandatory Attribution
 
 ## Key Capabilities & Features
 

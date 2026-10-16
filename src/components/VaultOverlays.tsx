@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
  * Every overlay the unlocked app can show, and the lazy boundaries around them.
  *
@@ -10,8 +12,8 @@
  * instead of duplicating it eleven times or dragging it into the initial bundle.
  *
  * Handlers that need only the vault and the overlay state are implemented here.
- * Anything that also touches app-level state — the current category selection, the
- * lock screens, the clipboard, the file input — arrives as a prop, which is why the
+ * Anything that also touches app-level state - the current category selection, the
+ * lock screens, the clipboard, the file input - arrives as a prop, which is why the
  * prop list is short despite there being twelve overlays.
  */
 
@@ -146,8 +148,7 @@ export function VaultOverlays({
               variables={overlays.variables.vars}
               onCopy={(body) => onCopy(overlays.variables!.prompt, body)}
               onCancel={() => {
-                // Skipping the form still copies — the raw body, placeholders and all —
-                // and still counts as a use, which is what it did before the split.
+                // Skipping the form still copies - the raw body, placeholders and all - // and still counts as a use, which is what it did before the split.
                 void onCopy(overlays.variables!.prompt, overlays.variables!.prompt.body);
               }}
             />

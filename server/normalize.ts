@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
  * Turn whatever a model actually returned into the exact shape the client
  * expects. Everything here treats its input as hostile: a model is free to
@@ -25,8 +27,8 @@ function asTrimmedString(value: unknown): string {
  *
  * The previous implementation was `Array.isArray(x) ? x.filter(Boolean) : []`,
  * which passes non-strings straight through. When a model returned
- * `weakSpots: [{ gap: "…" }]` — a common and perfectly reasonable-looking
- * deviation — the object reached React's children and threw "Objects are not
+ * `weakSpots: [{ gap: "…" }]` - a common and perfectly reasonable-looking
+ * deviation - the object reached React's children and threw "Objects are not
  * valid as a React child", taking down the widget. Dropping the item shows an
  * incomplete list; letting it through shows nothing at all.
  */

@@ -51,7 +51,7 @@ describe('createResponseCache', () => {
 
   /**
    * The behaviour the old cache got backwards. It evicted `keys().next()` without
-   * ever re-ordering on read, which is FIFO — so a key being hit constantly was
+   * ever re-ordering on read, which is FIFO - so a key being hit constantly was
    * evicted before a key written once and never touched again.
    */
   it('evicts the least recently USED entry, not the oldest written', async () => {

@@ -1,12 +1,14 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
  * Pure vault helpers: validation, repair, and the shape sent to the cloud.
  *
  * These lived at module scope in `App.tsx`, where nothing could reach them.
- * They are the functions most worth testing in the whole client — every one of
- * them exists because a malformed vault reached a React render and threw — so
+ * They are the functions most worth testing in the whole client - every one of
+ * them exists because a malformed vault reached a React render and threw - so
  * they belong in a module a test file can import.
  */
 
@@ -32,7 +34,7 @@ export const isValidVaultData = (value: unknown): value is VaultData => {
  * Explain, field by field, why a file is not a vault.
  *
  * Import previously checked only `schemaVersion` and then read `.prompts` and
- * `.categories` — so a file carrying a version but no `prompts` array threw
+ * `.categories` - so a file carrying a version but no `prompts` array threw
  * *inside* `setData`, after the try/catch had already returned. The user saw
  * "Invalid import file" for a syntax error and an unhandled exception for a
  * structural one.
@@ -51,7 +53,7 @@ export const describeVaultProblems = (value: unknown): string[] => {
   const problems: string[] = [];
 
   if (typeof data.schemaVersion !== 'string' || !data.schemaVersion) {
-    problems.push('"schemaVersion" is missing — this may not be a PromptVault export.');
+    problems.push('"schemaVersion" is missing - this may not be a PromptVault export.');
   }
   if (!Array.isArray(data.prompts)) problems.push('"prompts" is missing or is not a list.');
   if (!Array.isArray(data.categories)) problems.push('"categories" is missing or is not a list.');

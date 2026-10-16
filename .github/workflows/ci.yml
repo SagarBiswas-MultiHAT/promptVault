@@ -6,7 +6,7 @@ on:
   pull_request:
   workflow_dispatch:
 
-# Cancel superseded runs on the same ref — a stale run tells you nothing useful.
+# Cancel superseded runs on the same ref: a stale run tells you nothing useful.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true

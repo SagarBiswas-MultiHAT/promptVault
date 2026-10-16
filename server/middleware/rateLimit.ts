@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  */
 
 import type { RequestHandler } from 'express';
@@ -38,7 +40,7 @@ export function createRateLimiter(
   sweep.unref();
 
   const middleware: RequestHandler = (req, res, next) => {
-    // Correct only because `trust proxy` is configured — see TRUST_PROXY_HOPS.
+    // Correct only because `trust proxy` is configured - see TRUST_PROXY_HOPS.
     const key = req.ip ?? req.socket.remoteAddress ?? 'unknown';
     const now = Date.now();
 

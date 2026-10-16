@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
  * Every tunable in one place, resolved once at import time.
  */
@@ -14,19 +16,19 @@ import dotenv from 'dotenv';
  * Deliberately NOT `{ override: true }`.
  *
  * With `override`, a stray or stale `.env` left in the deploy image beats the
- * real platform environment variables — exactly backwards for production, where
+ * real platform environment variables - exactly backwards for production, where
  * the host is the source of truth. Precedence is now:
  *
  *   process environment  >  .env file  >  the defaults in this module
  *
  * `quiet` suppresses dotenv's promotional startup banner, which otherwise
- * prefixes every boot — including every CI run — with tips.
+ * prefixes every boot - including every CI run - with tips.
  */
 dotenv.config({ quiet: true });
 
 const serverDir = path.dirname(fileURLToPath(import.meta.url));
 
-/** Repository root — the parent of `server/`. */
+/** Repository root - the parent of `server/`. */
 export const ROOT_DIR = path.resolve(serverDir, '..');
 /** Where `vite build` puts the client bundle. */
 export const DIST_DIR = path.join(ROOT_DIR, 'dist');
@@ -69,7 +71,7 @@ export const VERSION = readPackageVersion();
  *   GEMINI_API_KEY="key1"             ← legacy single-key form (still supported)
  *
  * Keys are deduplicated and blanks are removed. The order in the env var is
- * the order they will be tried — put your most-quota-rich key first.
+ * the order they will be tried - put your most-quota-rich key first.
  */
 function parseGeminiKeys(): string[] {
   const multi = (process.env.GEMINI_API_KEYS ?? '')
@@ -92,7 +94,7 @@ export const GROQ_MODEL = process.env.GROQ_MODEL || 'qwen/qwen3.8-27b';
 /**
  * Upstream request deadlines. Without these a hung connection to the primary
  * provider means the fallback never fires and the request hangs until the
- * client gives up — which silently defeats the whole point of having two
+ * client gives up - which silently defeats the whole point of having two
  * providers.
  */
 export const GEMINI_TIMEOUT_MS = num(process.env.GEMINI_TIMEOUT_MS, 35_000);
@@ -120,7 +122,7 @@ export const PORT = num(
  * Number of trusted reverse proxies in front of this server.
  *
  * Behind Render / Railway / Fly / Cloudflare, `req.ip` without this is the
- * *proxy's* address, so every user shares one rate-limit bucket — an effective
+ * *proxy's* address, so every user shares one rate-limit bucket - an effective
  * 30 req/min cap for the entire deployment, and a trivial one-client DoS.
  * Raise it if you add another hop; keep it exact, since over-trusting lets a
  * client spoof `X-Forwarded-For` and escape its own bucket.
@@ -144,7 +146,7 @@ export const MAX_PROMPT_LENGTH = 10_000;
 
 /**
  * `MAX_PROMPT_LENGTH` used to be the only input cap, leaving `categories`
- * unbounded — a client could post thousands of category strings that get joined
+ * unbounded - a client could post thousands of category strings that get joined
  * straight into the upstream prompt, amplifying cost against *our* API quota.
  */
 export const MAX_CATEGORIES = 64;

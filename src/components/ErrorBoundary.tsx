@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  */
 
 import React from 'react';
@@ -16,7 +18,7 @@ interface ErrorBoundaryState {
 }
 
 /**
- * React Error Boundary — catches rendering crashes and shows a recovery UI.
+ * React Error Boundary - catches rendering crashes and shows a recovery UI.
  * Must be a class component (React requirement for error boundaries).
  */
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
@@ -52,7 +54,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
               Vault Error
             </h1>
             <p className="text-sm text-[#888888] leading-relaxed">
-              Something unexpected happened. Your data is safe in local storage — this is just a rendering issue.
+              Something unexpected happened. Your data is safe in local storage - this is just a rendering issue.
             </p>
             {this.state.error && (
               <p className="text-xs text-red-400/70 font-mono bg-red-500/5 border border-red-500/10 rounded-lg px-4 py-3 mt-4 break-words text-left">

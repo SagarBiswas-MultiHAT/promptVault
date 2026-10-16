@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  */
 
 import { Router } from 'express';
@@ -32,7 +34,7 @@ function parseSuggestBody(body: unknown): { prompt: string; categories: string[]
   }
 
   // Validate the *trimmed* value. Length used to be checked before trimming, so
-  // "     " passed validation and was sent upstream as an empty prompt — we paid
+  // "     " passed validation and was sent upstream as an empty prompt - we paid
   // for a request guaranteed to produce nonsense.
   const prompt = rawPrompt.trim();
   if (prompt.length < MIN_PROMPT_LENGTH) {

@@ -40,7 +40,7 @@ function installMatchMedia(initial: boolean) {
       matches = next;
       for (const listener of listeners) listener({matches: next} as MediaQueryListEvent);
     },
-    /** Flip without notifying — models a change between render and effect. */
+    /** Flip without notifying - models a change between render and effect. */
     setSilently(next: boolean) {
       matches = next;
     },

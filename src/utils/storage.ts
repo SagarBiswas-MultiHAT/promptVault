@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
  * Guarded `localStorage` access.
  *
@@ -8,7 +10,7 @@
  * fails in two distinct ways that need distinct handling:
  *
  * 1. **The write is rejected.** `QuotaExceededError` on a full origin. The vault
- *    silently stops persisting while the UI keeps reporting success — the user
+ *    silently stops persisting while the UI keeps reporting success - the user
  *    finds out when they reload and lose work.
  * 2. **The API is unreachable.** Reading `window.localStorage` *itself* throws in
  *    Safari private browsing and wherever storage is blocked by policy. That is a
@@ -69,8 +71,8 @@ export function readRaw(key: string): string | null {
  * Read and parse JSON, returning `null` unless it satisfies `isValid`.
  *
  * The validator is required rather than optional. Parsed JSON from storage is
- * untrusted input — it may have been written by an older schema, hand-edited in
- * devtools, or corrupted by a partial write — and an unchecked cast to `T` is how
+ * untrusted input - it may have been written by an older schema, hand-edited in
+ * devtools, or corrupted by a partial write - and an unchecked cast to `T` is how
  * that turns into a crash three components deep.
  */
 export function readJson<T>(key: string, isValid: (value: unknown) => value is T): T | null {

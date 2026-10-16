@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  */
 
 import { Copy, Star, Check } from 'lucide-react';
@@ -13,7 +15,7 @@ interface PromptCardProps {
   /**
    * Resolves `true` only when text actually reached the clipboard.
    *
-   * Resolves `false` when the copy did not happen — either the prompt contains
+   * Resolves `false` when the copy did not happen - either the prompt contains
    * `{{variables}}` and the caller opened the fill-in form instead, or the
    * clipboard write was rejected. Both used to render "Copied" anyway.
    */

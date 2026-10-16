@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
  * The global keyboard shortcuts, as advertised by the shortcuts modal.
  *
@@ -62,7 +64,7 @@ export function useKeyboardShortcuts(enabled: boolean, handlers: ShortcutHandler
  * Move focus to whichever search input is mounted.
  *
  * `focus()` returns void, so the original `a?.focus() || b?.focus()` always ran
- * the right-hand side too — focus ended up on the mobile input whenever both were
+ * the right-hand side too - focus ended up on the mobile input whenever both were
  * in the tree. Pick the target first, then focus exactly one.
  */
 export const focusSearchInput = () => {

@@ -1,7 +1,30 @@
 {
   "name": "promptvault",
-  "private": true,
   "version": "2.2.0",
+  "private": true,
+  "description": "The Private, Offline-First Prompt Manager for AI Agent Power Users",
+  "author": "Sagar Biswas <https://multihat.dev> (https://github.com/SagarBiswas-MultiHAT)",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SagarBiswas-MultiHAT/promptVault.git"
+  },
+  "homepage": "https://github.com/SagarBiswas-MultiHAT/promptVault#readme",
+  "bugs": {
+    "url": "https://github.com/SagarBiswas-MultiHAT/promptVault/issues"
+  },
+  "keywords": [
+    "prompt-manager",
+    "prompt-engineering",
+    "offline-first",
+    "aes-256-gcm",
+    "ai-librarian",
+    "gemini",
+    "groq",
+    "supabase-sync",
+    "react-19",
+    "pwa"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",

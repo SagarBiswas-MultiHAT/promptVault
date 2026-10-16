@@ -1,12 +1,14 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
  * Composition root.
  *
- * Everything that used to be interleaved in here — vault state and persistence, the
+ * Everything that used to be interleaved in here - vault state and persistence, the
  * sync engine and its eight refs, the keyboard shortcuts, both header layouts, both
- * footer layouts, and eleven dialogs — now lives in `hooks/` and `components/`. What
+ * footer layouts, and eleven dialogs - now lives in `hooks/` and `components/`. What
  * remains is the wiring: which controller each control calls, and the handlers that
  * genuinely span more than one of them.
  */
@@ -97,7 +99,7 @@ export default function App() {
    *
    * Stays in the composition root because its `Promise<boolean>` contract is a view
    * concern: `PromptCard` uses the resolved value to decide whether to show "Copied",
-   * and `false` means "nothing reached the clipboard" — either because the variable
+   * and `false` means "nothing reached the clipboard" - either because the variable
    * form opened instead, or because the write was rejected.
    */
   const handleCopyPrompt = useCallback((prompt: Prompt, customBody?: string) => {
@@ -259,7 +261,7 @@ export default function App() {
 
       <main id="main-content" className="flex-1 flex flex-col min-w-0 h-full min-h-0">
         {/* Visually hidden, so the page has an h1 without the design carrying one. */}
-        <h1 className="sr-only">PromptVault — Your Private AI Prompt Library</h1>
+        <h1 className="sr-only">PromptVault - Your Private AI Prompt Library</h1>
 
         <AppHeader
           isMobile={isMobile}
