@@ -1,4 +1,4 @@
-// Google Analytics 4 — deferred until after first user interaction or idle timeout
+// Google Analytics 4: deferred until after first user interaction or idle timeout
 // to prevent third-party scripts from competing with LCP and main-thread hydration.
 function loadGA() {
   if (window.__gaLoaded) return;

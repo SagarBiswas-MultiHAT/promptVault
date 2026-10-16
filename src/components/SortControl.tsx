@@ -1,12 +1,14 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
  * Sort control for the prompt grid.
  *
  * Replaced the native <select> (which renders a white platform sheet on Android)
  * with a fully custom dropdown that matches the vault's dark design system on
- * every platform — keyboard-navigable and screen-reader-labelled.
+ * every platform - keyboard-navigable and screen-reader-labelled.
  */
 
 import { useEffect, useRef, useState } from 'react';

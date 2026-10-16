@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
  * Apply the saved theme before first paint.
  *
@@ -9,7 +11,7 @@
  * synchronously in <head>, before the body is painted.
  *
  * Kept as an external file rather than an inline <script> so it needs no CSP
- * exception: `script-src 'self'` already covers it. Loaded WITHOUT `defer` — a
+ * exception: `script-src 'self'` already covers it. Loaded WITHOUT `defer` - a
  * deferred script runs after the document is parsed, which is exactly the flash
  * this is here to prevent.
  *

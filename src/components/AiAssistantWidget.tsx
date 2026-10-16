@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  */
 
 import { useMemo, useState } from 'react';
@@ -100,7 +102,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, hideOnMobile = f
     return general?.id || categories[0]?.id || '';
   };
 
-  // Step 1: Evaluate — score + weak spots + metadata (no rewrite)
+  // Step 1: Evaluate - score + weak spots + metadata (no rewrite)
   const handleEvaluate = async (overridePrompt?: string) => {
     let promptToEvaluate = overridePrompt || promptInput;
     promptToEvaluate = promptToEvaluate.trim();
@@ -156,7 +158,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, hideOnMobile = f
     }
   };
 
-  // Step 2: Improve — generate improved prompt (only on button click)
+  // Step 2: Improve - generate improved prompt (only on button click)
   const handleImprove = async () => {
     if (!promptInput.trim()) {
       setError('Please enter a prompt to improve.');
@@ -247,7 +249,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, hideOnMobile = f
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
             className="fixed bottom-[5rem] right-4 z-[9999] w-[400px] max-w-[calc(100vw-2rem)] max-h-[70vh] glass-panel rounded-2xl shadow-2xl flex flex-col overflow-hidden"
           >
-            {/* Top accent line — emerald for AI */}
+            {/* Top accent line: emerald for AI */}
             <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
 
             {/* Header */}
@@ -360,7 +362,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, hideOnMobile = f
                     )}
                   </div>
 
-                  {/* Improved Prompt — only shown after IMPROVE button click */}
+                  {/* Improved Prompt: only shown after IMPROVE button click */}
                   {isImproving && (
                     <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
                       <div className="w-4 h-4 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />

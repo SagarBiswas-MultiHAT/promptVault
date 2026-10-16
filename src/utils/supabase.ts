@@ -1,13 +1,15 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
  * Cloud sync client.
  *
  * `supabase` is `null` when sync is not configured. It used to be a *live* client
  * built from the placeholder URL `http://localhost/invalid-supabase-url`, which
  * meant any call path that slipped past an `isSupabaseConfigured` check produced
- * an opaque `TypeError: Failed to fetch` — or, worse, a real request to whatever
+ * an opaque `TypeError: Failed to fetch` - or, worse, a real request to whatever
  * happens to be listening on the developer's localhost. A `null` client turns the
  * same mistake into a type error at the call site, before it ships.
  */

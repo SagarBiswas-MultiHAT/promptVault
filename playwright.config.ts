@@ -18,7 +18,7 @@ export default defineConfig({
   projects: [
     {name: 'chromium', use: {...devices['Desktop Chrome']}},
   ],
-  // Exercise the real production bundle, not the dev server — this is what ships.
+  // Exercise the real production bundle, not the dev server - this is what ships.
   webServer: {
     command: `npm run build && npx vite preview --port ${PORT} --strictPort`,
     url: BASE_URL,

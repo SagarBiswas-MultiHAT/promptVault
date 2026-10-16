@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
  * Shared pieces of both prompt builders, plus the response schemas handed to
  * provider-side JSON mode.
@@ -21,8 +23,8 @@ const DELIMITER_PATTERN = /<\/?\s*user_prompt\s*>/gi;
  * rather than escaped, because there is no legitimate reason for one to appear in
  * a prompt someone is asking us to score.
  *
- * The blast radius here is small — the output goes back to the same user who
- * supplied the input — but the fix costs nothing.
+ * The blast radius here is small - the output goes back to the same user who
+ * supplied the input - but the fix costs nothing.
  */
 export function wrapUserPrompt(prompt: string): string {
   return [OPEN_TAG, prompt.replace(DELIMITER_PATTERN, ''), CLOSE_TAG].join('\n');
@@ -46,7 +48,7 @@ export const REPAIR_NOTICE =
  * Gemini `generationConfig.responseSchema` uses the OpenAPI subset with
  * uppercase type names, which is why these differ from ordinary JSON Schema.
  * Groq's default model (`llama-3.3-70b-versatile`) only supports schema-less
- * `json_object` mode, so these are Gemini-only — the normalizers remain the real
+ * `json_object` mode, so these are Gemini-only - the normalizers remain the real
  * contract for both providers.
  */
 export const ANALYZE_SCHEMA = {

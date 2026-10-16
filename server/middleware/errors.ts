@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  */
 
 import type { ErrorRequestHandler, RequestHandler } from 'express';
@@ -10,7 +12,7 @@ import { HttpError } from '../errors.ts';
  * JSON 404 for unmatched `/api/*` routes.
  *
  * Must be registered before the SPA catch-all. Without it, `GET /api/typo`
- * returned `index.html` with a 200 — so a client with a typo'd endpoint got a
+ * returned `index.html` with a 200 - so a client with a typo'd endpoint got a
  * page of HTML where it expected JSON, and `response.json()` threw a syntax
  * error that looked nothing like "route not found".
  */

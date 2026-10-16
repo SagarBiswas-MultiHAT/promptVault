@@ -119,7 +119,7 @@ test('a malformed import file is reported field by field, not as a bare alert', 
     name: 'broken.json',
     mimeType: 'application/json',
     // Has a version, so the old code passed the only check it made and then threw
-    // inside setData — after its own catch block had already returned.
+    // inside setData - after its own catch block had already returned.
     buffer: Buffer.from(JSON.stringify({schemaVersion: '1.0.0'})),
   });
 

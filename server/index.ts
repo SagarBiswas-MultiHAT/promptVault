@@ -1,8 +1,10 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
- * PromptVault AI proxy — wiring only. Behaviour lives in the modules this
+ * PromptVault AI proxy: wiring only. Behaviour lives in the modules this
  * imports, so each piece is unit-testable on its own.
  */
 
@@ -40,7 +42,7 @@ app.use('/api', rateLimiter.middleware, createApiRouter());
 app.all('/api/*', apiNotFound);
 
 if (IS_PRODUCTION) {
-  // Content-hashed bundles — safe to cache forever.
+  // Content-hashed bundles - safe to cache forever.
   app.use(
     '/assets',
     express.static(path.join(DIST_DIR, 'assets'), { maxAge: '1y', immutable: true })
@@ -129,7 +131,7 @@ process.on('unhandledRejection', (reason) => {
 
 // An uncaught exception leaves the process in an undefined state. Log it, then
 // let the shutdown path drain in-flight requests rather than continuing to serve
-// from a broken process — the supervisor restarts us clean.
+// from a broken process - the supervisor restarts us clean.
 process.on('uncaughtException', (error) => {
   console.error('[ai-proxy] Uncaught exception:', error);
   shutdown('uncaughtException');

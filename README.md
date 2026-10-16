@@ -14,7 +14,9 @@
   &nbsp;
   <a href=".github/CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?logo=github" alt="PRs Welcome" /></a>
   &nbsp;
-  <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg?logo=apache" alt="License" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg?logo=apache" alt="License: Apache 2.0" /></a>
+  &nbsp;
+  <a href="NOTICE"><img src="https://img.shields.io/badge/Attribution-NOTICE-orange.svg" alt="Attribution Notice" /></a>
 </p>
 <p align="left">
   <img src="https://img.shields.io/badge/Security-AES--256--GCM%20%2B%20PBKDF2-10b981?logo=lock&logoColor=white" alt="Security" />
@@ -51,7 +53,7 @@
 - [Security & Privacy](#is-my-data-safe)
 - [Available Commands](#available-commands)
 - [Contributing & Community](#contributing--community)
-- [License](#license)
+- [License & Attribution](#license--attribution)
 
 ---
 
@@ -439,6 +441,10 @@ PromptVault is an open-source project built for the AI community, and we welcome
 
 ---
 
-## License
+## License & Attribution
 
-PromptVault is free and open source, released under the [Apache License 2.0](https://opensource.org/licenses/Apache-2.0). You're free to use, modify, and distribute it.
+**PromptVault** is licensed under the [Apache License, Version 2.0](./LICENSE).
+
+In accordance with **Section 4(d)** of the Apache License 2.0, any fork, redistribution, or hosted deployment of this application must retain the root [`NOTICE`](./NOTICE) file and maintain visible attribution to **Sagar Biswas ([@SagarBiswas-MultiHAT](https://github.com/SagarBiswas-MultiHAT))** within both the documentation and the user interface.
+
+Cloning this repository, stripping `.git` commit history, removing copyright or `NOTICE` files, or misrepresenting this codebase as your own original work is a direct violation of the license and international copyright law, and will result in an immediate GitHub DMCA Takedown notice.

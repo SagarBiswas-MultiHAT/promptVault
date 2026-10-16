@@ -9,7 +9,7 @@
     <priority>1.0</priority>
     <image:image>
       <image:loc>https://promptvault.multihat.dev/og-image.png</image:loc>
-      <image:title>PromptVault — Your Private AI Prompt Library</image:title>
+      <image:title>PromptVault - Your Private AI Prompt Library</image:title>
       <image:caption>PromptVault is a private, offline-first AI prompt manager with AES-256-GCM encryption, Gemini-powered analysis, and cloud sync.</image:caption>
     </image:image>
   </url>

@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  */
 
 import type { RequestHandler } from 'express';
@@ -26,7 +28,7 @@ export const cors: RequestHandler = (req, res, next) => {
   //
   // The response is compressed and may sit behind a CDN. Without this, a cached
   // response carries whichever `Access-Control-Allow-Origin` the first requester
-  // happened to get, and serves it to every other origin — either leaking access
+  // happened to get, and serves it to every other origin - either leaking access
   // or denying it at random. `res.vary()` appends rather than overwriting, so it
   // composes with anything else that sets the header.
   res.vary('Origin');

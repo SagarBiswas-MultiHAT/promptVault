@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  */
 
 import { GROQ_API_KEY, GROQ_MODEL, GROQ_TIMEOUT_MS, TEMPERATURE } from '../config.ts';
@@ -13,7 +15,7 @@ export const GROQ = 'groq';
  * Groq free tier caps TPM at 8 000 tokens per minute.
  * Groq counts max_tokens (requested output) toward that limit, so
  * MAX_OUTPUT_TOKENS (8 192) alone blows the cap before any input is counted.
- * The JSON response from PromptVault analysis is ~200–400 tokens, so 1 024
+ * The JSON response from PromptVault analysis is ~200-400 tokens, so 1 024
  * is generous and keeps input + output well under 8 000.
  */
 const GROQ_MAX_OUTPUT_TOKENS = 1_024;
@@ -43,7 +45,7 @@ interface GroqChatCompletionResponse {
 }
 
 const SYSTEM_PROMPT =
-  'You are the PromptVault AI Librarian — a world-class prompt engineer and quality analyst. ' +
+  'You are the PromptVault AI Librarian - a world-class prompt engineer and quality analyst. ' +
   'Return strict JSON only.';
 
 export async function requestGroq(promptText: string): Promise<string> {
@@ -65,7 +67,7 @@ export async function requestGroq(promptText: string): Promise<string> {
         // `json_schema` mode is limited to a handful of models that do not
         // include the default `llama-3.3-70b-versatile`, so using it here would
         // 400 for most deployments. `json_object` guarantees syntactic validity
-        // only — the normalizers remain the real contract.
+        // only - the normalizers remain the real contract.
         //
         // `json_object` also requires the word JSON to appear in the messages.
         // Both prompt builders say "return ONLY valid JSON", and the system

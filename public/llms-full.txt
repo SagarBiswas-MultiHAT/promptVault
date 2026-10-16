@@ -1,4 +1,4 @@
-# PromptVault — Complete AI Agent Guide
+# PromptVault - Complete AI Agent Guide
 
 > PromptVault is a private, offline-first AI prompt manager and workbench for AI practitioners, prompt engineers, and developers. It provides zero-telemetry local storage, client-side AES-256-GCM encryption, AI-powered prompt analysis via Google Gemini and Groq, and optional cloud sync via Supabase.
 
@@ -15,3 +15,4 @@
 - [GitHub Repository](https://github.com/SagarBiswas-MultiHAT/promptVault)
 - [README Documentation](https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/README.md)
 - [Apache-2.0 License](https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/LICENSE)
+- [Attribution Notice](https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/NOTICE)

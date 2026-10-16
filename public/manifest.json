@@ -1,5 +1,5 @@
 {
-  "name": "PromptVault — Your Private AI Prompt Library",
+  "name": "PromptVault - Your Private AI Prompt Library",
   "short_name": "PromptVault",
   "description": "A private, offline-first prompt manager for organizing, evaluating, and deploying AI prompts across any workflow.",
   "start_url": "/",
@@ -29,7 +29,7 @@
       "sizes": "1200x630",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "PromptVault — AI Prompt Manager home screen"
+      "label": "PromptVault - AI Prompt Manager home screen"
     }
   ],
   "related_applications": [

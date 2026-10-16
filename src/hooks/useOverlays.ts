@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
  * Which overlay is open.
  *
@@ -10,7 +12,7 @@
  * arrive while Settings is open), and pretending otherwise would force a fake
  * hierarchy on them.
  *
- * The one thing this hook exists to own is `closeEscapable` — the set of overlays
+ * The one thing this hook exists to own is `closeEscapable` - the set of overlays
  * that Escape dismisses. That list was previously inlined in the keyboard handler,
  * which made it impossible to see that Settings and the four confirm dialogs are
  * *not* in it.

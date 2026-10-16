@@ -1,9 +1,11 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
- * The suggestion pipeline: cache → provider chain → parse (with one repair
- * retry) → normalize.
+ * The suggestion pipeline: cache -> provider chain -> parse (with one repair
+ * retry) -> normalize.
  */
 
 import { CACHE_TTL_MS, GEMINI_API_KEYS, HAS_GEMINI, GROQ_API_KEY, MAX_CACHE_ENTRIES } from './config.ts';
@@ -44,7 +46,7 @@ type FailureKind =
  * Classify a provider failure into a fixed vocabulary.
  *
  * `/api/health` is unauthenticated and served publicly in production, so it must
- * not echo raw upstream error bodies — those contain provider-internal detail and
+ * not echo raw upstream error bodies - those contain provider-internal detail and
  * whatever else the upstream chose to put in a 400. A closed set of reasons is
  * just as useful for diagnosing a degraded provider and leaks nothing. The full
  * message still goes to the logs.
@@ -96,7 +98,7 @@ const rateLimitedUntil = new Map<string, number>(); // slot → epoch ms
  *
  * When request A is already awaiting `requestGemini` for slot "gemini[2]",
  * concurrent request B would also pass `isRateLimited()` (the circuit breaker
- * hasn't fired yet) and make a second identical call — tripling the 403/429
+ * hasn't fired yet) and make a second identical call - tripling the 403/429
  * traffic on startup. Tracking in-flight slots lets B skip the call and fall
  * through to the next key, eliminating the concurrency pile-on.
  */
@@ -113,7 +115,7 @@ function isRateLimited(slot: string): boolean {
   const until = rateLimitedUntil.get(slot);
   if (until === undefined) return false;
   if (Date.now() < until) return true;
-  rateLimitedUntil.delete(slot); // cooldown expired — reset
+  rateLimitedUntil.delete(slot); // cooldown expired - reset
   return false;
 }
 
@@ -121,7 +123,7 @@ function isRateLimited(slot: string): boolean {
  * Record a rate-limit cooldown for `slot`.
  *
  * Falls back to a 60-second window when the error body does not carry an
- * explicit retry-after hint — the free-tier window is always ≤ 60 s so
+ * explicit retry-after hint - the free-tier window is always ≤ 60 s so
  * this is a safe upper bound.
  */
 function markRateLimited(slot: string, error: unknown): void {
@@ -137,7 +139,7 @@ function markRateLimited(slot: string, error: unknown): void {
 
 /**
  * Snapshot for `/api/health`. Reporting the last failure per provider/slot is
- * what makes a degraded primary provider visible — otherwise a permanently
+ * what makes a degraded primary provider visible - otherwise a permanently
  * broken Gemini key looks perfectly healthy because Groq keeps answering.
  */
 export function getProviderStatus(): Record<string, ProviderStatus> {
@@ -180,7 +182,7 @@ interface ProviderOutcome {
  * Try each Gemini key in order, then Groq.
  *
  * Per-key circuit breakers ("gemini[0]", "gemini[1]", …) mean a rate-limited
- * key is skipped instantly — no network round-trip — while keys that still
+ * key is skipped instantly - no network round-trip - while keys that still
  * have quota continue to serve requests. Only when every Gemini key is
  * exhausted does the chain fall through to Groq.
  */
@@ -200,7 +202,7 @@ async function callProviders(promptText: string, schema: unknown): Promise<Provi
     }
 
     // If another concurrent request is already mid-call on this slot, skip it
-    // rather than piling on — the other call will set the circuit breaker if
+    // rather than piling on - the other call will set the circuit breaker if
     // it fails, and the next request will skip cleanly via isRateLimited().
     if (inFlight.has(slot)) {
       failures.push(`${slot}: skipped (concurrent call in progress)`);
@@ -220,7 +222,7 @@ async function callProviders(promptText: string, schema: unknown): Promise<Provi
           // 1 hour so a dead key doesn't waste a network call on every request
           // for the entire process lifetime.
           rateLimitedUntil.set(slot, Date.now() + 3_600_000);
-          console.error(`[ai-proxy] ${slot} auth failure (HTTP ${error.status}); disabling for 1h — check this key`);
+          console.error(`[ai-proxy] ${slot} auth failure (HTTP ${error.status}); disabling for 1h - check this key`);
         } else if (
           error.message.includes('timed out') ||
           (error.status != null && error.status >= 500)
@@ -289,7 +291,7 @@ async function produce(prompt: string, categories: string[], mode: Mode): Promis
     parsed = extractJson(first.rawText);
   } catch (firstError) {
     // One repair retry. JSON mode makes unparsable output rare, but "rare" is
-    // not "never" — and a single terse retry is far cheaper than surfacing an
+    // not "never" - and a single terse retry is far cheaper than surfacing an
     // error to the user for something the model can usually fix on request.
     console.warn(`[ai-proxy] ${first.provider} returned unparsable JSON; retrying once.`);
     const retry = await callProviders(`${promptText}\n\n${REPAIR_NOTICE}`, schema);
@@ -306,7 +308,7 @@ async function produce(prompt: string, categories: string[], mode: Mode): Promis
   if (mode === 'improve') {
     const improved = normalizeImproveResponse(parsed);
     // Previously this returned 200 with an empty string and the widget rendered
-    // nothing at all, with no error — the worst kind of failure.
+    // nothing at all, with no error - the worst kind of failure.
     if (!improved.improvedPrompt) {
       throw new UpstreamError('The AI provider returned an empty improved prompt.');
     }

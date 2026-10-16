@@ -157,6 +157,12 @@ npm run test:e2e
 
 ---
 
+## Licensing & Contributions
+
+All contributions submitted to PromptVault are distributed under the terms of the [Apache License, Version 2.0](../LICENSE) with attribution preserved per the root [`NOTICE`](../NOTICE) file. By submitting a pull request, you confirm that your contribution complies with Section 5 (Submission of Contributions) of the Apache License 2.0.
+
+---
+
 ## Areas Where We Welcome Help
 
 - **Good First Issues:** Look for issues tagged `good first issue` on GitHub for bite-sized tasks.

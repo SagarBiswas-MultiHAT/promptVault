@@ -2,7 +2,7 @@ import {expect, test, type Page} from '@playwright/test';
 
 /**
  * Baseline behaviour lock for the vault CRUD path. This suite must keep passing
- * unchanged through the Phase 3 refactor — that is what makes the refactor
+ * unchanged through the Phase 3 refactor - that is what makes the refactor
  * provably behaviour-preserving.
  */
 
@@ -25,7 +25,7 @@ async function addPrompt(page: Page, title: string, body: string) {
  * particular write: the persistence effect also runs on mount, so the indicator
  * lights up ~500ms after load and stays up for 2s. A test that waits for it right
  * after saving can be satisfied by that *mount* write and reload before the real
- * one lands — which is exactly how this test flaked. Asserting the stored bytes
+ * one lands - which is exactly how this test flaked. Asserting the stored bytes
  * is deterministic and checks the thing the reload actually depends on.
  */
 async function waitForPersisted(page: Page, title: string) {
@@ -122,7 +122,7 @@ test('copies a prompt body to the clipboard', async ({page, context}) => {
  * `localStorage.setItem` by 500ms and nothing flushed it on unload, so closing or
  * reloading the tab inside that window lost the write outright, with no indication
  * that anything was pending. Phase 2 added the `pagehide` / `visibilitychange`
- * flush, so it now passes — and must keep passing.
+ * flush, so it now passes - and must keep passing.
  */
 test('a prompt survives an immediate reload (no debounce data loss)', async ({page}) => {
   await addPrompt(page, TITLE, BODY);

@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  */
 
 import {
@@ -26,12 +28,12 @@ interface GeminiGenerateContentResponse {
 /**
  * Whether the configured model accepts the structured-output fields.
  *
- * Google's `generateContent` surface is in flux — the Interactions API is now the
+ * Google's `generateContent` surface is in flux - the Interactions API is now the
  * recommended one, and `responseSchema` support varies by model. Rather than
  * assume every value someone might put in `GEMINI_MODEL` accepts these fields,
  * a 400 that names them flips this off and the call is retried plainly. Without
  * that, one unsupported field would 400 *every* Gemini request and silently
- * demote the whole app to Groq-only — a fallback that looks healthy while the
+ * demote the whole app to Groq-only - a fallback that looks healthy while the
  * primary provider is dead.
  */
 let structuredOutputSupported = true;

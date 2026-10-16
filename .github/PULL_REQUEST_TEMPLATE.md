@@ -38,3 +38,4 @@ Please describe how you verified your changes:
 - [ ] Changes maintain compatibility with existing user vaults stored in localStorage.
 - [ ] Offline functionality remains intact and cloud sync remains strictly optional.
 - [ ] Code follows project standards and contains clear, human comments where appropriate.
+- [ ] Contribution complies with the Apache-2.0 License and preserves attribution under NOTICE.

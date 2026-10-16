@@ -12,7 +12,7 @@
     <script src="/theme-init.js"></script>
 
     <!-- Primary Meta -->
-    <title>PromptVault — Your Private AI Prompt Library</title>
+    <title>PromptVault - Your Private AI Prompt Library</title>
     <meta name="description" content="A private, offline-first prompt manager for organizing, evaluating, and deploying AI prompts across any workflow. Secure, fast, and beautiful." />
     <meta name="keywords" content="AI prompt manager, offline prompt vault, prompt engineering workbench, private prompt library, prompt template manager, AI prompt organizer, ChatGPT prompts, prompt engineering tool, encrypted prompt storage" />
     <meta name="author" content="Sagar Biswas" />
@@ -25,13 +25,13 @@
     <!-- Open Graph / Social -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://promptvault.multihat.dev/" />
-    <meta property="og:title" content="PromptVault — Your Private AI Prompt Library" />
+    <meta property="og:title" content="PromptVault - Your Private AI Prompt Library" />
     <meta property="og:description" content="A private, offline-first prompt manager for organizing, evaluating, and deploying AI prompts across any workflow." />
     <meta property="og:image" content="https://promptvault.multihat.dev/og-image.png?v=2.2.0" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:alt" content="PromptVault — AI Prompt Manager Social Card" />
+    <meta property="og:image:alt" content="PromptVault - AI Prompt Manager Social Card" />
     <meta property="og:site_name" content="PromptVault" />
     <meta property="og:locale" content="en_US" />
 
@@ -40,10 +40,10 @@
     <meta name="twitter:site" content="@SagarBiswasMH" />
     <!-- twitter:creator distinguishes personal author from site handle for Tweet attribution -->
     <meta name="twitter:creator" content="@SagarBiswasMH" />
-    <meta name="twitter:title" content="PromptVault — Your Private AI Prompt Library" />
+    <meta name="twitter:title" content="PromptVault - Your Private AI Prompt Library" />
     <meta name="twitter:description" content="A private, offline-first prompt manager for organizing, evaluating, and deploying AI prompts across any workflow." />
     <meta name="twitter:image" content="https://promptvault.multihat.dev/og-image.png?v=2.2.0" />
-    <meta name="twitter:image:alt" content="PromptVault — AI Prompt Manager Social Card" />
+    <meta name="twitter:image:alt" content="PromptVault - AI Prompt Manager Social Card" />
 
     <!-- Canonical -->
     <link rel="canonical" href="https://promptvault.multihat.dev/" />
@@ -59,7 +59,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="PromptVault" />
 
-    <!-- Critical CSS — inlined for instant first paint without waiting for external stylesheet -->
+    <!-- Critical CSS: inlined for instant first paint without waiting for external stylesheet -->
     <style>
       :root{--v-bg:#08090A;--v-panel:#111214;--v-panel-bright:#1A1C20;--v-border:#252830;--v-text:#EAEDF3;--v-muted:#9CA3AF}
       .light{--v-bg:#F8F9FB;--v-panel:#FFFFFF;--v-panel-bright:#F3F4F6;--v-border:#E5E7EB;--v-text:#111827;--v-muted:#6B7280}
@@ -121,13 +121,13 @@
       @media(max-width:768px){.shell-sidebar{display:none}}
     </style>
 
-    <!-- Preconnect & Fonts — loaded non-blocking to avoid mobile render delay -->
+    <!-- Preconnect & Fonts: loaded non-blocking to avoid mobile render delay -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=optional" media="print" data-fonts />
 
 
-    <!-- Structured Data (JSON-LD) — @graph links all entities so crawlers can model the full knowledge graph -->
+    <!-- Structured Data (JSON-LD): @graph links all entities so crawlers can model the full knowledge graph -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -170,13 +170,18 @@
             "Import and export functionality (JSON)",
             "Usage analytics and prompt performance tracking",
             "Keyboard shortcuts for power users",
-            "Progressive Web App — installable on desktop and mobile",
+            "Progressive Web App: installable on desktop and mobile",
             "Dark and light theme support"
           ],
           "screenshot": "https://promptvault.multihat.dev/og-image.png",
+          "license": "https://www.apache.org/licenses/LICENSE-2.0",
+          "codeRepository": "https://github.com/SagarBiswas-MultiHAT/promptVault",
           "isAccessibleForFree": true,
+          "author": {
+            "@id": "https://multihat.dev/#author"
+          },
           "creator": {
-            "@id": "https://promptvault.multihat.dev/#organization"
+            "@id": "https://multihat.dev/#author"
           },
           "maintainer": {
             "@id": "https://promptvault.multihat.dev/#organization"
@@ -184,6 +189,16 @@
           "isPartOf": {
             "@id": "https://promptvault.multihat.dev/#website"
           }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://multihat.dev/#author",
+          "name": "Sagar Biswas",
+          "url": "https://multihat.dev",
+          "sameAs": [
+            "https://github.com/SagarBiswas-MultiHAT",
+            "https://twitter.com/SagarBiswasMH"
+          ]
         },
         {
           "@type": "Organization",
@@ -217,7 +232,7 @@
     }
     </script>
 
-    <!-- Google Analytics 4 — loaded after page is interactive to avoid blocking FCP/LCP -->
+    <!-- Google Analytics 4: loaded after page is interactive to avoid blocking FCP/LCP -->
     <script defer src="/gtag-init.js"></script>
   </head>
   <body>
@@ -231,35 +246,36 @@
       <main style="max-width:680px;margin:80px auto;padding:40px;font-family:system-ui,sans-serif;color:#EAEDF3;background:#111214;border-radius:16px;border:1px solid #252830;">
         <header>
           <h1 style="font-size:28px;margin:0 0 8px;font-weight:700;">PromptVault</h1>
-          <p style="font-size:14px;color:#9CA3AF;margin:0 0 24px;">Your Private AI Prompt Library — v2.2.0</p>
+          <p style="font-size:14px;color:#9CA3AF;margin:0 0 24px;">Your Private AI Prompt Library - v2.2.0</p>
         </header>
         <article>
           <p style="color:#9CA3AF;line-height:1.7;margin:0 0 16px;">
             <strong style="color:#EAEDF3;">PromptVault</strong> is a free, open-source <strong style="color:#EAEDF3;">AI prompt manager</strong> built for developers,
             prompt engineers, and AI practitioners. It provides an <strong style="color:#EAEDF3;">offline-first prompt vault</strong> with optional
-            <strong style="color:#EAEDF3;">AES-256-GCM client-side encryption</strong> — your prompts never leave your device unless you choose cloud sync.
+            <strong style="color:#EAEDF3;">AES-256-GCM client-side encryption</strong>: your prompts never leave your device unless you choose cloud sync.
           </p>
           <section aria-label="Key features">
             <h2 style="font-size:16px;color:#EAEDF3;margin:0 0 12px;">Key Features</h2>
             <ul style="color:#9CA3AF;line-height:1.8;padding-left:20px;margin:0 0 20px;">
-              <li>Offline-first <strong style="color:#EAEDF3;">prompt template manager</strong> — works without internet</li>
+              <li>Offline-first <strong style="color:#EAEDF3;">prompt template manager</strong>: works without internet</li>
               <li>AI-powered prompt analysis and improvement via Google Gemini</li>
               <li>Optional AES-256-GCM encrypted local vault with PIN/passphrase</li>
               <li>Cloud sync via Supabase with Row Level Security</li>
               <li>Category and tag organization for your <strong style="color:#EAEDF3;">ChatGPT prompts</strong> and more</li>
-              <li>Variable template injection — parameterize any prompt</li>
+              <li>Variable template injection: parameterize any prompt</li>
               <li>Import / Export (JSON) for full data portability</li>
               <li>Usage analytics and prompt performance tracking</li>
               <li>Keyboard shortcuts for <strong style="color:#EAEDF3;">prompt engineering workbench</strong> power users</li>
-              <li>Installable Progressive Web App — desktop and mobile</li>
-              <li>Dark and light theme — zero layout shift on load</li>
+              <li>Installable Progressive Web App: desktop and mobile</li>
+              <li>Dark and light theme: zero layout shift on load</li>
             </ul>
           </section>
           <nav aria-label="External links">
             <h2 style="font-size:16px;color:#EAEDF3;margin:0 0 12px;">Links</h2>
             <ul style="color:#9CA3AF;line-height:2;padding-left:20px;margin:0 0 20px;">
-              <li><a href="https://github.com/SagarBiswas-MultiHAT/promptVault" style="color:#f59e0b;">GitHub Repository — Apache-2.0 Open Source</a></li>
-              <li><a href="https://promptvault.multihat.dev/" style="color:#f59e0b;">Live App — promptvault.multihat.dev</a></li>
+              <li><a href="https://github.com/SagarBiswas-MultiHAT/promptVault" style="color:#f59e0b;">GitHub Repository: Apache-2.0 Open Source</a></li>
+              <li><a href="https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/NOTICE" style="color:#f59e0b;">NOTICE &amp; Attribution Requirements (Section 4d)</a></li>
+              <li><a href="https://promptvault.multihat.dev/" style="color:#f59e0b;">Live App: promptvault.multihat.dev</a></li>
             </ul>
           </nav>
         </article>

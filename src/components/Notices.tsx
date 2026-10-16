@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
  * The two out-of-band notices, both for failures that used to be silent.
  *
@@ -52,7 +54,7 @@ export function StorageErrorBanner({
 }
 
 /**
- * Clipboard failure — previously swallowed entirely.
+ * Clipboard failure - previously swallowed entirely.
  *
  * `polite`, not `assertive`: a failed copy is recoverable by clicking again, so it
  * does not warrant cutting across whatever the screen reader is mid-sentence on.

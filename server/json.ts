@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  */
 
 /**
@@ -15,7 +17,7 @@
  *   2. The outermost `{ … }` span in the raw text.
  *
  * A fenced block that fails to parse falls through to (2) rather than throwing
- * immediately — a model that emits a fence *and* prose around valid JSON used to
+ * immediately - a model that emits a fence *and* prose around valid JSON used to
  * fail here even though the object was recoverable.
  *
  * @throws SyntaxError or Error when no parsable object is present. Callers treat

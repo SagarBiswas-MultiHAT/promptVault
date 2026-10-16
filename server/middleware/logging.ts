@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  */
 
 import { randomUUID } from 'node:crypto';
@@ -10,7 +12,7 @@ import type { RequestHandler } from 'express';
  * Log API requests once the response is done.
  *
  * The previous version logged on the way *in*, so it recorded no status and no
- * duration — it could tell you a request arrived but never whether it succeeded,
+ * duration - it could tell you a request arrived but never whether it succeeded,
  * failed, or how slow the upstream was. Those are the only two things worth
  * logging about a proxy.
  *
@@ -29,7 +31,7 @@ export const requestLogger: RequestHandler = (req, res, next) => {
 
   // Capture the path now, not in the `finish` callback. Express rewrites
   // `req.url`/`req.path` while a request is inside a mounted router, so reading
-  // it at finish time logged `/health` for a request to `/api/health` — the
+  // it at finish time logged `/health` for a request to `/api/health` - the
   // prefix the router had already stripped.
   const { method, originalUrl } = req;
 

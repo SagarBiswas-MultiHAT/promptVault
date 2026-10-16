@@ -1,13 +1,15 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
  * Vault Protocol Settings: the PIN, cloud sync, backup/restore, and a summary of
  * what the storage layer actually is.
  *
  * `lazy()`-loaded by `App`, and it imports `Modal` statically. That combination is
  * what keeps the modal machinery out of the initial chunk while letting the bundler
- * hoist `Modal` into a chunk shared with every other dialog — the same net effect
+ * hoist `Modal` into a chunk shared with every other dialog - the same net effect
  * as the previous arrangement, where `App` lazily imported `Modal` itself.
  */
 
@@ -220,7 +222,7 @@ export function SettingsModal({
               <span className="font-mono opacity-50 italic">{hasPin ? 'AES-256-GCM + PBKDF2' : 'Not enabled'}</span>
             </div>
 
-            {/* Mobile-only shortcuts entry — desktop uses the floating ? button */}
+            {/* Mobile-only shortcuts entry - desktop uses the floating ? button */}
             <div className="pt-2 border-t border-vault-border/50">
               <button
                 onClick={() => { onClose(); onOpenShortcuts(); }}
@@ -236,12 +238,25 @@ export function SettingsModal({
           </div>
         </section>
 
-        {/* About */}
+        {/* About & Attribution */}
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-vault-text-muted font-mono uppercase tracking-widest text-[10px] font-bold">
-            <span>About</span>
+            <span>About &amp; License</span>
           </div>
           <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl space-y-3">
+            <a
+              href="https://multihat.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between text-xs group"
+            >
+              <span className="text-vault-text-muted font-mono">Author</span>
+              <span className="flex items-center gap-1.5 text-vault-text-muted group-hover:text-vault-accent transition-colors font-mono">
+                <User size={12} />
+                Sagar Biswas (@SagarBiswas-MultiHAT)
+              </span>
+            </a>
+            <div className="border-t border-vault-border/50" />
             <a
               href="mailto:sagarbiswas@multihat.dev"
               className="flex items-center justify-between text-xs group"
@@ -259,12 +274,24 @@ export function SettingsModal({
               rel="noopener noreferrer"
               className="flex items-center justify-between text-xs group"
             >
-              <span className="text-vault-text-muted font-mono">Source</span>
+              <span className="text-vault-text-muted font-mono">Canonical Source</span>
               <span className="flex items-center gap-1.5 text-vault-text-muted group-hover:text-vault-accent transition-colors font-mono">
                 <Github size={12} />
                 SagarBiswas-MultiHAT/promptVault
               </span>
             </a>
+            <div className="border-t border-vault-border/50" />
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-vault-text-muted font-mono">License</span>
+              <a
+                href="https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/LICENSE"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-emerald-400 hover:text-emerald-300 transition-colors text-[11px]"
+              >
+                Apache-2.0 (NOTICE Attributed)
+              </a>
+            </div>
           </div>
         </section>
       </div>

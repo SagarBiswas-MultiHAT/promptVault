@@ -1,6 +1,8 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * @project PromptVault (https://github.com/SagarBiswas-MultiHAT/promptVault)
+ * @author Sagar Biswas (@SagarBiswas-MultiHAT) <https://multihat.dev>
+ * @copyright Copyright (c) 2026 Sagar Biswas (MultiHAT)
+ * @license SPDX-License-Identifier: Apache-2.0
  *
  * The status bar. Two layouts, same reason as the header.
  *
@@ -94,6 +96,16 @@ export function AppFooter({ isMobile, isSaved, promptCount, isEncrypted, onOpenS
           <span className="font-semibold text-vault-text-muted">PromptVault</span>
           <span className="text-vault-border">·</span>
           <span>v{APP_VERSION}</span>
+          <span className="text-vault-border">·</span>
+          <a
+            href="https://github.com/SagarBiswas-MultiHAT/promptVault"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-vault-accent transition-colors normal-case"
+            title="PromptVault by Sagar Biswas (Apache-2.0)"
+          >
+            by Sagar Biswas
+          </a>
         </div>
         <div className="flex items-center gap-3">
           <span aria-live="polite" aria-atomic="true">
