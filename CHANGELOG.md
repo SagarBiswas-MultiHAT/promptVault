@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [2.2.0] - 2026-08-29
 
 ### Added
+- **Official Apache 2.0 Licensing & NOTICE Protection:** Standardized the repository under the Apache License 2.0 with a root NOTICE file mandating UI and documentation attribution (Section 4d), trademark protection (Section 6), and repository-wide SPDX provenance headers.
 - **True Client-Side Encryption:** Vault data is protected with AES-256-GCM encryption using the Web Crypto API, derived via PBKDF2-SHA-256 with 600,000 iterations and a cryptographically random salt.
 - **Envelope Encryption Architecture:** Implemented 256-bit Data Encryption Key (DEK) and Key Encryption Key (KEK) key wrapping.
 - **Passphrase & PIN Modes:** Support for both high-entropy passphrase mode and convenient numeric PIN mode, with clear security trade-off explanations.
