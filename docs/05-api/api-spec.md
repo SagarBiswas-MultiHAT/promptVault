@@ -5,7 +5,7 @@
 | **Product Name** | PromptVault |
 | **Document Type** | API Specification & Integration Guide |
 | **Status** | Approved (Production Baseline) |
-| **Version** | v2.2.0 |
+| **Version** | v2.2.1 |
 | **Owner / Lead Architect** | Sagar Biswas (@SagarBiswas-MultiHAT) / MultiHAT (<https://multihat.dev>) |
 | **OpenAPI Definition** | [openapi.yaml](file:///o:/github/promptVault/docs/05-api/openapi.yaml) |
 | **Reference Documents** | [Architecture Blueprint](file:///o:/github/promptVault/docs/03-architecture/architecture.md), [Threat Model](file:///o:/github/promptVault/docs/04-security/threat-model.md), [SRS](file:///o:/github/promptVault/docs/02-requirements/srs.md) |
@@ -173,7 +173,7 @@ curl -X GET http://localhost:3002/api/health
 ```json
 {
   "status": "ok",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "uptimeSeconds": 18420,
   "cache": {
     "entries": 35,

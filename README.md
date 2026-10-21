@@ -8,7 +8,9 @@
   &nbsp;
   <a href="https://github.com/SagarBiswas-MultiHAT/promptVault/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/SagarBiswas-MultiHAT/promptVault/ci.yml?branch=main&label=CI%20Build&logo=githubactions&logoColor=white" alt="CI Status" /></a>
   &nbsp;
-  <a href="https://github.com/SagarBiswas-MultiHAT/promptVault/releases"><img src="https://img.shields.io/badge/Release-v2.2.0-F59E0B?logo=semanticrelease&logoColor=white" alt="Version" /></a>
+  <a href="https://github.com/SagarBiswas-MultiHAT/promptVault/releases"><img src="https://img.shields.io/badge/Release-v2.2.1-F59E0B?logo=semanticrelease&logoColor=white" alt="Version" /></a>
+  &nbsp;
+  <a href="docs/README.md"><img src="https://img.shields.io/badge/Docs-Architecture%20Portal-6366F1?logo=gitbook&logoColor=white" alt="Docs Portal" /></a>
   &nbsp;
   <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Changelog-Keep%20a%20Changelog-blue?logo=git" alt="Changelog" /></a>
   &nbsp;

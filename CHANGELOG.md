@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [2.2.1] - 2026-10-22
+
+### Security
+- **PIN Entropy Hardening:** Numeric PIN creation now requires a minimum of 6 digits (up from 4), increasing the keyspace from 10,000 to 1,000,000 combinations. Existing 4-digit vaults remain unlockable for full backward compatibility.
+- **Progressive Cooldown Delays:** Added progressive backoff timers on repeated failed unlock attempts to mitigate brute-force attempts.
+- **Active Session Memory Hygiene:** Decrypted prompts in React state and internal data references are synchronously zeroed upon manual vault lock, and all active modals and overlays are immediately reset.
+- **Defensive Storage Guard:** Added a defensive check preventing accidental unencrypted data persistence when the vault is in a locked state.
+
+### Added
+- **Docs-as-Code Technical Portal:** Established a structured documentation suite in `docs/` covering Product Requirements (PRD), Software Requirements Specification (SRS), C4 Architecture, ERD Data Model, STRIDE Threat Model, OpenAPI 3.1.0 specs, Test Strategy, and Deployment Runbooks.
+- **Architectural Decision Records (ADRs):** Authored formal ADRs (0001 - 0004) documenting envelope encryption, dual AI fallback, Last-Write-Wins tombstone synchronization, and backend proxy isolation.
+- **Super-Ultra-High-Quality Visual Diagrams:** Generated 300% DPI (3x scale) dark-mode architecture and workflow PNG diagrams in `diagrams/` matching the core theme background (`#08090A`).
+- **Memory Hygiene & PIN Unit Tests:** Added dedicated unit test suites (`PinLock.test.tsx`, `useVault.test.tsx`) bringing automated unit test coverage to 81 passing tests across 11 suites.
+
+### Changed
+- **Toolchain Security Upgrade:** Upgraded Vite to 6.4.5, achieving 0 vulnerabilities across all dependencies in `npm audit`.
+- **Search Engine & Agentic Crawling:** Enriched `robots.txt`, `sitemap.xml`, `llms.txt`, and `llms-full.txt` to provide full discoverability for AI agent search engines (GPTBot, ClaudeBot, PerplexityBot).
+
+---
+
 ## [2.2.0] - 2026-08-29
 
 ### Added
