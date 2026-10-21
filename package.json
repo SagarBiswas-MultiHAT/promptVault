@@ -1,6 +1,6 @@
 {
   "name": "promptvault",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "private": true,
   "description": "The Private, Offline-First Prompt Manager for AI Agent Power Users",
   "author": "Sagar Biswas <https://multihat.dev> (https://github.com/SagarBiswas-MultiHAT)",

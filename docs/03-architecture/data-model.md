@@ -5,7 +5,7 @@
 | **Product Name** | PromptVault |
 | **Document Type** | Data Model, ERD & Schema Specification |
 | **Status** | Approved (Production Baseline) |
-| **Version** | v2.2.0 (Schema Version `2.0.0`) |
+| **Version** | v2.2.1 (Schema Version `2.0.0`) |
 | **Owner / Lead Architect** | Sagar Biswas (@SagarBiswas-MultiHAT) / MultiHAT (<https://multihat.dev>) |
 | **Reference Documents** | [Architecture Blueprint](file:///o:/github/promptVault/docs/03-architecture/architecture.md), [SRS](file:///o:/github/promptVault/docs/02-requirements/srs.md) |
 
