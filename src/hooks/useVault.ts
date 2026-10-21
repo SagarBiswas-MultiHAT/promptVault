@@ -95,7 +95,8 @@ export function useVault(syncMeta: SyncMetaStore): VaultController {
     const version = ++writeVersion.current;
     let cancelled = false;
     const persist = async () => {
-      if (envelopeRef.current && keyRef.current) {
+      if (envelopeRef.current) {
+        if (!keyRef.current) return;
         try {
           const next = await updateEncryptedVault(envelopeRef.current, data, keyRef.current);
           if (cancelled || version !== writeVersion.current) return;
@@ -133,6 +134,7 @@ export function useVault(syncMeta: SyncMetaStore): VaultController {
       return true;
     } catch { return false; }
   }, [envelope]);
+
   const recover = useCallback(async (recoveryKey: string) => {
     if (!envelope) return false;
     try {
@@ -142,7 +144,23 @@ export function useVault(syncMeta: SyncMetaStore): VaultController {
       return true;
     } catch { return false; }
   }, [envelope]);
-  const lock = useCallback(() => { if (envelope) { keyRef.current = null; setIsLocked(true); } }, [envelope]);
+
+  const lock = useCallback(() => {
+    if (envelope) {
+      keyRef.current = null;
+      setIsLocked(true);
+      const lockedData: VaultData = {
+        ...INITIAL_DATA,
+        settings: {
+          ...INITIAL_DATA.settings,
+          isDarkMode: dataRef.current.settings.isDarkMode,
+        },
+      };
+      dataRef.current = lockedData;
+      setData(lockedData);
+    }
+  }, [envelope]);
+
   const removeProtection = useCallback(() => {
     // `unlock()` installs the key synchronously but React state updates on the
     // next render. Checking the key makes removal work in the same user action.
