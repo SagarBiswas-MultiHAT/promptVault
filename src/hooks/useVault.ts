@@ -130,6 +130,7 @@ export function useVault(syncMeta: SyncMetaStore): VaultController {
     try {
       const result = await unlockEncryptedVault(envelope, secret);
       const next = sanitizeVault(result.data);
+      next.settings.isDarkMode = dataRef.current.settings.isDarkMode;
       keyRef.current = result.key; dataRef.current = next; setData(next); setIsLocked(false);
       return true;
     } catch { return false; }
@@ -140,6 +141,7 @@ export function useVault(syncMeta: SyncMetaStore): VaultController {
     try {
       const result = await recoverEncryptedVault(envelope, recoveryKey);
       const next = sanitizeVault(result.data);
+      next.settings.isDarkMode = dataRef.current.settings.isDarkMode;
       keyRef.current = result.key; dataRef.current = next; setData(next); setIsLocked(false);
       return true;
     } catch { return false; }
