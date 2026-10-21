@@ -1,0 +1,500 @@
+openapi: 3.1.0
+info:
+  title: PromptVault AI Proxy & System API
+  version: 2.2.0
+  description: |
+    # PromptVault API Specification
+
+    ## What is this API? (Plain-English Overview)
+    PromptVault is a zero-knowledge, local-first prompt notebook. The browser client does almost everything locally on your machine, including encrypting all your prompts with AES-256-GCM before saving them to disk.
+
+    However, PromptVault also includes an **AI Librarian** feature that evaluates prompt clarity, spots missing details, suggests tags, and drafts upgraded prompt variations.
+
+    To protect your privacy and security:
+    1. **Your computer never exposes private AI keys**: Third-party AI credentials (Google Gemini and Groq API keys) live exclusively on the backend server.
+    2. **Stateless Courier**: The backend server acts strictly as a secure courier. It receives a prompt, sends it to the AI engine, normalizes the response into clean data, and hands it back to your browser.
+    3. **Zero Storage on Server**: The server never saves your prompts to a database, log file, or disk.
+    4. **Dual Provider Reliability**: The server maintains a pool of Google Gemini keys as its primary provider. If Google is overloaded, rate-limited, or experiencing downtime, the server automatically fails over to Groq without interrupting your work.
+    5. **Smart Response Caching**: Identical prompts evaluated within 30 minutes are served instantly from high-speed memory without making repeated external calls.
+
+    ## Security & Authentication
+    - The `/api/suggest` endpoint requires no user passwords because the client app communicates with its paired server.
+    - Rate limiting is enforced per IP address (30 requests per minute) to protect server capacity and prevent abuse.
+    - Cross-Origin Resource Sharing (CORS) strictly permits only approved application origins in production.
+  contact:
+    name: Sagar Biswas (MultiHAT)
+    url: https://multihat.dev
+    email: contact@multihat.dev
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: http://localhost:3002
+    description: Local development and default standalone server
+  - url: https://promptvault.app
+    description: Production environment
+
+tags:
+  - name: AI Suggestions
+    description: Prompt quality analysis, tag suggestions, and automatic rewriting powered by Gemini and Groq.
+  - name: System Health
+    description: Operational health probes, memory cache statistics, and AI provider diagnostics.
+
+paths:
+  /api/suggest:
+    post:
+      tags:
+        - AI Suggestions
+      summary: Analyze prompt quality or generate an improved prompt version
+      description: |
+        Processes a prompt through the AI pipeline. Depending on the `mode` parameter:
+        - **analyze** (default): Evaluates clarity, calculates a quality score from 0 to 10, identifies weak spots, suggests improvement tips, detects tags, and selects the best matching category.
+        - **improve**: Rewrites the prompt into a comprehensive, high-performing version with role prompting, context, and clear constraints, listing each specific enhancement made.
+
+        Responses are cached in server memory for 30 minutes using a deterministic hash of the prompt text, mode, and category list.
+      operationId: generateSuggestion
+      requestBody:
+        required: true
+        description: Prompt text and optional evaluation parameters.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuggestRequest'
+            examples:
+              analyzeExample:
+                summary: Prompt Quality Analysis Request
+                value:
+                  prompt: "Write a function in python that takes a list of integers and returns only the primes."
+                  categories: ["Development", "Education", "Personal"]
+                  mode: "analyze"
+              improveExample:
+                summary: Prompt Improvement Request
+                value:
+                  prompt: "Help me write a cold sales email to a software engineering director."
+                  categories: ["Marketing", "Sales", "Outreach"]
+                  mode: "improve"
+      responses:
+        '200':
+          description: Suggestion generated successfully or served from memory cache.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuggestResponse'
+              examples:
+                analyzeSuccess:
+                  summary: Successful Analysis Response
+                  value:
+                    qualityScore: 8.5
+                    scoreLabel: "GOOD"
+                    weakSpots:
+                      - "Does not specify handling for empty lists or negative numbers"
+                      - "Performance requirements are not stated for large datasets"
+                    improvements:
+                      - "Specify time and space complexity expectations"
+                      - "Include explicit test edge cases like negative numbers and duplicates"
+                    confidence: "HIGH"
+                    confidenceNote: "Clear request with straightforward algorithmic intent."
+                    title: "Python Prime Number Filter"
+                    category: "Development"
+                    tags:
+                      - "python"
+                      - "primes"
+                      - "algorithms"
+                      - "math"
+                    provider: "gemini"
+                improveSuccess:
+                  summary: Successful Improvement Response
+                  value:
+                    improvedPrompt: "Act as an expert B2B SaaS copywriter. Draft a concise, high-converting cold email (under 120 words) tailored to a Director of Engineering at a mid-market tech firm. Focus on eliminating developer onboarding bottlenecks. Include a compelling 1-sentence value proposition, social proof, and a low-friction call to action."
+                    improvementsMade:
+                      - "Assigned a domain expert persona (B2B SaaS copywriter)"
+                      - "Enforced a strict brevity constraint (under 120 words)"
+                      - "Targeted specific pain points (developer onboarding bottlenecks)"
+                      - "Replaced vague request with structured sections and low-friction CTA"
+                    provider: "gemini"
+        '400':
+          description: Client validation error. The request body is malformed, prompt is missing, under 3 characters, or exceeds 10,000 characters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missingPrompt:
+                  summary: Missing prompt field
+                  value:
+                    error: "Prompt is required."
+                tooShort:
+                  summary: Prompt too short
+                  value:
+                    error: "Prompt must be at least 3 characters."
+                tooLong:
+                  summary: Prompt exceeds length limit
+                  value:
+                    error: "Prompt exceeds maximum length of 10000 characters."
+                invalidJson:
+                  summary: Malformed JSON body
+                  value:
+                    error: "Request body is not valid JSON."
+        '413':
+          description: Request body is too large (exceeds the 1MB payload limit).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Request body is too large."
+        '429':
+          description: Rate limit exceeded. The client has sent more than 30 requests within a 60-second window.
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: Maximum number of allowed requests per window (30).
+              example: 30
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: Number of remaining requests in current window.
+              example: 0
+            X-RateLimit-Reset:
+              schema:
+                type: integer
+              description: Unix timestamp in seconds when the current rate limit window resets.
+              example: 1774163400
+            Retry-After:
+              schema:
+                type: integer
+              description: Number of seconds the client must wait before making another request.
+              example: 42
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Too many requests. Please wait a moment before trying again."
+        '502':
+          description: Upstream AI provider error. Both Gemini and Groq providers failed to return a valid response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                allProvidersFailed:
+                  summary: Provider chain exhausted
+                  value:
+                    error: "Every AI provider failed. Check API keys, quota, and network connectivity."
+                invalidModelOutput:
+                  summary: Model returned unparsable output
+                  value:
+                    error: "The AI provider did not return valid JSON."
+        '503':
+          description: AI service is unconfigured. The server has no Gemini or Groq API keys present in its environment.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "The AI service is not configured on this server."
+
+  /api/health:
+    get:
+      tags:
+        - System Health
+      summary: Service health check and diagnostic monitoring
+      description: |
+        Returns container health status, package version, process uptime, cache metrics, active AI model names, and per-provider circuit-breaker statuses.
+
+        Used by Docker healthchecks, Kubernetes liveness probes, cloud monitoring systems, and the client UI to verify server readiness. This endpoint never caches responses (`Cache-Control: no-store`).
+      operationId: getHealthStatus
+      responses:
+        '200':
+          description: Service is online and operational.
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              example: "no-store"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: "ok"
+                version: "2.2.0"
+                uptimeSeconds: 1420
+                cache:
+                  entries: 12
+                  pending: 0
+                models:
+                  gemini: "gemini-3.6-flash"
+                  groq: "qwen/qwen3.8-27b"
+                geminiStructuredOutput: true
+                providers:
+                  gemini:
+                    configured: true
+                    lastFailure: null
+                  groq:
+                    configured: true
+                    lastFailure: null
+
+components:
+  schemas:
+    SuggestRequest:
+      type: object
+      required:
+        - prompt
+      properties:
+        prompt:
+          type: string
+          minLength: 3
+          maxLength: 10000
+          description: The raw prompt text to evaluate or improve. Trimmed whitespace length must be between 3 and 10,000 characters.
+          example: "Draft a clean TypeScript function that parses query strings safely."
+        categories:
+          type: array
+          items:
+            type: string
+          maxItems: 64
+          default: []
+          description: Existing user vault categories. The AI selects the best fitting category from this list. Total combined character length across all categories is capped at 2,000 characters.
+          example: ["Development", "Productivity", "Writing"]
+        mode:
+          type: string
+          enum:
+            - analyze
+            - improve
+          default: analyze
+          description: Pipeline step to run. Use 'analyze' to assess quality and score, or 'improve' to rewrite the prompt.
+          example: "analyze"
+
+    AnalyzeResult:
+      type: object
+      required:
+        - qualityScore
+        - scoreLabel
+        - weakSpots
+        - improvements
+        - confidence
+        - confidenceNote
+        - title
+        - category
+        - tags
+        - provider
+      properties:
+        qualityScore:
+          type: number
+          minimum: 0
+          maximum: 10
+          description: Numerical prompt quality score from 0.0 to 10.0, rounded to one decimal place.
+          example: 8.5
+        scoreLabel:
+          type: string
+          enum:
+            - EXCELLENT
+            - GOOD
+            - CONSIDER IMPROVING
+          description: User-friendly quality assessment label based on score threshold (9+ is EXCELLENT, 7-8.9 is GOOD, below 7 is CONSIDER IMPROVING).
+          example: "GOOD"
+        weakSpots:
+          type: array
+          items:
+            type: string
+          maxItems: 5
+          description: Key missing details, ambiguities, or limitations identified in the prompt.
+          example:
+            - "Does not define response format (e.g. JSON, table, markdown)"
+            - "Audience skill level is unspecified"
+        improvements:
+          type: array
+          items:
+            type: string
+          maxItems: 10
+          description: Concrete, actionable recommendations to make the prompt significantly more effective.
+          example:
+            - "Specify target programming language version and dependencies"
+            - "Provide a sample input and expected output"
+        confidence:
+          type: string
+          enum:
+            - HIGH
+            - MEDIUM
+          description: Confidence level of the AI evaluation.
+          example: "HIGH"
+        confidenceNote:
+          type: string
+          description: Brief explanatory rationale supporting the confidence score.
+          example: "Prompt contains a clear objective and recognizable technical context."
+        title:
+          type: string
+          description: Generated concise, human-friendly title for the prompt notebook.
+          example: "TypeScript Query String Parser"
+        category:
+          type: string
+          description: Assigned category, chosen from the user-provided category list (defaults to 'General' if no match or empty list).
+          example: "Development"
+        tags:
+          type: array
+          items:
+            type: string
+          maxItems: 8
+          description: Array of lowercase topical tags extracted from the prompt content.
+          example:
+            - "typescript"
+            - "parsing"
+            - "web"
+        provider:
+          type: string
+          description: Name of the AI provider and key slot that produced the result (e.g. 'gemini', 'gemini[0]', 'groq').
+          example: "gemini"
+
+    ImproveResult:
+      type: object
+      required:
+        - improvedPrompt
+        - improvementsMade
+        - provider
+      properties:
+        improvedPrompt:
+          type: string
+          description: The fully rewritten, enhanced prompt text incorporating best engineering practices.
+          example: "Act as a Senior TypeScript Architect. Write a robust query string parser in TypeScript 5.x that converts URL query parameters into strongly typed nested objects. Include defensive error handling for malformed URI encoding, support array values, and provide comprehensive unit test examples."
+        improvementsMade:
+          type: array
+          items:
+            type: string
+          maxItems: 20
+          description: Itemized list of enhancements and additions made to the original prompt.
+          example:
+            - "Defined professional persona (Senior TypeScript Architect)"
+            - "Added version constraints (TypeScript 5.x)"
+            - "Added edge-case specifications (malformed URI components and array notation)"
+            - "Requested concrete test verification code"
+        provider:
+          type: string
+          description: Name of the AI provider that successfully generated the revision.
+          example: "gemini"
+
+    SuggestResponse:
+      oneOf:
+        - $ref: '#/components/schemas/AnalyzeResult'
+        - $ref: '#/components/schemas/ImproveResult'
+      description: Dynamic result matching the requested mode (AnalyzeResult when mode=analyze, ImproveResult when mode=improve).
+
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - version
+        - uptimeSeconds
+        - cache
+        - models
+        - geminiStructuredOutput
+        - providers
+      properties:
+        status:
+          type: string
+          example: "ok"
+          description: Overall service status.
+        version:
+          type: string
+          example: "2.2.0"
+          description: Current server application version read from package.json.
+        uptimeSeconds:
+          type: integer
+          example: 3600
+          description: Number of elapsed seconds since server process start.
+        cache:
+          $ref: '#/components/schemas/CacheStats'
+        models:
+          type: object
+          required:
+            - gemini
+            - groq
+          properties:
+            gemini:
+              type: string
+              example: "gemini-3.6-flash"
+              description: Active primary Google Gemini model identifier.
+            groq:
+              type: string
+              example: "qwen/qwen3.8-27b"
+              description: Active secondary Groq fallback model identifier.
+        geminiStructuredOutput:
+          type: boolean
+          example: true
+          description: Indicates whether Gemini JSON schema enforcement is active.
+        providers:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ProviderStatus'
+          description: Per-provider and per-key-slot configuration and circuit-breaker status.
+
+    CacheStats:
+      type: object
+      required:
+        - entries
+        - pending
+      properties:
+        entries:
+          type: integer
+          example: 24
+          description: Total number of active cached suggestion responses currently in memory.
+        pending:
+          type: integer
+          example: 0
+          description: Number of in-flight provider requests currently being deduplicated.
+
+    ProviderStatus:
+      type: object
+      required:
+        - configured
+        - lastFailure
+      properties:
+        configured:
+          type: boolean
+          example: true
+          description: Whether an API key is present for this provider slot.
+        lastFailure:
+          type: object
+          nullable: true
+          required:
+            - at
+            - kind
+            - status
+          properties:
+            at:
+              type: string
+              format: date-time
+              example: "2026-10-21T18:30:00.000Z"
+              description: ISO timestamp of the most recent failure on this slot.
+            kind:
+              type: string
+              enum:
+                - timeout
+                - network
+                - auth
+                - rate_limited
+                - bad_request
+                - upstream_error
+                - truncated
+                - empty_response
+                - blocked
+                - unknown
+              example: "rate_limited"
+              description: Standardized classification of the failure reason.
+            status:
+              type: integer
+              nullable: true
+              example: 429
+              description: Upstream HTTP status code returned by the provider, if available.
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Safe, human-readable description of why the request could not be fulfilled.
+          example: "Prompt must be at least 3 characters."
