@@ -110,7 +110,7 @@ Everything is stored directly in your browser. No sign-up required. No ads. No d
 ## What Can It Do?
 
 ### 🔒 Encrypt Your Vault
-You can encrypt the local vault with either a numeric PIN or a passphrase. PromptVault uses AES-256-GCM for vault data and PBKDF2-SHA-256 (600,000 iterations) to derive the key that unlocks it. Your secret is never stored. A PIN is convenient but weak against offline guessing; use a long passphrase for meaningful protection, and save the one-time recovery key shown during setup.
+You can encrypt the local vault with either a numeric PIN (minimum 6 digits for new vaults, 4 digits for legacy unlocks) or a passphrase (minimum 15 characters, recommended by default). PromptVault uses AES-256-GCM for vault data, PBKDF2-SHA-256 (600,000 iterations) to derive the key that unlocks it, and progressive cooldown delays after consecutive failed unlock attempts. Your secret is never stored. A PIN is convenient for local devices, but a long passphrase provides the highest cryptographic resistance against offline guessing. Save the one-time recovery key shown during setup.
 
 ### 🤖 Built-In AI Assistant
 Not sure if your prompt is well-written? The **AI Librarian** can:

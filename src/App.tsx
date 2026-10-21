@@ -176,8 +176,14 @@ export default function App() {
   }, [overlays]);
 
   const handleLockButtonClick = () => {
-    if (vault.isEncrypted) vault.lock();
-    else setSecurityAction('create');
+    if (vault.isEncrypted) {
+      overlays.resetAll();
+      setSearchQuery('');
+      setSelectedCategoryId(null);
+      vault.lock();
+    } else {
+      setSecurityAction('create');
+    }
   };
 
   const toggleSidebar = useCallback(() => setSidebarCollapsed(prev => !prev), []);
