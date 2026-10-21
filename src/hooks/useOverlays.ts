@@ -80,6 +80,12 @@ export interface Overlays {
    * changes no behaviour.
    */
   closeEscapable: () => void;
+
+  /**
+   * Clears and resets all active modal dialogs, prompt viewers, editors, and
+   * variable requests. Essential for memory hygiene when locking the vault.
+   */
+  resetAll: () => void;
 }
 
 export function useOverlays(): Overlays {
@@ -106,6 +112,21 @@ export function useOverlays(): Overlays {
     setShortcuts(false);
   }, []);
 
+  const resetAll = useCallback(() => {
+    setNewPrompt(false);
+    setEditing(null);
+    setViewing(null);
+    setVariables(null);
+    setSettings(false);
+    setShortcuts(false);
+    setCategoryCreate(false);
+    setCategoryName('');
+    setCategoryDelete(null);
+    setPendingImport(null);
+    setImportError(null);
+    setConfirmDeleteId(null);
+  }, []);
+
   return useMemo(() => ({
     newPrompt, setNewPrompt,
     editing, setEditing,
@@ -120,9 +141,10 @@ export function useOverlays(): Overlays {
     importError, setImportError,
     confirmDeleteId, setConfirmDeleteId,
     closeEscapable,
+    resetAll,
   }), [
     newPrompt, editing, viewing, variables, settings, shortcuts, categoryCreate,
     categoryName, categoryDelete, pendingImport, importError, confirmDeleteId,
-    toggleShortcuts, closeEscapable,
+    toggleShortcuts, closeEscapable, resetAll,
   ]);
 }

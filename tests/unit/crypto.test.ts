@@ -24,6 +24,12 @@ describe('encrypted vault envelopes', () => {
     await expect(unlockEncryptedVault(envelope, '1234')).resolves.toMatchObject({ data: vault });
   });
 
+  it('round-trips with a 6-digit PIN and rejects an incorrect 6-digit PIN', async () => {
+    const { envelope } = await createEncryptedVault(vault, '123456', 'pin');
+    await expect(unlockEncryptedVault(envelope, '654321')).rejects.toThrow();
+    await expect(unlockEncryptedVault(envelope, '123456')).resolves.toMatchObject({ data: vault });
+  });
+
   it('recovers the same vault with the one-time recovery key', async () => {
     const created = await createEncryptedVault(vault, '1234', 'pin');
     await expect(recoverEncryptedVault(created.envelope, created.recoveryKey)).resolves.toMatchObject({ data: vault });
