@@ -115,3 +115,5 @@ For detailed technical diagrams and architectural documentation, refer to the co
 * [Cloud Sync Lifecycle](file:///o:/github/promptVault/diagrams/cloud-sync-lifecycle.png): Details on the 1-second debounced push, 30-second silent poll, and tombstone reconciliation.
 * [AI Suggestion Pipeline](file:///o:/github/promptVault/diagrams/ai-suggestion-pipeline.png): Deep dive into token bucket rate limits, provider fallback, and prompt scoring rubrics.
 * [Runtime Workflows](file:///o:/github/promptVault/diagrams/runtime-workflows.png): Step-by-step user journeys for smart copy, AI prompt polishing, and portable backups.
+
+---

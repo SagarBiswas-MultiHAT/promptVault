@@ -28,66 +28,26 @@ The C4 model visualizes the architecture at four progressively deeper levels of 
 
 ### Level 1: System Context Diagram (The Big Picture)
 
-```mermaid
-%%{init: {"theme": "base", "themeVariables": {"fontSize": "13px", "fontFamily": "Inter, system-ui, sans-serif", "primaryColor": "#1E222B", "primaryTextColor": "#EAEDF3", "primaryBorderColor": "#f59e0b", "lineColor": "#f59e0b", "secondaryColor": "#111214", "tertiaryColor": "#08090A"}}}%%
-flowchart TB
-    User([User / Prompt Engineer])
+<div align="center">
+<table><tr><td>
 
-    subgraph PromptVaultSystem ["PromptVault System Boundary"]
-        ClientApp["PromptVault PWA Client\n(Browser / React 19 SPA)"]
-        BackendProxy["PromptVault AI Gateway\n(Node.js / Express 5 Proxy)"]
-    end
+<img src="../img/architecture.md/Level_1_System_Context_Diagram_(The_Big_Picture).png" alt="System Context Diagram (The Big Picture)" width="550"/>
 
-    subgraph ExternalSystems ["External Cloud Services"]
-        GeminiAPI["Google Gemini AI API\n(Primary Provider: gemini-3.6-flash)"]
-        GroqAPI["Groq Cloud AI API\n(Fallback Provider: qwen/qwen3.8-27b)"]
-        SupabaseCloud["Supabase Backend\n(PostgreSQL + GoTrue OAuth PKCE)"]
-    end
+</td></tr></table>
+</div>
 
-    User -->|"Interacts, searches, writes, locks (Zero-Knowledge)"| ClientApp
-    ClientApp -->|"Sends prompt drafts for evaluation (HTTPS POST)"| BackendProxy
-    ClientApp -->|"Authenticates & syncs encrypted vault (TLS 1.3 REST)"| SupabaseCloud
-    BackendProxy -->|"Primary AI prompt analysis"| GeminiAPI
-    BackendProxy -.->|"Automatic fallback on error / rate-limit"| GroqAPI
-```
+![]()
 
 ### Level 2: Container Diagram (Runtime Applications & Datastores)
 
-```mermaid
-%%{init: {"theme": "base", "themeVariables": {"fontSize": "13px", "fontFamily": "Inter, system-ui, sans-serif", "primaryColor": "#1E222B", "primaryTextColor": "#EAEDF3", "primaryBorderColor": "#f59e0b", "lineColor": "#f59e0b", "secondaryColor": "#111214", "tertiaryColor": "#08090A"}}}%%
-flowchart TB
-    subgraph BrowserContainer ["User's Browser (Client Container)"]
-        direction TB
-        ReactApp["React 19 SPA\nComponents, State Hooks, Motion Animations"]
-        ServiceWorker["Service Worker (sw.js)\nOffline caching of shell, CSS, and fonts"]
-        WebCryptoEngine["Web Crypto SubtleCrypto\nAES-256-GCM Envelope Encryption (DEK/KEK)"]
-        BrowserStorage[("Browser localStorage\nprompt-vault-data\nprompt-vault-sync-meta")]
 
-        ReactApp <--> WebCryptoEngine
-        ReactApp <--> BrowserStorage
-        ServiceWorker -.->|"Caches Assets"| ReactApp
-    end
+<div align="center">
+<table><tr><td>
 
-    subgraph ServerContainer ["Backend Gateway Container (Node.js)"]
-        direction TB
-        ExpressServer["Express 5 Server (server/index.ts)\nHelmet Security, Compression, CORS"]
-        RateLimiter["Sliding-Window Rate Limiter\n30 req/min per IP (Token Bucket)"]
-        MemoryCache["In-Memory Response Cache\n200 entries, 30-minute TTL"]
-        AIOrchestrator["Dual-Provider Orchestrator\nGemini Key Pool + Groq Fallback"]
+<img src="../img/architecture.md/Level_2_Container_Diagram_(Runtime_Applications_&_Datastores).png" alt="Container Diagram (Runtime Applications & Datastores)" width="580"/>
 
-        ExpressServer --> RateLimiter --> MemoryCache --> AIOrchestrator
-    end
-
-    subgraph CloudContainer ["Supabase Cloud Container"]
-        direction TB
-        GoTrueAuth["GoTrue Auth Service\nGoogle OAuth 2.0 PKCE Handshake"]
-        PostgresDB[("PostgreSQL Database\npublic.vaults (Row-Level Security)")]
-    end
-
-    ReactApp -->|"POST /api/suggest (mode: analyze / improve)"| ExpressServer
-    ReactApp -->|"REST API (TLS 1.3)"| PostgresDB
-    ReactApp -->|"OAuth Login"| GoTrueAuth
-```
+</td></tr></table>
+</div>
 
 ### Level 3: Component Diagram (Client Architecture Breakdown)
 
@@ -148,3 +108,5 @@ PromptVault's architecture is comprehensively documented across five verified, p
 3. [Cloud Sync Lifecycle](file:///o:/github/promptVault/diagrams/cloud-sync-lifecycle.png): Chronological lifecycle covering Session Bootstrap, 1-Second Debounced Push, 30-Second Silent Polling, and Last-Write-Wins tombstone reconciliation.
 4. [AI Suggestion Pipeline](file:///o:/github/promptVault/diagrams/ai-suggestion-pipeline.png): Detailed engineering walkthrough of the sliding-window rate limiter, 30-minute cache, Gemini-to-Groq fallback, and 8-point rubric evaluation.
 5. [Runtime Workflows](file:///o:/github/promptVault/diagrams/runtime-workflows.png): End-to-end user journeys for smart template copy, AI Prompt Doctor polishing, and schema-sanitized JSON import/export.
+
+---

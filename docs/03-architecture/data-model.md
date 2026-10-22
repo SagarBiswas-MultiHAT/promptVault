@@ -25,77 +25,13 @@ PromptVault is designed around a **clean, modular, and privacy-preserving data m
 
 The following diagram illustrates the relationships between entities in memory, at rest, and in the cloud:
 
-```mermaid
-%%{init: {"theme": "base", "themeVariables": {"fontSize": "13px", "fontFamily": "Inter, system-ui, sans-serif", "primaryColor": "#1E222B", "primaryTextColor": "#EAEDF3", "primaryBorderColor": "#f59e0b", "lineColor": "#f59e0b", "secondaryColor": "#111214", "tertiaryColor": "#08090A"}}}%%
-erDiagram
-    VAULT_DATA ||--|{ PROMPT : contains
-    VAULT_DATA ||--|{ CATEGORY : contains
-    VAULT_DATA ||--|| SETTINGS : configures
-    CATEGORY ||--o{ PROMPT : organizes
+<div align="center">
+<table><tr><td>
 
-    ENCRYPTED_VAULT ||--|| KEY_WRAPPER : "primary lock"
-    ENCRYPTED_VAULT ||--|| KEY_WRAPPER : "recovery lock"
-    ENCRYPTED_VAULT ||--|| VAULT_DATA : "encrypts payload"
+<img src="../img/data-model.md/2_Entity_Relationship_Diagram_(ERD).png" alt="Entity Relationship Diagram (ERD)" width="1200"/>
 
-    SUPABASE_VAULTS ||--|| VAULT_DATA : "stores JSONB payload"
-
-    PROMPT {
-        string id PK "UUID v4"
-        string title "Prompt Title"
-        string body "Prompt Content with {{variables}}"
-        string categoryId FK "References Category.id"
-        string_array tags "Tags list for search filtering"
-        boolean isFavorite "Favorite bookmark toggle"
-        number usageCount "Total copy counter"
-        number createdAt "Epoch timestamp ms"
-        number updatedAt "Epoch timestamp ms (LWW)"
-        number_or_null deletedAt "Epoch timestamp ms (Tombstone)"
-    }
-
-    CATEGORY {
-        string id PK "UUID v4"
-        string name "Category Name (e.g., Coding, Writing)"
-        number updatedAt "Epoch timestamp ms (LWW)"
-        number_or_null deletedAt "Epoch timestamp ms (Tombstone)"
-    }
-
-    SETTINGS {
-        string sortBy "MOST_USED | RECENTLY_ADDED | RECENTLY_UPDATED | A_Z"
-        boolean isDarkMode "Theme preference toggle"
-    }
-
-    VAULT_DATA {
-        string schemaVersion "Constant: '2.0.0'"
-        list prompts "Array of Prompt entities"
-        list categories "Array of Category entities"
-        object settings "Settings configuration"
-    }
-
-    KEY_WRAPPER {
-        string salt "Base64 encoded 16-byte random salt"
-        string iv "Base64 encoded 12-byte random IV"
-        string ciphertext "Base64 encoded encrypted 32-byte DEK"
-    }
-
-    ENCRYPTED_VAULT {
-        string schemaVersion "Constant: '2.0.0'"
-        number version "Encryption schema version: 1"
-        string algorithm "Constant: 'AES-256-GCM'"
-        string kdf "Constant: 'PBKDF2-SHA-256'"
-        number iterations "Iteration count: 600,000"
-        string mode "Secret mode: 'pin' | 'passphrase'"
-        object primary "KeyWrapper for user secret"
-        object recovery "KeyWrapper for 64-char emergency token"
-        object payload "AES-GCM ciphertext of VaultData JSON"
-    }
-
-    SUPABASE_VAULTS {
-        uuid user_id PK "References auth.users.id"
-        jsonb data "Sanitized VaultData document"
-        text schema_version "Constant: '2.0.0'"
-        timestamptz updated_at "Server timestamp"
-    }
-```
+</td></tr></table>
+</div>
 
 ---
 
@@ -214,21 +150,13 @@ To guarantee that corrupted JSON imports or partial syncs never crash the UI, `s
 
 PromptVault solves the classic distributed sync problem of resurrected deleted items using **30-Day Deletion Tombstones**:
 
-```mermaid
-%%{init: {"theme": "base", "themeVariables": {"fontSize": "13px", "fontFamily": "Inter, system-ui, sans-serif", "primaryColor": "#1E222B", "primaryTextColor": "#EAEDF3", "primaryBorderColor": "#f59e0b", "lineColor": "#f59e0b", "secondaryColor": "#111214", "tertiaryColor": "#08090A"}}}%%
-stateDiagram-v2
-    [*] --> ActivePrompt : User Creates Prompt
-    ActivePrompt --> ActivePrompt : User Edits (updatedAt = now)
-    ActivePrompt --> Tombstone : User Deletes (deletedAt = now)
+<div align="center">
+<table><tr><td>
 
-    state Tombstone {
-        [*] --> RetainedAgeLess30Days
-        RetainedAgeLess30Days --> PropagatedToOtherDevices : Cross-Device Sync
-        RetainedAgeLess30Days --> PurgedAge30PlusDays : sweepTombstones()
-    }
+<img src="../img/data-model.md/5_Data_Retention_&_Tombstone_Lifecycle.png" alt="Data Retention & Tombstone Lifecycle" width="650"/>
 
-    PurgedAge30PlusDays --> [*] : Permanently Deleted from Storage
-```
+</td></tr></table>
+</div>
 
 1. **Deletion Marks a Tombstone**: When a user deletes a prompt or category, `deletedAt` is populated with `Date.now()`.
 2. **Propagating the Deletion**: When another device syncs via `mergeVaults()`, it compares timestamps:
@@ -237,3 +165,5 @@ stateDiagram-v2
 3. **Automatic Garbage Collection (`sweepTombstones`)**:
    - Tombstones with `Date.now() - deletedAt < 30 days` are retained.
    - Tombstones older than 30 days (`30 * 86,400,000` ms) are permanently purged during merge passes to reclaim local storage capacity.
+
+---

@@ -74,3 +74,5 @@ We selected **Option 3: Dedicated Express 5 Backend Gateway**.
 ### Negative / Trade-Offs
 - **Requires Node.js Runtime**: Unlike pure static sites that can be hosted on GitHub Pages or an S3 bucket, PromptVault requires a Node.js runtime environment (such as a VPS, Render, Railway, or Docker container) to power its AI features.
 - **Memory Scaling**: In-memory caching is per-server-instance. In horizontally scaled multi-container clusters, caches are not shared across instances (an acceptable trade-off for current single-instance deployment topologies).
+
+---
