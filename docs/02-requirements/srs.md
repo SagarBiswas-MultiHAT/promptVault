@@ -191,3 +191,5 @@ The requirements defined in this specification directly correspond to the verifi
 - [Cloud Sync Lifecycle](file:///o:/github/promptVault/diagrams/cloud-sync-lifecycle.png): 1-second debounce, 30-second poll, and conflict resolution engine.
 - [AI Suggestion Pipeline](file:///o:/github/promptVault/diagrams/ai-suggestion-pipeline.png): Rate limiting, caching, dual fallback, and rubric scoring.
 - [Runtime Workflows](file:///o:/github/promptVault/diagrams/runtime-workflows.png): User interaction flows for smart copy, AI assistant, and JSON export/import.
+
+---

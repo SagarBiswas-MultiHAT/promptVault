@@ -68,3 +68,5 @@ We selected **Option 3: Symmetric Envelope Encryption with Dual KEKs**.
 ### Negative / Trade-Offs
 - **CPU Work on Unlock**: Computing 600,000 PBKDF2 rounds causes a 1.5s to 3.0s delay when unlocking on older mobile devices (intentionally designed to stop attackers).
 - **Permanent Data Loss if Both Keys are Lost**: Because there is no central password reset server, losing both the PIN and the emergency recovery key results in permanent loss of access. This trade-off is clearly communicated in the UI.
+
+---

@@ -78,3 +78,5 @@ We selected **Option 3: Per-Entity Last-Write-Wins with 30-Day Tombstones**.
 ### Negative / Trade-Offs
 - **Last-Write-Wins on Same Prompt**: If the exact same prompt is edited simultaneously on two offline devices, the one saved a fraction of a second later wins. For individual prompt libraries, this edge case is exceedingly rare and considered an acceptable trade-off compared to the extreme complexity of character-by-character CRDTs.
 - **Device Inactivity Window**: If a device stays completely powered off and offline for longer than 30 days, its purged tombstones will have expired, creating a minor theoretical risk of an old prompt reappearing. 30 days is a standard industry balance for consumer personal apps.
+
+---

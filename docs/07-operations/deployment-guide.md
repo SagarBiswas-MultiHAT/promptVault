@@ -329,3 +329,5 @@ PromptVault assets are built using Vite with deterministic SHA content hashes (e
 ### Error 4: "Cloud sync shows Disconnected or Auth Fails."
 - **Why It Happens**: `VITE_SUPABASE_URL` was not present during the `npm run build` step, or the user's redirect URL is missing from the Supabase dashboard.
 - **Fix**: Rebuild the client using `npm run build` with `VITE_SUPABASE_URL` present in the environment, and check Supabase Redirect URLs.
+
+---

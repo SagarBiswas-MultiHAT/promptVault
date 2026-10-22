@@ -25,7 +25,9 @@ PromptVault is not an ordinary note-taking app. It is a **zero-knowledge privacy
 PromptVault organizes testing into three focused tiers:
 
 ```
-          / \
+            _
+           / \
+          /   \
          / E2E \        Level 3: Full Browser End-to-End Tests (Playwright)
         / Tests \       Realistic user journeys, clicks, encryption UI, offline mode.
        /---------\
@@ -34,6 +36,7 @@ PromptVault organizes testing into three focused tiers:
     /---------------\
    /   Unit Tests    \  Level 1: Fast Cryptographic & Logic Tests (Vitest)
   /-------------------\ Math, AES-256-GCM, PBKDF2 hashing, LWW merge engine.
+
 ```
 
 - **Unit Tests (Fast & Mathematical)**: Test the raw engine gears (encryption math, timestamp comparison, JSON data parsing). They run in less than 4 seconds.
@@ -216,3 +219,5 @@ Our test strategy is grounded in lessons learned during development. Several key
 3. **Model Output Structure Drift**:
    - *Past Problem*: Upstream LLMs occasionally returned an array of objects `[{ gap: "missing details" }]` instead of an array of strings `["missing details"]`, which caused React rendering crashes.
    - *Permanent Regression Lock*: `tests/unit/normalize.test.ts` feeds deeply nested hostile objects into the normalizer and asserts that clean string arrays are always produced.
+
+---

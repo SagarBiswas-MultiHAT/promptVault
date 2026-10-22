@@ -73,3 +73,5 @@ We selected **Option 3: Server-Side Dual-Provider Orchestration with Transparent
 ### Negative / Trade-Offs
 - **Two API Keys Recommended for Full Redundancy**: Server hosts should configure both `GEMINI_API_KEYS` and `GROQ_API_KEY` to enable seamless failover (the app gracefully runs with either if only one is provided).
 - **Slight Model Variance in Rewrites**: While the JSON schema is identical, different models have slightly different prose writing styles. This is mitigated by our strict 8-point system prompt constraints and normalization.
+
+---

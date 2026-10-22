@@ -42,45 +42,13 @@ To protect PromptVault effectively, all system data is classified into three dis
 
 The PromptVault architecture contains four critical trust boundaries:
 
-```mermaid
-%%{init: {"theme": "base", "themeVariables": {"fontSize": "13px", "fontFamily": "Inter, system-ui, sans-serif", "primaryColor": "#1E222B", "primaryTextColor": "#EAEDF3", "primaryBorderColor": "#f59e0b", "lineColor": "#f59e0b", "secondaryColor": "#111214", "tertiaryColor": "#08090A"}}}%%
-flowchart TB
-    subgraph ClientBoundary ["Trust Boundary 1: Client Device"]
-        direction TB
-        subgraph ActiveMemory ["Volatile RAM (Highest Trust)"]
-            PlaintextData["Plaintext Prompts (React State)"]
-            ActiveDEK["Master Vault Key (keyRef.current)"]
-        end
+<div align="center">
+<table><tr><td>
 
-        subgraph LocalDisk ["Browser Storage (Untrusted at Rest)"]
-            CiphertextEnvelope[("Encrypted Envelope\nprompt-vault-data\n(AES-256-GCM)")]
-        end
+<img src="../img/threat-model.md/3_Trust_Boundaries_&_Attack_Surfaces.png" alt="Trust Boundaries & Attack Surfaces" width="480"/>
 
-        ActiveMemory -- "Lock: Memory wiped\nSave: Encrypted with DEK" --> LocalDisk
-    end
-
-    subgraph ServerBoundary ["Trust Boundary 2: Express Gateway"]
-        direction TB
-        ExpressProxy["Express 5 Server\nRate Limiter & Cache"]
-        ServerKeys[("Server Secrets\nGEMINI_API_KEY\nGROQ_API_KEY")]
-        ExpressProxy --- ServerKeys
-    end
-
-    subgraph ExternalBoundary ["Trust Boundary 3: External AI Vendors"]
-        direction TB
-        GeminiVendor["Google Gemini API"]
-        GroqVendor["Groq Cloud API"]
-    end
-
-    subgraph CloudBoundary ["Trust Boundary 4: Supabase Cloud"]
-        direction TB
-        PostgresRLS[("Supabase PostgreSQL\nRow-Level Security: auth.uid() = user_id")]
-    end
-
-    ClientBoundary -->|"TLS 1.3: POST /api/suggest (prompt text only)"| ServerBoundary
-    ServerBoundary -->|"Encrypted API calls (Server-to-Server)"| ExternalBoundary
-    ClientBoundary -->|"TLS 1.3: Sanitized VaultData (OAuth PKCE)"| CloudBoundary
-```
+</td></tr></table>
+</div>
 
 ---
 
@@ -167,3 +135,5 @@ While PromptVault provides military-grade cryptographic protection, security is 
 - **Safekeeping the Emergency Recovery Key**: PromptVault has no central password reset server. If a user forgets their PIN and loses their 64-character Emergency Recovery Key, **their data cannot be recovered by anyone**. The recovery key should be printed or stored in an offline password manager.
 - **Browser Extension Hygiene**: Users should avoid installing untrusted browser extensions that request broad read/write permissions across all web pages.
 - **Dependency & Tooling Hygiene**: Development tooling dependencies are audited via `npm audit` (0 reported vulnerabilities) and pinned against vulnerable local dev-server middleware.
+
+---

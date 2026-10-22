@@ -23,6 +23,8 @@
 <p align="left">
   <img src="https://img.shields.io/badge/Security-AES--256--GCM%20%2B%20PBKDF2-10b981?logo=lock&logoColor=white" alt="Security" />
   &nbsp;
+  <img src="https://img.shields.io/badge/Audit-0%20Vulnerabilities-10b981?logo=shield&logoColor=white" alt="Vulnerabilities: 0" />
+  &nbsp;
   <img src="https://img.shields.io/badge/AI%20Engine-Gemini%20%2B%20Groq%20Fallback-8B5CF6?logo=google&logoColor=white" alt="AI Engine" />
   &nbsp;
   <img src="https://img.shields.io/badge/Sync-Supabase%20RLS-3ECF8E?logo=supabase&logoColor=white" alt="Supabase Sync" />
@@ -33,7 +35,13 @@
   &nbsp;
   <img src="https://img.shields.io/badge/Tailwind-CSS%20v4-38B2AC?logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
   &nbsp;
-  <img src="https://img.shields.io/badge/Testing-Playwright%20%2B%20Vitest-E33D26?logo=playwright&logoColor=white" alt="Testing" />
+  <img src="https://img.shields.io/badge/Testing-Playwright%20%2B%20Vitest%20(81%20Tests)-E33D26?logo=playwright&logoColor=white" alt="Testing" />
+</p>
+<p align="left">
+  <strong><a href="https://promptvault.multihat.dev/">🚀 Launch Live Web App</a></strong> &nbsp;•&nbsp;
+  <strong><a href="docs/README.md">📖 Architecture & Docs Portal</a></strong> &nbsp;•&nbsp;
+  <strong><a href="diagrams/">🗺️ 300% DPI Architecture Diagrams</a></strong> &nbsp;•&nbsp;
+  <strong><a href="#-encrypt-your-vault">🔒 Zero-Knowledge Security</a></strong>
 </p>
 
 ---
@@ -41,6 +49,9 @@
 ## 📋 Table of Contents
 
 - [Comprehensive Architectural & Feature Synthesis](#comprehensive-architectural--feature-synthesis)
+  - [Architectural Breakdown](#architectural-breakdown)
+  - [Visual Architecture & System Models (300% DPI)](#visual-architecture--system-models-300-dpi)
+  - [Docs-as-Code Technical Documentation Portal](#docs-as-code-technical-documentation-portal)
 - [What is PromptVault?](#what-is-promptvault)
 - [What Can It Do? (Features)](#what-can-it-do)
 - [How Does It Compare?](#how-does-it-compare)
@@ -75,8 +86,9 @@ PromptVault is a privacy-first, client-encrypted AI prompt workbench and local l
 │ 🎨 Frontend (Client-Side)            │ 🔒 Cryptography & Storage Layer                 │
 │ • React 19 + TypeScript 5.8 (Strict) │ • AES-256-GCM on-device encryption               │
 │ • Tailwind CSS v4 + Motion           │ • PBKDF2-SHA-256 KDF (600,000 iterations)        │
-│ • Virtualized Grid (>200 items)      │ • 256-bit DEK + KEK key wrapping + Recovery Key  │
-│ • Offline PWA + Pre-paint Theme Init │ • Guarded localStorage with quota-aware error    │
+│ • Virtualized Grid (>200 items)      │ • 6-digit PIN entropy + Emergency Recovery Key   │
+│ • Offline PWA + Pre-paint Theme Init │ • Active session memory zeroing on manual lock   │
+│ • Active theme preservation on lock  │ • Guarded localStorage with quota-aware error    │
 ├──────────────────────────────────────┼──────────────────────────────────────────────────┤
 │ 🧠 AI Librarian Proxy Server         │ ☁️ Cloud Sync & Data Resilience                 │
 │ • Express + TypeScript proxy         │ • Supabase PostgreSQL backend with Google OAuth  │
@@ -88,9 +100,45 @@ PromptVault is a privacy-first, client-encrypted AI prompt workbench and local l
 
 </div>
 
-### Architecture Overview (v1.0.0)
+### Visual Architecture & System Models (300% DPI)
 
-![Architecture Overview](diagrams/Architecture_Overview.png)
+PromptVault includes a comprehensive visual library of super-ultra-high-quality architectural models rendered at 300% DPI (3x scale factor) in the [`diagrams/`](diagrams/) directory:
+
+<div align="center">
+
+| Diagram Model | Focus Area | Resolution |
+| :--- | :--- | :--- |
+| **[System Architecture](diagrams/architecture.png)** | End-to-end 4-tier topology spanning Client, AI Gateway, LLM Providers, and Cloud Sync | 2352 x 6744 px |
+| **[Cryptographic Workflow](diagrams/encryption-workflow.png)** | PBKDF2 derivation, 256-bit DEK generation, AES-256-GCM sealing, and 6-digit PIN / Passphrase unlocking | 2352 x 10482 px |
+| **[Cloud Sync Lifecycle](diagrams/cloud-sync-lifecycle.png)** | 1-second debounced push, 30-second silent poll, LWW merge engine, and 30-day tombstone cleanup | 2352 x 17904 px |
+| **[AI Suggestion Pipeline](diagrams/ai-suggestion-pipeline.png)** | Gemini multi-key pooling, Groq automatic circuit-breaker fallback, in-flight coalescing, and caching | 2352 x 25248 px |
+| **[Runtime Workflows](diagrams/runtime-workflows.png)** | Smart template substitution, AI Prompt Doctor evaluation and rewriting, and portable JSON backup | 2256 x 17973 px |
+
+<br/>
+
+<a href="diagrams/architecture.png">
+  <img src="diagrams/architecture.png" alt="PromptVault System Architecture" width="900" />
+</a>
+<p><em>Figure 1: High-level System Architecture topology. Click the image to view the full 300% DPI high-resolution diagram.</em></p>
+
+</div>
+
+### Docs-as-Code Technical Documentation Portal
+
+PromptVault features a complete, enterprise-grade technical documentation suite authored under the **Docs-as-Code** standard in [`docs/`](docs/):
+
+| Directory | Document Title | Description | Primary Audience |
+| :--- | :--- | :--- | :--- |
+| [docs/00-overview/](docs/00-overview/vision-charter.md) | **[Vision & Charter](docs/00-overview/vision-charter.md)** | Core privacy problem statement, user personas, success KPIs, and strategic boundaries | Founders, Evaluators, All Users |
+| [docs/01-product/](docs/01-product/prd.md) | **[Product Requirements (PRD)](docs/01-product/prd.md)** | Detailed user personas, MoSCoW feature prioritization table, and non-goals | Product Managers, Developers |
+| [docs/02-requirements/](docs/02-requirements/srs.md) | **[Software Requirements (SRS)](docs/02-requirements/srs.md)** | Quantifiable engineering metrics, PBKDF2 rounds, latency budgets, and rate limits | Software Engineers, QA Leads |
+| [docs/03-architecture/](docs/03-architecture/architecture.md) | **[Architecture Blueprint](docs/03-architecture/architecture.md)** | C4 Context, Container, Component, and Code models with 4-tier stack specification | Architects, Lead Developers |
+| [docs/03-architecture/data-model.md](docs/03-architecture/data-model.md) | **[Data Model & Schema Spec](docs/03-architecture/data-model.md)** | Full Entity-Relationship Diagram (ERD), TypeScript schemas, and tombstone lifecycle | Database Designers, Developers |
+| [docs/03-architecture/adr/](docs/03-architecture/adr/) | **[Architectural Decision Records (ADRs)](docs/03-architecture/adr/)** | Formal ADRs 0001 - 0004 covering Encryption, Dual AI Fallback, LWW Sync, and Proxy Isolation | Senior Engineers, System Architects |
+| [docs/04-security/](docs/04-security/threat-model.md) | **[Threat Model & Security Spec](docs/04-security/threat-model.md)** | Plain-English security summary, STRIDE threat mitigations, and 5 mandatory invariants | Security Auditors, Compliance |
+| [docs/05-api/](docs/05-api/api-spec.md) | **[API Specification & OpenAPI 3.1](docs/05-api/api-spec.md)** | Human-friendly API guide and machine-readable [OpenAPI 3.1.0 schema](docs/05-api/openapi.yaml) | API Developers, Integrators |
+| [docs/06-testing/](docs/06-testing/test-strategy.md) | **[Test Strategy & Quality Plan](docs/06-testing/test-strategy.md)** | Quality framework covering 81 unit tests across 11 suites and Playwright E2E browser tests | QA Engineers, Contributors |
+| [docs/07-operations/](docs/07-operations/deployment-guide.md) | **[Production Deployment Runbook](docs/07-operations/deployment-guide.md)** | Complete operations guide for VPS/Node.js, Docker containers, Railway, and Render | DevOps, Sysadmins, Self-Hosters |
 
 ---
 
@@ -113,6 +161,10 @@ Everything is stored directly in your browser. No sign-up required. No ads. No d
 
 ### 🔒 Encrypt Your Vault
 You can encrypt the local vault with either a numeric PIN (minimum 6 digits for new vaults, 4 digits for legacy unlocks) or a passphrase (minimum 15 characters, recommended by default). PromptVault uses AES-256-GCM for vault data, PBKDF2-SHA-256 (600,000 iterations) to derive the key that unlocks it, and progressive cooldown delays after consecutive failed unlock attempts. Your secret is never stored. A PIN is convenient for local devices, but a long passphrase provides the highest cryptographic resistance against offline guessing. Save the one-time recovery key shown during setup.
+
+- **Active Session Memory Hygiene**: When you manually lock your vault, decrypted prompt data in React state and internal memory references is immediately cleared and zeroed out. Open edit dialogs and modal overlays are automatically closed to prevent UI data leakage.
+- **Defensive Storage Guard**: Storage write handlers guard against accidental unencrypted data persistence while the vault is locked.
+- **Theme Setting Preservation**: Your active dark or light theme preference is preserved across locking, unlocking, and recovery cycles.
 
 ### 🤖 Built-In AI Assistant
 Not sure if your prompt is well-written? The **AI Librarian** can:
@@ -405,7 +457,11 @@ Yes. Here's how PromptVault protects you:
 |---|---|
 | **Your AI keys are private** | They're stored on the server, never sent to your browser |
 | **Encrypted local vault** | When enabled, prompt data is AES-256-GCM encrypted in browser storage; the secret is never stored |
+| **Active session memory hygiene** | Decrypted prompts in React state and internal data references are synchronously zeroed upon manual lock, and all open dialogs are reset |
+| **Brute-force PIN protection** | Minimum 6-digit numeric PIN requirement with progressive exponential backoff cooldown delays after consecutive failed attempts |
+| **Defensive storage guard** | Storage write handlers block unencrypted writes while the vault is locked |
 | **Your prompts stay local** | Everything lives in your browser unless you choose cloud sync. Sync payloads are plaintext JSON protected by Supabase RLS and TLS so a newly signed-in device can use the vault |
+| **Zero-vulnerability toolchain** | 0 open vulnerabilities across dependencies via `npm audit` on Vite 6.4.5 |
 | **The app can't be embedded** | Security headers prevent the app from being loaded inside other websites |
 | **Abuse prevention** | The AI assistant is limited to 30 requests per minute per user |
 | **Connections are restricted** | In production, only your own domain can talk to the server |
@@ -422,12 +478,16 @@ Run these in your terminal from the project folder:
 | `npm run dev:api` | Starts the AI assistant service (port 3002) |
 | `npm run test:keys` | Tests and diagnoses all AI API keys ([docs](scripts/README.md)) |
 | `npm run test:keys:wait` | Tests keys with a 60s cooldown for rate-limit recovery |
-| `npm run test` | Runs the test suite |
-| `npm run build` | Packages the app ready for deployment |
+| `npm run test` | Runs the 81 automated unit tests across 11 test suites |
+| `npm run test:watch` | Runs unit tests in interactive watch mode |
+| `npm run test:e2e` | Runs Playwright browser end-to-end integration tests |
+| `npm run typecheck` | Runs strict TypeScript compiler checks across all 4 project configurations |
+| `npm run lint` | Alias for `npm run typecheck` |
+| `npm run build` | Packages the app into an optimized production bundle |
 | `npm start` | Runs the packaged app in production mode |
 | `npm run preview` | Previews the packaged app locally before deploying |
-| `npm run lint` | Checks the code for errors |
-| `npm run clean` | Deletes the packaged build files |
+| `npm run generate:og` | Generates the 1200x630 Open Graph and Twitter social card |
+| `npm run clean` | Deletes the packaged build files (`dist/`) |
 
 ---
 
@@ -436,10 +496,23 @@ Run these in your terminal from the project folder:
 PromptVault is an open-source project built for the AI community, and we welcome contributors of all skill levels.
 
 - **Getting Started:** Read our [Contributing Guide](.github/CONTRIBUTING.md) for local setup, development commands, and pull request guidelines.
+- **Documentation Portal:** Explore the full [Architecture & Engineering Documentation](docs/README.md) for C4 models, ERDs, and ADRs.
 - **Security Inquiries:** Review our [Security Policy](.github/SECURITY.md) for responsible vulnerability disclosure and threat model details.
 - **Join the Discussion:** Visit our [GitHub Discussions](https://github.com/SagarBiswas-MultiHAT/promptVault/discussions) to share your favorite prompt workflows, propose ideas, or ask questions.
 - **Good First Issues:** Explore issues labeled `good first issue` on GitHub for well-scoped starter contributions.
 - **Version History:** See [CHANGELOG.md](CHANGELOG.md) for a complete record of releases and changes.
+
+---
+
+## ⭐ Star History & Community Support
+
+If you find PromptVault useful for your AI workflow or project, please consider giving this repository a star on GitHub! It helps more developers discover the project and keeps development active.
+
+<div align="center">
+
+[![Star History Chart](https://api.star-history.com/svg?repos=SagarBiswas-MultiHAT/promptVault&type=Date)](https://star-history.com/#SagarBiswas-MultiHAT/promptVault&Date)
+
+</div>
 
 ---
 
