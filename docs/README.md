@@ -70,6 +70,7 @@ docs/
 | [docs/05-api/api-spec.md](file:///o:/github/promptVault/docs/05-api/api-spec.md) | **API Integration & Usage Guide** | Human-readable API guide covering `/api/suggest` (analyze and improve modes), `/api/health`, error codes, rate-limiting headers, and cURL examples. | Frontend Devs, Backend Devs |
 | [docs/06-testing/test-strategy.md](file:///o:/github/promptVault/docs/06-testing/test-strategy.md) | **Test Strategy & Quality Plan** | Quality assurance framework covering 81 Vitest unit tests, Playwright browser E2E tests, API key diagnostic probes, and regression prevention history. | QA Engineers, Contributors |
 | [docs/07-operations/deployment-guide.md](file:///o:/github/promptVault/docs/07-operations/deployment-guide.md) | **Production Deployment Runbook** | Complete deployment instructions for VPS/Node.js, multi-stage Docker containerization, cloud PaaS (Railway, Render), Supabase migrations, and troubleshooting. | DevOps, Sysadmins, Self-Hosters |
+| [PRIVACY.md](file:///o:/github/promptVault/PRIVACY.md) | **Privacy Policy & Transparency Declaration** | Comprehensive privacy pledge, zero prompt tracking guarantee, anonymous page-view analytics specifications, and data handling rules. | All Users, Legal & Compliance, Auditors |
 
 ---
 
@@ -114,9 +115,10 @@ To help you find exactly what you need quickly, follow the tailored reading path
 - **Then**: [docs/05-api/api-spec.md](file:///o:/github/promptVault/docs/05-api/api-spec.md) for backend endpoints, and [docs/06-testing/test-strategy.md](file:///o:/github/promptVault/docs/06-testing/test-strategy.md) to run the test suite.
 
 ### For Security Auditors & Privacy Specialists
-- **Start here**: [docs/04-security/threat-model.md](file:///o:/github/promptVault/docs/04-security/threat-model.md) for the comprehensive STRIDE risk analysis and 5 inviolable security rules.
-- **Next**: [docs/03-architecture/adr/0001-envelope-encryption.md](file:///o:/github/promptVault/docs/03-architecture/adr/0001-envelope-encryption.md) for cryptographic implementation rationale.
-- **Then**: Inspect the live automated tests in [tests/unit/crypto.test.ts](file:///o:/github/promptVault/tests/unit/crypto.test.ts) and [tests/e2e/lock.spec.ts](file:///o:/github/promptVault/tests/e2e/lock.spec.ts) verifying zero-plaintext storage.
+- **Start here**: [PRIVACY.md](file:///o:/github/promptVault/PRIVACY.md) for the executive privacy pledge and zero-prompt-tracking technical guarantee.
+- **Next**: [docs/04-security/threat-model.md](file:///o:/github/promptVault/docs/04-security/threat-model.md) for the comprehensive STRIDE risk analysis and 5 inviolable security rules.
+- **Then**: [docs/03-architecture/adr/0001-envelope-encryption.md](file:///o:/github/promptVault/docs/03-architecture/adr/0001-envelope-encryption.md) for cryptographic implementation rationale.
+- **Finally**: Inspect the live automated tests in [tests/unit/crypto.test.ts](file:///o:/github/promptVault/tests/unit/crypto.test.ts) and [tests/e2e/lock.spec.ts](file:///o:/github/promptVault/tests/e2e/lock.spec.ts) verifying zero-plaintext storage.
 
 ### For DevOps & Self-Hosters
 - **Start here**: [docs/07-operations/deployment-guide.md](file:///o:/github/promptVault/docs/07-operations/deployment-guide.md) for hardware sizing, environment variables, and Docker setup.

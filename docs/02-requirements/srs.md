@@ -140,7 +140,7 @@ PromptVault operates under a hybrid client-first architecture comprising three d
   - `Strict-Transport-Security`: `max-age=31536000; includeSubDomains; preload`.
   - `X-Content-Type-Options`: `nosniff`.
   - `X-Frame-Options`: `DENY`.
-- **NFR-2.3 Zero Third-Party Telemetry**: The application shall contain 0 tracking pixels, 0 analytics scripts, and 0 third-party advertising SDKs.
+- **NFR-2.3 Anonymous Traffic Analytics & Zero Prompt Telemetry**: The application may include lightweight, anonymous page-view analytics for aggregate visitor counts only. Under no circumstances shall prompt text, titles, tags, template variables, encryption keys, or search terms be transmitted to any analytics or advertising service (see [PRIVACY.md](../../PRIVACY.md)).
 
 ### NFR-3: Reliability, Availability & Fault Tolerance
 - **NFR-3.1 Client Availability**: 100% offline availability for stored prompt access and encryption operations.

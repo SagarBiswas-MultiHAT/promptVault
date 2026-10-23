@@ -1,5 +1,8 @@
 // Google Analytics 4: deferred until after first user interaction or idle timeout
 // to prevent third-party scripts from competing with LCP and main-thread hydration.
+// PRIVACY NOTICE: Configured strictly for aggregated, anonymous page-view counts.
+// Under no circumstances are prompt text, titles, tags, search queries, or user
+// inputs tracked. IP anonymization and privacy-preserving flags are enforced.
 function loadGA() {
   if (window.__gaLoaded) return;
   window.__gaLoaded = true;
@@ -17,7 +20,12 @@ function loadGA() {
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-6NXF69ERP4');
+  gtag('config', 'G-6NXF69ERP4', {
+    anonymize_ip: true,
+    allow_google_signals: false,
+    allow_ad_personalization_signals: false,
+    restricted_data_processing: true
+  });
 }
 
 // Attach user interaction listeners with passive flag for zero scroll jank

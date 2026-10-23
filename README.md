@@ -64,6 +64,7 @@
 - [Deployment (Production)](#putting-it-on-the-internet-deployment)
   - [Updating on a Droplet / VPS](#updating-your-project-on-a-droplet-vps)
 - [Security & Privacy](#is-my-data-safe)
+  - [Privacy Policy & Zero Prompt Tracking](PRIVACY.md)
 - [Available Commands](#available-commands)
 - [Contributing & Community](#contributing--community)
 - [License & Attribution](#license--attribution)
@@ -211,7 +212,7 @@ Why choose PromptVault instead of saving prompts in a general note-taking app or
 | **Built-in AI Prompt Refinement** | Yes (Gemini + Groq fallback) | Paid add-on required | Third-party plugin required | Limited or static only |
 | **Variable Template Injection (`{{var}}`)** | Yes (interactive form before copy) | No native support | Templater plugin required | Rare |
 | **Private API Key Proxy** | Yes (keys never reach the browser) | Not applicable | Direct client calls | Centralized / Hosted |
-| **No Mandatory Account or Tracking** | Yes (use instantly with no signup) | Account required | Account not required | Account usually required |
+| **No Mandatory Account or Tracking** | Yes (anonymous page views only; zero prompt tracking) | Account required | Account not required | Account usually required |
 | **Cross-Device Sync** | Optional (free Supabase backend) | Built-in | Paid or manual Git setup | Built-in (vendor locked) |
 | **Open Source License** | Apache 2.0 | Proprietary | Proprietary | Mostly proprietary |
 
@@ -461,6 +462,7 @@ Yes. Here's how PromptVault protects you:
 | **Brute-force PIN protection** | Minimum 6-digit numeric PIN requirement with progressive exponential backoff cooldown delays after consecutive failed attempts |
 | **Defensive storage guard** | Storage write handlers block unencrypted writes while the vault is locked |
 | **Your prompts stay local** | Everything lives in your browser unless you choose cloud sync. Sync payloads are plaintext JSON protected by Supabase RLS and TLS so a newly signed-in device can use the vault |
+| **Anonymous page-view analytics** | General page view counts only; zero prompt text, search queries, or user inputs are ever tracked ([Privacy Policy](PRIVACY.md)) |
 | **Zero-vulnerability toolchain** | 0 open vulnerabilities across dependencies via `npm audit` on Vite 6.4.5 |
 | **The app can't be embedded** | Security headers prevent the app from being loaded inside other websites |
 | **Abuse prevention** | The AI assistant is limited to 30 requests per minute per user |

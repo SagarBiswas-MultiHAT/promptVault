@@ -17,3 +17,4 @@
 - [README Guide](https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/README.md)
 - [Apache-2.0 License](https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/LICENSE)
 - [Attribution Notice](https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/NOTICE)
+- [Privacy Policy](https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/PRIVACY.md)
