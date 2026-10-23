@@ -292,6 +292,18 @@ export function SettingsModal({
                 Apache-2.0 (NOTICE Attributed)
               </a>
             </div>
+            <div className="border-t border-vault-border/50" />
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-vault-text-muted font-mono">Privacy Policy</span>
+              <a
+                href="https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/PRIVACY.md"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-vault-accent hover:underline transition-colors text-[11px]"
+              >
+                Zero Prompt Tracking
+              </a>
+            </div>
           </div>
         </section>
       </div>

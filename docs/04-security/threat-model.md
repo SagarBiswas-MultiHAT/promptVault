@@ -34,7 +34,7 @@ To protect PromptVault effectively, all system data is classified into three dis
 | :--- | :--- | :--- | :--- |
 | **Tier 1: Secret / Critical** | - Master Vault Key (DEK, 32-byte AES key)<br>- User unlocking secret (PIN / Passphrase)<br>- Emergency Recovery Key (64-char hex token)<br>- Server AI Keys (`GEMINI_API_KEY`, `GROQ_API_KEY`) | - Active RAM only (`keyRef.current`)<br>- Never stored on disk<br>- Offline paper / secret vault<br>- Server environment variables | Absolute confidentiality. Zero storage at rest on client disk. Memory zeroing upon lock. |
 | **Tier 2: Confidential** | - Prompt titles, bodies, and custom tags<br>- Category names and organizational structure<br>- Cloud backup JSONB payload | - Local storage (Encrypted envelope)<br>- Supabase `public.vaults` (TLS + RLS) | Strict confidentiality and integrity. No plaintext on disk or in transit. |
-| **Tier 3: Public / Unclassified** | - Application HTML, CSS, and JS bundles<br>- Dark / Light theme preference (`isDarkMode`)<br>- Active sort selection (`sortBy`) | - Browser cache & Service Worker<br>- Local storage | Availability and integrity. |
+| **Tier 3: Public / Unclassified** | - Application HTML, CSS, and JS bundles<br>- Dark / Light theme preference (`isDarkMode`)<br>- Active sort selection (`sortBy`)<br>- Aggregated anonymous page-view counts | - Browser cache & Service Worker<br>- Local storage<br>- Anonymous GA4 telemetry (zero prompt text) | Availability and integrity. |
 
 ---
 
@@ -92,6 +92,9 @@ The STRIDE model analyzes six categories of security threats against PromptVault
 * **Threat I4: Browser Memory Dumping**: An attacker inspects active RAM while the application is locked.
   - *Severity*: Medium.
   - *Mitigation*: Clicking "Lock Vault" synchronously sets `keyRef.current = null`, wiping the active `CryptoKey` from memory and replacing React state with an empty vault before displaying the PIN lock screen.
+* **Threat I5: Analytics Telemetry Leakage**: An analytics script accidentally intercepts or transmits confidential prompt text, search terms, or vault secrets.
+  - *Severity*: High.
+  - *Mitigation*: The analytics script (`gtag-init.js`) is loaded independently and possesses zero access or integration with React application state or vault storage. Strict privacy flags are enforced (IP anonymization, disabled ad personalization, disabled Google signals, and restricted data processing). Zero prompt strings, category names, tags, variable values, or search queries are ever emitted. Additionally, users can block analytics completely with standard ad-blockers with zero loss of vault functionality (see [PRIVACY.md](../../PRIVACY.md)).
 
 ### 4.5 Denial of Service (DoS)
 * **Threat D1: AI API Quota Exhaustion**: An attacker floods `/api/suggest` with massive prompt texts or rapid-fire requests to drive up API costs and cause service outages for legitimate users.

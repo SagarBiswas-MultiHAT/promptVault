@@ -38,6 +38,10 @@ PromptVault is designed with defense-in-depth principles:
 ### 4. Browser Defense & Headers
 - Production builds enforce strict Content Security Policy (CSP), `X-Frame-Options: DENY`, `frame-ancestors 'none'`, `X-Content-Type-Options: nosniff`, and HTTP Strict Transport Security (HSTS).
 
+### 5. Privacy & Zero Prompt Tracking
+- PromptVault guarantees zero telemetry for prompt contents, titles, tags, search queries, and encryption secrets.
+- Analytics are restricted strictly to aggregate, anonymous page-view counts with IP anonymization and advertising signals disabled. Full details are documented in our [Privacy Policy](../PRIVACY.md).
+
 ---
 
 ## Reporting a Vulnerability

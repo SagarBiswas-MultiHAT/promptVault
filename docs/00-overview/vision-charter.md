@@ -76,7 +76,7 @@ To keep PromptVault lean, secure, and focused, the project defines strict bounda
 ### Out-of-Scope (Non-Goals)
 * **Not a Social Network or Marketplace**: PromptVault does not feature public prompt feeds, likes, comments, or public sharing links. It is strictly your personal workspace.
 * **No Unencrypted Centralized Database**: PromptVault will never store user prompts in a shared public database where administrators can read them.
-* **No Tracking, Advertising, or Telemetry**: No third-party tracking scripts, advertising SDKs, or behavioral telemetry are included.
+* **Zero Prompt Tracking or Behavioral Profiling**: No prompt telemetry, keystroke loggers, or advertising SDKs. Aggregated anonymous page-view analytics are used strictly to measure site visit counts without tracking prompt contents or user queries (see [PRIVACY.md](../../PRIVACY.md)).
 * **No Direct Client API Key Exposure**: Third-party AI API keys (Gemini / Groq) are never exposed to the client browser bundle.
 
 ---

@@ -67,7 +67,7 @@ The features of PromptVault are prioritized according to the industry-standard M
 | **Could Have** (Future Enhancements) | Local AI | Direct integration with local Ollama or WebLLM models for 100% on-device AI evaluation. |
 | **Could Have** | Browser Tools | Lightweight Chrome/Firefox extension for rapid prompt insertion directly into web text fields. |
 | **Won't Have** (Strict Non-Goals) | Social Features | No public prompt sharing feeds, social upvotes, comments, or public marketplaces. |
-| **Won't Have** | Tracking | No user telemetry, marketing tracking scripts, or ad analytics. |
+| **Won't Have** | Prompt Tracking | No prompt text tracking, user keystroke logging, or advertising telemetry. Anonymous page-view counts only. |
 
 ---
 
@@ -192,7 +192,7 @@ The features of PromptVault are prioritized according to the industry-standard M
 To maintain architectural purity and rock-solid privacy, PromptVault intentionally excludes:
 1. **No Centralized Plaintext Database**: We do not maintain a company server holding unencrypted user vaults.
 2. **No Social Feed or Community Sharing**: PromptVault is not a social network with upvotes, public profiles, or prompt marketplaces.
-3. **No User Analytics or Telemetry**: We do not track user typing habits, store analytics cookies, or sell behavioral data.
+3. **No Prompt or Behavioral Telemetry**: We do not track user typing habits, search queries, or prompt text, nor do we sell behavioral data. Only anonymous aggregate page-view counts are gathered to understand site traffic (see [PRIVACY.md](../../PRIVACY.md)).
 4. **No Proprietary Lock-In**: Exporting data never requires payment, subscription, or proprietary software.
 5. **No Client-Side API Key Exposure**: Third-party LLM API keys are never bundled into client-side JavaScript.
 
