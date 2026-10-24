@@ -170,11 +170,37 @@ export const formatTimestamp = (value: number | null) => {
   return 'just now';
 };
 
-/** Extract `{{variable}}` names in first-appearance order, de-duplicated. */
+/** Extract {{variable}} names in first-appearance order, trimmed and de-duplicated. */
 export const extractVariables = (body: string): string[] => {
-  const matches = body.match(/{{([^{}]+)}}/g);
-  if (!matches) return [];
-  return Array.from(new Set(matches.map((m) => m.replace(/{{|}}/g, ''))));
+  const matches = body.matchAll(/{{\s*([a-zA-Z0-9_-]+)\s*}}/g);
+  const result: string[] = [];
+  const seen = new Set<string>();
+  for (const match of matches) {
+    const name = match[1]?.trim();
+    if (name && !seen.has(name)) {
+      seen.add(name);
+      result.push(name);
+    }
+  }
+  return result;
+};
+
+/**
+ * Substitute dynamic variables in a prompt body.
+ * Matches the SRS FR-3.1 identifier pattern with optional inner whitespace,
+ * while ignoring colon-containing object literals and whitespace-only brackets.
+ * Falls back to [key] if a variable is omitted from values or empty.
+ * Uses a replacer function to protect against $ character corruption ($&, $$, $1).
+ */
+export const substituteVariables = (
+  body: string,
+  values: Record<string, string> = {}
+): string => {
+  return body.replace(/{{\s*([a-zA-Z0-9_-]+)\s*}}/g, (_match, rawKey: string) => {
+    const key = rawKey.trim();
+    const val = values[key];
+    return val && val.trim() !== '' ? val : `[${key}]`;
+  });
 };
 
 export interface PromptFilter {

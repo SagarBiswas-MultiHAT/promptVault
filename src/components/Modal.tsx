@@ -24,6 +24,16 @@ function emitStackChange() {
   window.dispatchEvent(new Event(MODAL_STACK_CHANGED));
 }
 
+function getActiveElement(node?: Node | null): Element | null {
+  if (!node) return typeof document !== 'undefined' ? document.activeElement : null;
+  const root = node.getRootNode?.();
+  if (root && 'activeElement' in root) {
+    const active = (root as Document | ShadowRoot).activeElement;
+    if (active) return active;
+  }
+  return typeof document !== 'undefined' ? document.activeElement : null;
+}
+
 export function Modal({ isOpen, onClose, title, children, footer }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
@@ -39,7 +49,8 @@ export function Modal({ isOpen, onClose, title, children, footer }: ModalProps) 
     emitStackChange();
 
     window.addEventListener(MODAL_STACK_CHANGED, refreshTopmost);
-    openerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const active = getActiveElement(dialogRef.current);
+    openerRef.current = active instanceof HTMLElement ? active : null;
     const timer = window.setTimeout(() => {
       const focusable = dialogRef.current?.querySelector<HTMLElement>('[autofocus], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])');
       (focusable ?? dialogRef.current)?.focus();
@@ -63,8 +74,9 @@ export function Modal({ isOpen, onClose, title, children, footer }: ModalProps) 
     if (focusable.length === 0) { event.preventDefault(); dialogRef.current.focus(); return; }
     const first = focusable[0]!;
     const last = focusable[focusable.length - 1]!;
-    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    const currentActive = getActiveElement(dialogRef.current);
+    if (event.shiftKey && currentActive === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && currentActive === last) { event.preventDefault(); first.focus(); }
   };
 
   return (

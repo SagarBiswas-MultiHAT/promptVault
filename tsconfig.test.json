@@ -10,5 +10,5 @@
     // Hook tests render real components to assert subscribe/unsubscribe behaviour.
     "jsx": "react-jsx"
   },
-  "include": ["tests"]
+  "include": ["tests", "src/vite-env.d.ts"]
 }

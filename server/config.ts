@@ -181,6 +181,19 @@ export function validateConfig(): void {
     );
   }
 
+  for (const origin of ALLOWED_ORIGINS) {
+    const isHttp = origin.startsWith('http://') || origin.startsWith('https://');
+    const isExtension = origin.startsWith('chrome-extension://') || origin.startsWith('moz-extension://');
+    if (!isHttp && !isExtension) {
+      const message = `Invalid origin in ALLOWED_ORIGINS: "${origin}". Must start with http://, https://, chrome-extension://, or moz-extension://.`;
+      if (IS_PRODUCTION) fatal.push(message);
+      else console.warn(`[ai-proxy] ⚠  ${message}`);
+    }
+    if (IS_PRODUCTION && origin.endsWith('://*')) {
+      fatal.push(`Wildcard origin "${origin}" is not permitted in production. Configure exact extension IDs instead.`);
+    }
+  }
+
   if (fatal.length > 0) {
     for (const message of fatal) console.error(`[ai-proxy] ✖  ${message}`);
     console.error('[ai-proxy] Refusing to start in production with the configuration above.');

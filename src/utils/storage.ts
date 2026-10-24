@@ -25,13 +25,33 @@ export type StorageFailure = 'quota' | 'unavailable';
 
 export type WriteResult = { ok: true } | { ok: false; reason: StorageFailure; error: unknown };
 
+export type StorageChangeCallback = (key: string | null, newValue: string | null) => void;
+
+export interface StorageBackend {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+  removeItem(key: string): void;
+  subscribe?: (callback: StorageChangeCallback) => () => void;
+}
+
+let customBackend: StorageBackend | null = null;
+
+export function configureStorageBackend(backend: StorageBackend | null): void {
+  customBackend = backend;
+}
+
+export function getStorageBackend(): StorageBackend | null {
+  return customBackend;
+}
+
 /**
  * Resolve the backing store, or `null` when storage is blocked.
  *
  * Not cached: a user can grant storage permission mid-session, and a cached
  * `null` would keep the vault non-persistent for the rest of the page's life.
  */
-function store(): Storage | null {
+function store(): Storage | StorageBackend | null {
+  if (customBackend) return customBackend;
   try {
     return window.localStorage;
   } catch {
@@ -107,4 +127,18 @@ export function removeKey(key: string): void {
   } catch {
     // Nothing useful to do: the key is already unreachable, which is the goal.
   }
+}
+
+export function addStorageListener(callback: StorageChangeCallback): () => void {
+  if (customBackend?.subscribe) {
+    return customBackend.subscribe(callback);
+  }
+  if (typeof window !== 'undefined' && window.addEventListener) {
+    const handler = (e: StorageEvent) => {
+      callback(e.key, e.newValue);
+    };
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }
+  return () => {};
 }

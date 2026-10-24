@@ -8,6 +8,7 @@
 import { useState } from 'react';
 import { Prompt } from '../types.ts';
 import { Clipboard, Info } from 'lucide-react';
+import { substituteVariables } from '../utils/vault.ts';
 
 interface VariableFormProps {
   prompt: Prompt;
@@ -22,12 +23,7 @@ export function VariableForm({ prompt, variables, onCopy, onCancel }: VariableFo
   );
 
   const handleCopy = () => {
-    let finalBody = prompt.body;
-    Object.entries(values).forEach(([key, val]) => {
-      // Use regex to replace all occurrences of {{key}}
-      const regex = new RegExp(`{{${key}}}`, 'g');
-      finalBody = finalBody.replace(regex, (val as string) || `[${key}]`);
-    });
+    const finalBody = substituteVariables(prompt.body, values);
     onCopy(finalBody);
   };
 

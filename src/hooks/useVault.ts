@@ -8,12 +8,44 @@
 import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 
 import { INITIAL_DATA, LOCAL_STORAGE_KEY, SCHEMA_VERSION } from '../constants.ts';
-import { createEncryptedVault, isEncryptedVault, recoverEncryptedVault, type EncryptedVault, type SecretMode, unlockEncryptedVault, updateEncryptedVault } from '../utils/crypto.ts';
+import { createEncryptedVault, decryptVaultPayload, isEncryptedVault, recoverEncryptedVault, type EncryptedVault, type SecretMode, unlockEncryptedVault, updateEncryptedVault } from '../utils/crypto.ts';
 import { mergeVaults } from '../utils/merge.ts';
 import { readRaw, writeJson, type StorageFailure } from '../utils/storage.ts';
 import { isValidVaultData, sanitizeVault, withoutSecrets } from '../utils/vault.ts';
 import type { Category, Prompt, SortOption, VaultData } from '../types.ts';
 import type { SyncMetaStore } from './useSyncMeta.ts';
+
+export interface SessionKeyBridge {
+  loadUnlockedKey?: () => Promise<CryptoKey | null>;
+  saveUnlockedKey?: (key: CryptoKey) => Promise<void>;
+  clearUnlockedKey: () => void | Promise<void>;
+}
+
+let sessionKeyBridge: SessionKeyBridge | null = null;
+
+export function configureSessionKeyBridge(bridge: SessionKeyBridge | null): void {
+  sessionKeyBridge = bridge;
+}
+
+function saveSessionKey(key: CryptoKey): void {
+  const save = sessionKeyBridge?.saveUnlockedKey;
+  if (!save) return;
+  Promise.resolve()
+    .then(() => save(key))
+    .catch((error: unknown) => {
+      console.error('[PromptVault] Failed to save unlocked session key:', error);
+    });
+}
+
+function clearSessionKey(): void {
+  const clear = sessionKeyBridge?.clearUnlockedKey;
+  if (!clear) return;
+  Promise.resolve()
+    .then(() => clear())
+    .catch((error: unknown) => {
+      console.error('[PromptVault] Failed to clear unlocked session key:', error);
+    });
+}
 
 type InitialVault = { data: VaultData; envelope: EncryptedVault | null };
 
@@ -77,6 +109,33 @@ export function useVault(syncMeta: SyncMetaStore): VaultController {
     else document.documentElement.classList.add('light');
   }, [data.settings.isDarkMode]);
 
+  // Ephemeral session key restoration for headless or extension environments.
+  useEffect(() => {
+    if (!isLocked || !envelopeRef.current || !sessionKeyBridge?.loadUnlockedKey) return;
+    let active = true;
+
+    sessionKeyBridge.loadUnlockedKey().then(async (restoredKey) => {
+      if (!active || !restoredKey || !envelopeRef.current) return;
+      try {
+        const decrypted = await decryptVaultPayload(envelopeRef.current, restoredKey);
+        if (!active) return;
+        const next = sanitizeVault(decrypted);
+        next.settings.isDarkMode = dataRef.current.settings.isDarkMode;
+        keyRef.current = restoredKey;
+        dataRef.current = next;
+        setData(next);
+        setIsLocked(false);
+      } catch (err) {
+        console.warn('[PromptVault] Ephemeral session key invalid or expired:', err);
+        clearSessionKey();
+      }
+    }).catch((error: unknown) => {
+      console.error('[PromptVault] Failed to restore ephemeral session key:', error);
+    });
+
+    return () => { active = false; };
+  }, [isLocked]);
+
   const recordWrite = useCallback((ok: boolean, reason?: StorageFailure) => {
     if (!ok) { setStorageError(reason ?? 'unavailable'); return; }
     setStorageError(null);
@@ -120,6 +179,7 @@ export function useVault(syncMeta: SyncMetaStore): VaultController {
       const result = writeJson(LOCAL_STORAGE_KEY, created.envelope);
       if (!result.ok) { setStorageError(result.reason); return null; }
       dataRef.current = nextData; keyRef.current = created.key;
+      saveSessionKey(created.key);
       setData(nextData); envelopeRef.current = created.envelope; setEnvelope(created.envelope); setIsLocked(false); setStorageError(null);
       return created.recoveryKey;
     } catch (error) { console.error('[PromptVault] Failed to enable encryption:', error); setStorageError('unavailable'); return null; }
@@ -131,7 +191,9 @@ export function useVault(syncMeta: SyncMetaStore): VaultController {
       const result = await unlockEncryptedVault(envelope, secret);
       const next = sanitizeVault(result.data);
       next.settings.isDarkMode = dataRef.current.settings.isDarkMode;
-      keyRef.current = result.key; dataRef.current = next; setData(next); setIsLocked(false);
+      keyRef.current = result.key;
+      saveSessionKey(result.key);
+      dataRef.current = next; setData(next); setIsLocked(false);
       return true;
     } catch { return false; }
   }, [envelope]);
@@ -142,7 +204,9 @@ export function useVault(syncMeta: SyncMetaStore): VaultController {
       const result = await recoverEncryptedVault(envelope, recoveryKey);
       const next = sanitizeVault(result.data);
       next.settings.isDarkMode = dataRef.current.settings.isDarkMode;
-      keyRef.current = result.key; dataRef.current = next; setData(next); setIsLocked(false);
+      keyRef.current = result.key;
+      saveSessionKey(result.key);
+      dataRef.current = next; setData(next); setIsLocked(false);
       return true;
     } catch { return false; }
   }, [envelope]);
@@ -150,6 +214,7 @@ export function useVault(syncMeta: SyncMetaStore): VaultController {
   const lock = useCallback(() => {
     if (envelope) {
       keyRef.current = null;
+      clearSessionKey();
       setIsLocked(true);
       const lockedData: VaultData = {
         ...INITIAL_DATA,
@@ -169,7 +234,9 @@ export function useVault(syncMeta: SyncMetaStore): VaultController {
     if (!envelope || !keyRef.current) return false;
     const result = writeJson(LOCAL_STORAGE_KEY, dataRef.current);
     if (!result.ok) { setStorageError(result.reason); return false; }
-    keyRef.current = null; envelopeRef.current = null; setEnvelope(null); setStorageError(null); return true;
+    keyRef.current = null; envelopeRef.current = null; setEnvelope(null); setStorageError(null);
+    clearSessionKey();
+    return true;
   }, [envelope]);
 
   const createPrompt = useCallback((input: { title: string; body: string; categoryId: string; tags?: string[]; isFavorite?: boolean }) => {

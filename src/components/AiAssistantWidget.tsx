@@ -5,11 +5,12 @@
  * @license SPDX-License-Identifier: Apache-2.0
  */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Sparkles, Send, X, AlertTriangle, Check, Shield, Zap, Wand2 } from 'lucide-react';
 import { Category } from '../types.ts';
 import { useIsMobile } from '../hooks/useMediaQuery.ts';
+import { buildApiUrl } from '../utils/api.ts';
 
 interface EvaluationResult {
   qualityScore: number;
@@ -45,11 +46,21 @@ export function AiAssistantWidget({ categories, onCreatePrompt, hideOnMobile = f
   const [improveResult, setImproveResult] = useState<ImproveResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isImproving, setIsImproving] = useState(false);
+  const [coldStartNotice, setColdStartNotice] = useState(false);
+  const coldStartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [editingSuggestions, setEditingSuggestions] = useState(false);
   const [suggestedTitle, setSuggestedTitle] = useState('');
   const [suggestedCategory, setSuggestedCategory] = useState('');
   const [tagsInput, setTagsInput] = useState('');
+
+  useEffect(() => {
+    return () => {
+      if (coldStartTimerRef.current) {
+        clearTimeout(coldStartTimerRef.current);
+      }
+    };
+  }, []);
 
   const availableCategoryNames = useMemo(() => categories.map(c => c.name), [categories]);
 
@@ -73,6 +84,11 @@ export function AiAssistantWidget({ categories, onCreatePrompt, hideOnMobile = f
   };
 
   const resetAssistant = () => {
+    if (coldStartTimerRef.current) {
+      clearTimeout(coldStartTimerRef.current);
+      coldStartTimerRef.current = null;
+    }
+    setColdStartNotice(false);
     setPromptInput('');
     setEvaluation(null);
     setImproveResult(null);
@@ -117,8 +133,14 @@ export function AiAssistantWidget({ categories, onCreatePrompt, hideOnMobile = f
     setEvaluation(null);
     setImproveResult(null);
 
+    if (coldStartTimerRef.current) clearTimeout(coldStartTimerRef.current);
+    setColdStartNotice(false);
+    coldStartTimerRef.current = setTimeout(() => {
+      setColdStartNotice(true);
+    }, 3500);
+
     try {
-      const response = await fetch('/api/suggest', {
+      const response = await fetch(buildApiUrl('/api/suggest'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -154,6 +176,11 @@ export function AiAssistantWidget({ categories, onCreatePrompt, hideOnMobile = f
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to evaluate prompt.');
     } finally {
+      if (coldStartTimerRef.current) {
+        clearTimeout(coldStartTimerRef.current);
+        coldStartTimerRef.current = null;
+      }
+      setColdStartNotice(false);
       setIsLoading(false);
     }
   };
@@ -168,8 +195,14 @@ export function AiAssistantWidget({ categories, onCreatePrompt, hideOnMobile = f
     setIsImproving(true);
     setError(null);
 
+    if (coldStartTimerRef.current) clearTimeout(coldStartTimerRef.current);
+    setColdStartNotice(false);
+    coldStartTimerRef.current = setTimeout(() => {
+      setColdStartNotice(true);
+    }, 3500);
+
     try {
-      const response = await fetch('/api/suggest', {
+      const response = await fetch(buildApiUrl('/api/suggest'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -192,6 +225,11 @@ export function AiAssistantWidget({ categories, onCreatePrompt, hideOnMobile = f
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to improve prompt.');
     } finally {
+      if (coldStartTimerRef.current) {
+        clearTimeout(coldStartTimerRef.current);
+        coldStartTimerRef.current = null;
+      }
+      setColdStartNotice(false);
       setIsImproving(false);
     }
   };
@@ -286,9 +324,16 @@ export function AiAssistantWidget({ categories, onCreatePrompt, hideOnMobile = f
 
               {/* Loading State */}
               {isLoading && (
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
-                  <div className="w-4 h-4 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
-                  <span className="text-xs font-mono text-vault-text-muted uppercase tracking-[0.1em]">Evaluating prompt quality...</span>
+                <div className="flex flex-col gap-2 p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
+                  <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
+                    <span className="text-xs font-mono text-vault-text-muted uppercase tracking-[0.1em]">Evaluating prompt quality...</span>
+                  </div>
+                  {coldStartNotice && (
+                    <p className="text-[11px] font-mono text-emerald-400/90 pl-7">
+                      Connecting to AI server, this may take a few seconds on first request...
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -364,9 +409,16 @@ export function AiAssistantWidget({ categories, onCreatePrompt, hideOnMobile = f
 
                   {/* Improved Prompt: only shown after IMPROVE button click */}
                   {isImproving && (
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
-                      <div className="w-4 h-4 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
-                      <span className="text-xs font-mono text-vault-text-muted uppercase tracking-[0.1em]">Generating improved prompt...</span>
+                    <div className="flex flex-col gap-2 p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
+                      <div className="flex items-center gap-3">
+                        <div className="w-4 h-4 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
+                        <span className="text-xs font-mono text-vault-text-muted uppercase tracking-[0.1em]">Generating improved prompt...</span>
+                      </div>
+                      {coldStartNotice && (
+                        <p className="text-[11px] font-mono text-emerald-400/90 pl-7">
+                          Connecting to AI server, this may take a few seconds on first request...
+                        </p>
+                      )}
                     </div>
                   )}
 
