@@ -1,7 +1,16 @@
 // @vitest-environment jsdom
 import {afterEach, describe, expect, it, vi} from 'vitest';
 
-import {readJson, readRaw, removeKey, writeJson} from '../../src/utils/storage.ts';
+import {
+  addStorageListener,
+  configureStorageBackend,
+  getStorageBackend,
+  readJson,
+  readRaw,
+  removeKey,
+  writeJson,
+  type StorageBackend,
+} from '../../src/utils/storage.ts';
 
 const KEY = 'storage-test';
 
@@ -20,6 +29,7 @@ function stubStorage(descriptor: PropertyDescriptor) {
 const realStorage = Object.getOwnPropertyDescriptor(window, 'localStorage');
 
 afterEach(() => {
+  configureStorageBackend(null);
   if (realStorage) Object.defineProperty(window, 'localStorage', realStorage);
   window.localStorage.clear();
 });
@@ -162,5 +172,82 @@ describe('removeKey', () => {
     stubStorage({value: {removeItem: spy}});
     expect(() => removeKey(KEY)).not.toThrow();
     expect(spy).toHaveBeenCalled();
+  });
+});
+
+describe('custom StorageBackend', () => {
+  it('directs readRaw, readJson, writeJson, and removeKey to custom backend', () => {
+    const memory = new Map<string, string>();
+    const backend: StorageBackend = {
+      getItem: vi.fn((key: string) => memory.get(key) ?? null),
+      setItem: vi.fn((key: string, value: string) => { memory.set(key, value); }),
+      removeItem: vi.fn((key: string) => { memory.delete(key); }),
+    };
+
+    configureStorageBackend(backend);
+    expect(getStorageBackend()).toBe(backend);
+
+    expect(writeJson('custom-key', { hello: 'world' })).toEqual({ ok: true });
+    expect(backend.setItem).toHaveBeenCalledWith('custom-key', JSON.stringify({ hello: 'world' }));
+
+    const read = readJson('custom-key', (v): v is { hello: string } => typeof v === 'object' && v !== null && 'hello' in v);
+    expect(read).toEqual({ hello: 'world' });
+    expect(backend.getItem).toHaveBeenCalledWith('custom-key');
+
+    expect(readRaw('custom-key')).toBe(JSON.stringify({ hello: 'world' }));
+
+    removeKey('custom-key');
+    expect(backend.removeItem).toHaveBeenCalledWith('custom-key');
+    expect(readRaw('custom-key')).toBeNull();
+  });
+
+  it('delegates addStorageListener to customBackend.subscribe when provided', () => {
+    const unsubscribeSpy = vi.fn();
+    const subscribeSpy = vi.fn((_callback) => unsubscribeSpy);
+    const backend: StorageBackend = {
+      getItem: () => null,
+      setItem: () => {},
+      removeItem: () => {},
+      subscribe: subscribeSpy,
+    };
+
+    configureStorageBackend(backend);
+    const listener = vi.fn();
+    const unsubscribe = addStorageListener(listener);
+
+    expect(subscribeSpy).toHaveBeenCalledWith(listener);
+    unsubscribe();
+    expect(unsubscribeSpy).toHaveBeenCalled();
+  });
+
+  it('restores default window.localStorage and DOM listener when reset to null', () => {
+    const backend: StorageBackend = {
+      getItem: vi.fn(() => 'custom'),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    };
+
+    configureStorageBackend(backend);
+    expect(readRaw('foo')).toBe('custom');
+
+    configureStorageBackend(null);
+    expect(getStorageBackend()).toBeNull();
+    window.localStorage.setItem('foo', 'real');
+    expect(readRaw('foo')).toBe('real');
+  });
+
+  it('retains WriteResult failure classification for custom backend errors', () => {
+    const backend: StorageBackend = {
+      getItem: () => null,
+      setItem: () => {
+        throw new DOMException('Full', 'QuotaExceededError');
+      },
+      removeItem: () => {},
+    };
+
+    configureStorageBackend(backend);
+    const result = writeJson('key', { test: true });
+    expect(result.ok).toBe(false);
+    expect(result.ok === false && result.reason).toBe('quota');
   });
 });

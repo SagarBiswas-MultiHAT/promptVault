@@ -107,6 +107,10 @@ async function decryptPayload(envelope: EncryptedVault, key: CryptoKey): Promise
   return JSON.parse(decoder.decode(plaintext)) as VaultData;
 }
 
+export async function decryptVaultPayload(envelope: EncryptedVault, key: CryptoKey): Promise<VaultData> {
+  return decryptPayload(envelope, key);
+}
+
 export async function createEncryptedVault(data: VaultData, secret: string, mode: SecretMode): Promise<NewEncryptedVault> {
   const rawKey = randomBytes(VAULT_KEY_BYTES);
   const key = await crypto.subtle.importKey('raw', rawKey, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
