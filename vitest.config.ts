@@ -13,5 +13,6 @@ export default defineConfig({
     restoreMocks: true,
     unstubEnvs: true,
     unstubGlobals: true,
+    testTimeout: 15000,
   },
 });

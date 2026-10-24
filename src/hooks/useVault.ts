@@ -27,11 +27,12 @@ export function configureSessionKeyBridge(bridge: SessionKeyBridge | null): void
   sessionKeyBridge = bridge;
 }
 
-function saveSessionKey(key: CryptoKey): void {
+function saveSessionKey(key: CryptoKey, transferKey?: CryptoKey): void {
   const save = sessionKeyBridge?.saveUnlockedKey;
   if (!save) return;
+  const keyToSave = transferKey ?? key;
   Promise.resolve()
-    .then(() => save(key))
+    .then(() => save(keyToSave))
     .catch((error: unknown) => {
       console.error('[PromptVault] Failed to save unlocked session key:', error);
     });
@@ -175,11 +176,12 @@ export function useVault(syncMeta: SyncMetaStore): VaultController {
   const protect = useCallback(async (secret: string, mode: SecretMode) => {
     try {
       const nextData = { ...dataRef.current, schemaVersion: SCHEMA_VERSION };
-      const created = await createEncryptedVault(nextData, secret, mode);
+      const options = sessionKeyBridge ? { includeTransferKey: true } : undefined;
+      const created = await createEncryptedVault(nextData, secret, mode, options);
       const result = writeJson(LOCAL_STORAGE_KEY, created.envelope);
       if (!result.ok) { setStorageError(result.reason); return null; }
       dataRef.current = nextData; keyRef.current = created.key;
-      saveSessionKey(created.key);
+      saveSessionKey(created.key, created.transferKey);
       setData(nextData); envelopeRef.current = created.envelope; setEnvelope(created.envelope); setIsLocked(false); setStorageError(null);
       return created.recoveryKey;
     } catch (error) { console.error('[PromptVault] Failed to enable encryption:', error); setStorageError('unavailable'); return null; }
@@ -188,11 +190,12 @@ export function useVault(syncMeta: SyncMetaStore): VaultController {
   const unlock = useCallback(async (secret: string) => {
     if (!envelope) return false;
     try {
-      const result = await unlockEncryptedVault(envelope, secret);
+      const options = sessionKeyBridge ? { includeTransferKey: true } : undefined;
+      const result = await unlockEncryptedVault(envelope, secret, options);
       const next = sanitizeVault(result.data);
       next.settings.isDarkMode = dataRef.current.settings.isDarkMode;
       keyRef.current = result.key;
-      saveSessionKey(result.key);
+      saveSessionKey(result.key, result.transferKey);
       dataRef.current = next; setData(next); setIsLocked(false);
       return true;
     } catch { return false; }
@@ -201,11 +204,12 @@ export function useVault(syncMeta: SyncMetaStore): VaultController {
   const recover = useCallback(async (recoveryKey: string) => {
     if (!envelope) return false;
     try {
-      const result = await recoverEncryptedVault(envelope, recoveryKey);
+      const options = sessionKeyBridge ? { includeTransferKey: true } : undefined;
+      const result = await recoverEncryptedVault(envelope, recoveryKey, options);
       const next = sanitizeVault(result.data);
       next.settings.isDarkMode = dataRef.current.settings.isDarkMode;
       keyRef.current = result.key;
-      saveSessionKey(result.key);
+      saveSessionKey(result.key, result.transferKey);
       dataRef.current = next; setData(next); setIsLocked(false);
       return true;
     } catch { return false; }

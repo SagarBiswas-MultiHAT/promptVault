@@ -46,6 +46,9 @@ export default defineConfig({
       },
     },
     rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+      },
       output: {
         manualChunks(id) {
           const normalizedId = id.replace(/\\/g, '/');

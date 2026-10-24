@@ -26,7 +26,8 @@
    ═══════════════════════════════════════ */
 
 @layer base {
-  :root {
+  :root,
+  :host {
     --v-bg: #08090A;
     --v-panel: #111214;
     --v-panel-bright: #1A1C20;

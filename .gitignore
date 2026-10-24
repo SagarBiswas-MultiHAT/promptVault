@@ -1,6 +1,7 @@
 node_modules/
 build/
 dist/
+dist-extension/
 coverage/
 .DS_Store
 *.log
@@ -19,3 +20,5 @@ prompt.md
 
 final_implementation_plan_v1.0.0.md
 pre_extension_refactoring_implementation_plan.md
+final_extension_implementation_plan.md
+extension_implementation_plan.md
