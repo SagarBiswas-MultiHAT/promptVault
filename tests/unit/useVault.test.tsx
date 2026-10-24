@@ -2,9 +2,10 @@
 import { act } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createRoot, type Root } from 'react-dom/client';
-import { useVault, type VaultController } from '../../src/hooks/useVault.ts';
+import { configureSessionKeyBridge, useVault, type SessionKeyBridge, type VaultController } from '../../src/hooks/useVault.ts';
 import type { SyncMetaStore } from '../../src/hooks/useSyncMeta.ts';
-import { LOCAL_STORAGE_KEY } from '../../src/constants.ts';
+import { INITIAL_DATA, LOCAL_STORAGE_KEY } from '../../src/constants.ts';
+import { createEncryptedVault } from '../../src/utils/crypto.ts';
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -45,6 +46,7 @@ describe('useVault Hook - Session Memory Hygiene on Manual Lock', () => {
   });
 
   afterEach(() => {
+    configureSessionKeyBridge(null);
     act(() => {
       root.unmount();
     });
@@ -133,5 +135,161 @@ describe('useVault Hook - Session Memory Hygiene on Manual Lock', () => {
     expect(vaultRef.current!.data.prompts[0]?.body).toBe('CANARY-TOP-SECRET-DATA-BODY');
     expect(vaultRef.current!.dataRef.current.prompts[0]?.id).toBe(promptId);
     expect(vaultRef.current!.data.settings.isDarkMode).toBe(false);
+  });
+
+  it('does not consult configured session key bridge for an unencrypted vault', async () => {
+    const syncMeta = createMockSyncMeta();
+    const bridge: SessionKeyBridge = {
+      loadUnlockedKey: vi.fn(async () => null),
+      saveUnlockedKey: vi.fn(async () => {}),
+      clearUnlockedKey: vi.fn(),
+    };
+    configureSessionKeyBridge(bridge);
+
+    await act(async () => {
+      root.render(<TestComponent syncMeta={syncMeta} />);
+    });
+
+    expect(vaultRef.current!.isEncrypted).toBe(false);
+    expect(vaultRef.current!.isLocked).toBe(false);
+    expect(bridge.loadUnlockedKey).not.toHaveBeenCalled();
+  });
+
+  it('supports a bridge without the optional save method', async () => {
+    const bridge: SessionKeyBridge = {
+      loadUnlockedKey: vi.fn(async () => null),
+      clearUnlockedKey: vi.fn(),
+    };
+    configureSessionKeyBridge(bridge);
+
+    const syncMeta = createMockSyncMeta();
+    await act(async () => {
+      root.render(<TestComponent syncMeta={syncMeta} />);
+    });
+
+    await act(async () => {
+      await vaultRef.current!.protect('123456', 'pin');
+    });
+
+    expect(vaultRef.current!.isEncrypted).toBe(true);
+    expect(vaultRef.current!.isLocked).toBe(false);
+  });
+
+  it('restores encrypted vault from valid session key bridge and preserves theme', async () => {
+    const testData = {
+      ...INITIAL_DATA,
+      prompts: [
+        {
+          id: 'restored-p1',
+          title: 'Restored Secret',
+          body: 'Restored Content',
+          categoryId: 'general',
+          tags: [],
+          isFavorite: false,
+          usageCount: 0,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          deletedAt: null,
+        },
+      ],
+      settings: { ...INITIAL_DATA.settings, isDarkMode: false },
+    };
+    const created = await createEncryptedVault(testData, 'secretPass', 'passphrase');
+    window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(created.envelope));
+
+    const bridge: SessionKeyBridge = {
+      loadUnlockedKey: vi.fn(async () => created.key),
+      saveUnlockedKey: vi.fn(async () => {}),
+      clearUnlockedKey: vi.fn(),
+    };
+    configureSessionKeyBridge(bridge);
+
+    const syncMeta = createMockSyncMeta();
+    await act(async () => {
+      root.render(<TestComponent syncMeta={syncMeta} />);
+    });
+
+    // Wait for async restoration effect
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 50));
+    });
+
+    expect(bridge.loadUnlockedKey).toHaveBeenCalled();
+    expect(vaultRef.current!.isLocked).toBe(false);
+    expect(vaultRef.current!.data.prompts.length).toBe(1);
+    expect(vaultRef.current!.data.prompts[0]?.title).toBe('Restored Secret');
+  });
+
+  it('clears session key bridge when restored key fails decryption', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const testData = { ...INITIAL_DATA };
+    const created = await createEncryptedVault(testData, 'pin123', 'pin');
+    window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(created.envelope));
+
+    // Generate an unrelated dummy CryptoKey that cannot decrypt the envelope
+    const dummyKey = await crypto.subtle.generateKey(
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['encrypt', 'decrypt']
+    );
+
+    const bridge: SessionKeyBridge = {
+      loadUnlockedKey: vi.fn(async () => dummyKey),
+      saveUnlockedKey: vi.fn(async () => {}),
+      clearUnlockedKey: vi.fn(),
+    };
+    configureSessionKeyBridge(bridge);
+
+    const syncMeta = createMockSyncMeta();
+    await act(async () => {
+      root.render(<TestComponent syncMeta={syncMeta} />);
+    });
+
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 50));
+    });
+
+    expect(bridge.loadUnlockedKey).toHaveBeenCalled();
+    expect(bridge.clearUnlockedKey).toHaveBeenCalled();
+    expect(vaultRef.current!.isLocked).toBe(true);
+    warnSpy.mockRestore();
+  });
+
+  it('invokes bridge save and clear on protect, lock, unlock, and removeProtection', async () => {
+    const bridge: SessionKeyBridge = {
+      loadUnlockedKey: vi.fn(async () => null),
+      saveUnlockedKey: vi.fn(async () => {}),
+      clearUnlockedKey: vi.fn(),
+    };
+    configureSessionKeyBridge(bridge);
+
+    const syncMeta = createMockSyncMeta();
+    await act(async () => {
+      root.render(<TestComponent syncMeta={syncMeta} />);
+    });
+
+    // 1. protect -> saveUnlockedKey
+    await act(async () => {
+      await vaultRef.current!.protect('654321', 'pin');
+    });
+    expect(bridge.saveUnlockedKey).toHaveBeenCalledTimes(1);
+
+    // 2. lock -> clearUnlockedKey
+    await act(async () => {
+      vaultRef.current!.lock();
+    });
+    expect(bridge.clearUnlockedKey).toHaveBeenCalledTimes(1);
+
+    // 3. unlock -> saveUnlockedKey
+    await act(async () => {
+      await vaultRef.current!.unlock('654321');
+    });
+    expect(bridge.saveUnlockedKey).toHaveBeenCalledTimes(2);
+
+    // 4. removeProtection -> clearUnlockedKey
+    await act(async () => {
+      vaultRef.current!.removeProtection();
+    });
+    expect(bridge.clearUnlockedKey).toHaveBeenCalledTimes(2);
   });
 });

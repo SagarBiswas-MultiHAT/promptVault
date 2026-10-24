@@ -8,6 +8,15 @@
 import type { RequestHandler } from 'express';
 import { ALLOWED_ORIGINS, IS_PRODUCTION } from '../config.ts';
 
+export function isOriginAllowed(origin: string, allowedOrigins: readonly string[]): boolean {
+  for (const allowed of allowedOrigins) {
+    if (allowed === origin) return true;
+    if (allowed === 'chrome-extension://*' && origin.startsWith('chrome-extension://')) return true;
+    if (allowed === 'moz-extension://*' && origin.startsWith('moz-extension://')) return true;
+  }
+  return false;
+}
+
 /**
  * Resolve the value to echo in `Access-Control-Allow-Origin`, or `null` to send
  * no CORS headers at all.
@@ -17,7 +26,10 @@ function resolveOrigin(origin: string | undefined): string | null {
   // Origin header. There is nothing to grant, and the old `origin || '*'`
   // fallback handed out a wildcard for exactly these harmless cases.
   if (!origin) return null;
-  if (ALLOWED_ORIGINS.includes(origin)) return origin;
+  const configuredOrigins = IS_PRODUCTION
+    ? ALLOWED_ORIGINS.filter((allowed) => !allowed.endsWith('://*'))
+    : ALLOWED_ORIGINS;
+  if (isOriginAllowed(origin, configuredOrigins)) return origin;
   // Development convenience only. In production `validateConfig()` guarantees a
   // non-empty allowlist, so this branch cannot widen anything there.
   return IS_PRODUCTION ? null : origin;
