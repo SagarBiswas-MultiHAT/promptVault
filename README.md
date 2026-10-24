@@ -8,7 +8,7 @@
   &nbsp;
   <a href="https://github.com/SagarBiswas-MultiHAT/promptVault/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/SagarBiswas-MultiHAT/promptVault/ci.yml?branch=main&label=CI%20Build&logo=githubactions&logoColor=white" alt="CI Status" /></a>
   &nbsp;
-  <a href="https://github.com/SagarBiswas-MultiHAT/promptVault/releases"><img src="https://img.shields.io/badge/Release-v2.2.1-F59E0B?logo=semanticrelease&logoColor=white" alt="Version" /></a>
+  <a href="https://github.com/SagarBiswas-MultiHAT/promptVault/releases"><img src="https://img.shields.io/badge/Release-v2.3.0-F59E0B?logo=semanticrelease&logoColor=white" alt="Version" /></a>
   &nbsp;
   <a href="docs/README.md"><img src="https://img.shields.io/badge/Docs-Architecture%20Portal-6366F1?logo=gitbook&logoColor=white" alt="Docs Portal" /></a>
   &nbsp;
@@ -29,13 +29,15 @@
   &nbsp;
   <img src="https://img.shields.io/badge/Sync-Supabase%20RLS-3ECF8E?logo=supabase&logoColor=white" alt="Supabase Sync" />
   &nbsp;
+  <img src="https://img.shields.io/badge/Extension-Manifest%20V3-0284C7?logo=googlechrome&logoColor=white" alt="Extension: Manifest V3" />
+  &nbsp;
   <img src="https://img.shields.io/badge/React-19.0-61DAFB?logo=react&logoColor=black" alt="React 19" />
   &nbsp;
   <img src="https://img.shields.io/badge/TypeScript-5.8%20Strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
   &nbsp;
   <img src="https://img.shields.io/badge/Tailwind-CSS%20v4-38B2AC?logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
   &nbsp;
-  <img src="https://img.shields.io/badge/Testing-Playwright%20%2B%20Vitest%20(81%20Tests)-E33D26?logo=playwright&logoColor=white" alt="Testing" />
+  <img src="https://img.shields.io/badge/Testing-Playwright%20%2B%20Vitest%20(141%20Tests)-E33D26?logo=playwright&logoColor=white" alt="Testing" />
 </p>
 <p align="left">
   <strong><a href="https://promptvault.multihat.dev/">🚀 Launch Live Web App</a></strong> &nbsp;•&nbsp;
@@ -138,7 +140,7 @@ PromptVault features a complete, enterprise-grade technical documentation suite 
 | [docs/03-architecture/adr/](docs/03-architecture/adr/) | **[Architectural Decision Records (ADRs)](docs/03-architecture/adr/)** | Formal ADRs 0001 - 0004 covering Encryption, Dual AI Fallback, LWW Sync, and Proxy Isolation | Senior Engineers, System Architects |
 | [docs/04-security/](docs/04-security/threat-model.md) | **[Threat Model & Security Spec](docs/04-security/threat-model.md)** | Plain-English security summary, STRIDE threat mitigations, and 5 mandatory invariants | Security Auditors, Compliance |
 | [docs/05-api/](docs/05-api/api-spec.md) | **[API Specification & OpenAPI 3.1](docs/05-api/api-spec.md)** | Human-friendly API guide and machine-readable [OpenAPI 3.1.0 schema](docs/05-api/openapi.yaml) | API Developers, Integrators |
-| [docs/06-testing/](docs/06-testing/test-strategy.md) | **[Test Strategy & Quality Plan](docs/06-testing/test-strategy.md)** | Quality framework covering 81 unit tests across 11 suites and Playwright E2E browser tests | QA Engineers, Contributors |
+| [docs/06-testing/](docs/06-testing/test-strategy.md) | **[Test Strategy & Quality Plan](docs/06-testing/test-strategy.md)** | Quality framework covering 141 unit tests across 18 suites and Playwright E2E browser tests | QA Engineers, Contributors |
 | [docs/07-operations/](docs/07-operations/deployment-guide.md) | **[Production Deployment Runbook](docs/07-operations/deployment-guide.md)** | Complete operations guide for VPS/Node.js, Docker containers, Railway, and Render | DevOps, Sysadmins, Self-Hosters |
 
 ---
@@ -198,6 +200,13 @@ Switch between a dark theme (easy on the eyes at night) and a light theme (great
 
 ### 📱 Works on Mobile Too
 The app is fully usable on phones and tablets. The sidebar slides in and out, buttons are large enough to tap, and the layout adjusts to any screen size.
+
+### 🧩 Chromium Browser Extension (Manifest V3)
+PromptVault includes a native browser extension for Chrome, Brave, Microsoft Edge, and Opera that brings your encrypted prompt vault directly into your daily AI workflows:
+- **In-Chat Quick Picker Overlay**: Press `Alt+P` (or `Option+P` on Mac) inside ChatGPT, Claude, DeepSeek, Google AI Studio, or v0 to search your prompts and inject them into the chat input in one click. Isolated inside a closed Shadow DOM to avoid host CSS pollution.
+- **One-Click Web Clipping**: Select text on any web page, right-click, and choose **Save to PromptVault** to store ideas directly into your vault.
+- **Local & Cloud Sync**: Seamlessly syncs with your desktop vault using `chrome.storage.local` and optional Supabase cloud sync via Google OAuth.
+- **Easy Installation**: Download the pre-built `promptvault-extension-v2.3.0.zip` from [Releases](https://github.com/SagarBiswas-MultiHAT/promptVault/releases/latest), enable Developer Mode in your browser extensions page, and click **Load unpacked**.
 
 ---
 

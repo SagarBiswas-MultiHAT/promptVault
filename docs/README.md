@@ -4,10 +4,10 @@
 | :--- | :--- |
 | **Product Name** | PromptVault |
 | **Tagline** | The Private, Offline-First Prompt Manager for AI Power Users |
-| **Documentation Version** | v2.2.1 |
+| **Documentation Version** | v2.3.0 |
 | **Repository** | [github.com/SagarBiswas-MultiHAT/promptVault](https://github.com/SagarBiswas-MultiHAT/promptVault) |
 | **Lead Architect** | Sagar Biswas (@SagarBiswas-MultiHAT) / MultiHAT (<https://multihat.dev>) |
-| **Status** | Production Baseline (v2.2.1 Verified) |
+| **Status** | Production Baseline (v2.3.0 Verified) |
 
 ---
 
@@ -68,7 +68,7 @@ docs/
 | [docs/04-security/threat-model.md](file:///o:/github/promptVault/docs/04-security/threat-model.md) | **Threat Model & Security Spec** | Plain-English security summary, 3-tier asset classification, trust boundary maps, STRIDE threat mitigations, and 5 mandatory security invariants. | Security Auditors, Compliance, Users |
 | [docs/05-api/openapi.yaml](file:///o:/github/promptVault/docs/05-api/openapi.yaml) | **OpenAPI 3.1.0 Specification** | Standard machine-readable OpenAPI specification for the Express AI proxy and health monitoring endpoints. | API Developers, Tooling Integrations |
 | [docs/05-api/api-spec.md](file:///o:/github/promptVault/docs/05-api/api-spec.md) | **API Integration & Usage Guide** | Human-readable API guide covering `/api/suggest` (analyze and improve modes), `/api/health`, error codes, rate-limiting headers, and cURL examples. | Frontend Devs, Backend Devs |
-| [docs/06-testing/test-strategy.md](file:///o:/github/promptVault/docs/06-testing/test-strategy.md) | **Test Strategy & Quality Plan** | Quality assurance framework covering 81 Vitest unit tests, Playwright browser E2E tests, API key diagnostic probes, and regression prevention history. | QA Engineers, Contributors |
+| [docs/06-testing/test-strategy.md](file:///o:/github/promptVault/docs/06-testing/test-strategy.md) | **Test Strategy & Quality Plan** | Quality assurance framework covering 141 Vitest unit tests, Playwright browser E2E tests, API key diagnostic probes, and regression prevention history. | QA Engineers, Contributors |
 | [docs/07-operations/deployment-guide.md](file:///o:/github/promptVault/docs/07-operations/deployment-guide.md) | **Production Deployment Runbook** | Complete deployment instructions for VPS/Node.js, multi-stage Docker containerization, cloud PaaS (Railway, Render), Supabase migrations, and troubleshooting. | DevOps, Sysadmins, Self-Hosters |
 | [PRIVACY.md](file:///o:/github/promptVault/PRIVACY.md) | **Privacy Policy & Transparency Declaration** | Comprehensive privacy pledge, zero prompt tracking guarantee, anonymous page-view analytics specifications, and data handling rules. | All Users, Legal & Compliance, Auditors |
 

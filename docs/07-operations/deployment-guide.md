@@ -5,7 +5,7 @@
 | **Product Name** | PromptVault |
 | **Document Type** | Production Deployment Guide, Configuration Manual & Operations Runbook |
 | **Status** | Approved (Production Baseline) |
-| **Version** | v2.2.1 |
+| **Version** | v2.3.0 |
 | **Owner / Lead Architect** | Sagar Biswas (@SagarBiswas-MultiHAT) / MultiHAT (<https://multihat.dev>) |
 | **Reference Documents** | [Architecture Blueprint](file:///o:/github/promptVault/docs/03-architecture/architecture.md), [SRS](file:///o:/github/promptVault/docs/02-requirements/srs.md), [Threat Model](file:///o:/github/promptVault/docs/04-security/threat-model.md), [API Spec](file:///o:/github/promptVault/docs/05-api/api-spec.md) |
 

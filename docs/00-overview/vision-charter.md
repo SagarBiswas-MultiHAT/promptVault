@@ -5,7 +5,7 @@
 | **Project Name** | PromptVault |
 | **Document Type** | Vision Statement & Project Charter |
 | **Status** | Approved (Production Baseline) |
-| **Current Version** | v2.2.1 |
+| **Current Version** | v2.3.0 |
 | **Owner / Maintainer** | Sagar Biswas (@SagarBiswas-MultiHAT) / MultiHAT (<https://multihat.dev>) |
 | **License** | Apache License 2.0 |
 | **Repository** | [github.com/SagarBiswas-MultiHAT/promptVault](https://github.com/SagarBiswas-MultiHAT/promptVault) |
@@ -88,7 +88,7 @@ The success and technical health of PromptVault are measured by the following ta
 | Area | Target Metric (KPI) | Verification Method |
 | :--- | :--- | :--- |
 | **Privacy & Security** | Zero plaintext leaks at rest in browser storage. | Cryptographic unit tests verify encrypted envelope and lack of plaintext prompts. |
-| **Quality & Correctness** | 100% green test suite across all unit and integration tests. | 81 automated unit tests running in Vitest on every build. |
+| **Quality & Correctness** | 100% green test suite across all unit and integration tests. | 141 automated unit tests running in Vitest on every build. |
 | **User Experience Speed** | Initial app shell render < 1.0s; prompt search filter < 16ms (60fps). | Lighthouse performance audit and memory-indexed search benchmarks. |
 | **AI Availability** | >= 99.9% uptime for AI evaluations via automated fallback. | Express proxy switches transparently from Gemini to Groq if the primary provider fails. |
 | **Sync Resilience** | Zero resurrected prompts after cross-device deletion. | 30-day tombstone sweep and Last-Write-Wins merge validation. |

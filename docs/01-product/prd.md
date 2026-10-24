@@ -5,9 +5,9 @@
 | **Product Name** | PromptVault |
 | **Document Type** | Product Requirements Document (PRD) |
 | **Status** | Approved (Production Baseline) |
-| **Version** | v2.2.1 |
+| **Version** | v2.3.0 |
 | **Owner / Product Lead** | Sagar Biswas (@SagarBiswas-MultiHAT) / MultiHAT (<https://multihat.dev>) |
-| **Target Platforms** | Web, Mobile Web, Desktop PWA (Chrome, Safari, Edge, Firefox) |
+| **Target Platforms** | Web, Chromium Extension (MV3), Mobile Web, Desktop PWA |
 | **Reference Charter** | [Vision & Charter](file:///o:/github/promptVault/docs/00-overview/vision-charter.md) |
 
 ---
@@ -182,7 +182,7 @@ The features of PromptVault are prioritized according to the industry-standard M
 | **Security & Cryptography** | PBKDF2-SHA-256 derivation with 600,000 iterations; AES-256-GCM envelope; zero plaintext on disk. | Vitest crypto unit tests (`crypto.test.ts`). |
 | **Performance** | App shell First Contentful Paint < 1.0s; search filtering across 1,000 items < 16ms (60 FPS). | Chrome Lighthouse audit; memory-indexed search benchmarking. |
 | **API Proxy Throughput** | AI proxy response time < 2.5s on Gemini, < 1.5s on Groq; in-memory cache hit response < 10ms. | Server-side latency logging (`server/index.ts`). |
-| **Reliability & Tests** | 100% pass rate on unit test suite (81 tests); zero uncaught promise rejections. | Vitest automated test run on every GitHub Actions CI build. |
+| **Reliability & Tests** | 100% pass rate on unit test suite (141 tests across 18 suites); zero uncaught promise rejections. | Vitest automated test run on every GitHub Actions CI build. |
 | **Compatibility** | Evergreen browser support: Chrome 110+, Safari 16+, Edge 110+, Firefox 115+, iOS Safari, Android Chrome. | BrowserStack / Playwright cross-browser test runner. |
 
 ---

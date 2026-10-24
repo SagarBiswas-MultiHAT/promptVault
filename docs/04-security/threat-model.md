@@ -5,7 +5,7 @@
 | **Product Name** | PromptVault |
 | **Document Type** | Threat Model & Security Risk Analysis (STRIDE) |
 | **Status** | Approved (Production Baseline) |
-| **Version** | v2.2.1 |
+| **Version** | v2.3.0 |
 | **Owner / Lead Architect** | Sagar Biswas (@SagarBiswas-MultiHAT) / MultiHAT (<https://multihat.dev>) |
 | **Reference Documents** | [Architecture Blueprint](file:///o:/github/promptVault/docs/03-architecture/architecture.md), [SRS](file:///o:/github/promptVault/docs/02-requirements/srs.md), [ADR 0001](file:///o:/github/promptVault/docs/03-architecture/adr/0001-envelope-encryption.md) |
 

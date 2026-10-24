@@ -5,7 +5,7 @@
 | **Product Name** | PromptVault |
 | **Document Type** | Comprehensive Test Strategy, Quality Assurance & Verification Plan |
 | **Status** | Approved (Production Baseline) |
-| **Version** | v2.2.1 |
+| **Version** | v2.3.0 |
 | **Owner / Lead Architect** | Sagar Biswas (@SagarBiswas-MultiHAT) / MultiHAT (<https://multihat.dev>) |
 | **Reference Documents** | [SRS](file:///o:/github/promptVault/docs/02-requirements/srs.md), [Architecture Blueprint](file:///o:/github/promptVault/docs/03-architecture/architecture.md), [Threat Model](file:///o:/github/promptVault/docs/04-security/threat-model.md) |
 
@@ -155,7 +155,7 @@ Built with **Playwright v1.62**, running against the real, optimized production 
 
 For any build, pull request, or release to be certified as production-ready, it must achieve a 100% pass mark against the following checklist:
 
-1. **Unit Test Pass Rate**: 81 out of 81 unit tests must pass with zero failures and zero skipped tests.
+1. **Unit Test Pass Rate**: 141 out of 141 unit tests must pass with zero failures and zero skipped tests across all 18 test suites.
 2. **Type Check Cleanliness**: `npm run typecheck` must exit with return code `0` and zero warnings or errors across all four `tsconfig` files.
 3. **E2E Browser Pass Rate**: All 11 browser test scenarios across `lock.spec.ts`, `vault.spec.ts`, and `ui.spec.ts` must pass in an isolated Chromium context.
 4. **Zero-Plaintext Compliance**: Automated assertion `expect(localStorage.getItem('prompt-vault-data')).not.toContain(SECRET)` must succeed.
@@ -166,7 +166,7 @@ For any build, pull request, or release to be certified as production-ready, it 
 ## 6. How to Run the Tests (Operator Guide)
 
 ### Running Fast Unit Tests
-To run all 81 unit tests once:
+To run all 141 unit tests once:
 ```bash
 npm test
 ```

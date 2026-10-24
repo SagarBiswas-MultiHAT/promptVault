@@ -7,7 +7,7 @@
 
 import { DEFAULT_SORT, VaultData } from './types.ts';
 
-export const APP_VERSION = '2.2.1';
+export const APP_VERSION = '2.3.0';
 export const SCHEMA_VERSION = '2.0.0';
 const INITIAL_TIMESTAMP = 0;
 

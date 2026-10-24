@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "PromptVault - AI Prompt Manager",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "Private encrypted prompt library with instant in-chat injection for supported AI sites.",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs8cwMj17SQxCgFhR276+WwsQ2KLzcrmdCpjs7Jvf1ADuQRLC2ZIOOYnS14OFO3EgFn1CmMvgIxpZgFVCujsvyznHXO0C109JW88Phd35HMBCYPnfJrmGHI/Oc0KOFzE/raI6nSb6PzilzVogeTtChjX2wNehYh5JHLJGLXr80Q+CEJOU56p/My123sbTEjDtUBAiDbCo1a27hmzprpf+TxT4snQ2WT2CwtdKFxwmrX6Hw8BJfXOB8zspO5qweL10lcNfyMEtm98d4kWvuG3326pa2c4tnXBxSRwXksfyvsU5kVgDQDZQRTVoKx499YToEebA89GHiQasykjkRHPLPwIDAQAB",
   "icons": {

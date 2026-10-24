@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [2.3.0] - 2026-10-25
+
+### Added
+- **Manifest V3 Browser Extension:** Introduced the official PromptVault Chromium browser extension (Chrome, Edge, Brave, Opera) powered by Manifest V3 with an offline-first storage bridge.
+- **In-Chat Quick Picker Overlay:** Injected floating zero-knowledge prompt search and insertion overlay into ChatGPT (`chatgpt.com`), Claude (`claude.ai`), DeepSeek (`chat.deepseek.com`), Google AI Studio (`aistudio.google.com`), and v0 (`v0.dev`), isolated in a custom Shadow DOM.
+- **One-Click Context Menu Clipping:** Highlight text on any web page and right-click "Save to PromptVault" to queue or append prompts into the vault.
+- **Dedicated Extension OAuth Flow:** Implemented `chrome.identity.launchWebAuthFlow` for Google OAuth with Supabase synchronization, keeping tokens and session state secure within extension storage.
+- **Deterministic Cryptographic Key:** Fixed a permanent 2048-bit RSA key in `manifest.json` ensuring a consistent extension ID (`npnpfcekohdmaindglkpddodjdbhbboo`) across local development, unpacked distribution, and testing environments.
+- **Session Encryption Bridge:** Secure runtime transfer of session keys between background service worker and content scripts using `chrome.storage.session`.
+- **Extended Test Suite:** Expanded automated test coverage from 81 tests to 141 tests across 18 test suites (including extension host DOM matching, content injection, session key lifecycle, and pending clip queues).
+
+### Changed
+- **Settings Modal & UI Overhaul:** Redesigned Cloud Sync status card with inline sign-out, side-by-side 2-column sync telemetry, full-width sync action with live spinner, and fixed Storage Engine multi-tier alignment.
+- **Responsive Dialog Viewports:** Optimized `Modal.tsx` paddings (`p-3 sm:p-4`, `px-4 sm:px-6`) for 420px browser extension popups and narrow mobile devices.
+- **Strict Privacy Policy:** Established official `PRIVACY.md` defining zero prompt tracking, client-side encryption guarantees, and anonymous page-view analytics boundaries.
+- **Core Decoupling:** Refactored core business logic into environment-agnostic shared modules (`src/core/`), separating web application state from extension background and content scripts.
+
+---
+
 ## [2.2.1] - 2026-10-22
 
 ### Security

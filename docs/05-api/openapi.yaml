@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: PromptVault AI Proxy & System API
-  version: 2.2.1
+  version: 2.3.0
   description: |
     # PromptVault API Specification
 
@@ -221,7 +221,7 @@ paths:
                 $ref: '#/components/schemas/HealthResponse'
               example:
                 status: "ok"
-                version: "2.2.1"
+                version: "2.3.0"
                 uptimeSeconds: 1420
                 cache:
                   entries: 12
@@ -398,7 +398,7 @@ components:
           description: Overall service status.
         version:
           type: string
-          example: "2.2.1"
+          example: "2.3.0"
           description: Current server application version read from package.json.
         uptimeSeconds:
           type: integer

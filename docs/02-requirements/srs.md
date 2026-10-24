@@ -5,7 +5,7 @@
 | **Product Name** | PromptVault |
 | **Document Type** | Software Requirements Specification (SRS) |
 | **Status** | Approved (Production Baseline) |
-| **Version** | v2.2.1 |
+| **Version** | v2.3.0 |
 | **Owner / Lead Engineer** | Sagar Biswas (@SagarBiswas-MultiHAT) / MultiHAT (<https://multihat.dev>) |
 | **Scope** | Client Web Application, Express AI Proxy, and Supabase Sync Layer |
 | **Reference Documents** | [Vision & Charter](file:///o:/github/promptVault/docs/00-overview/vision-charter.md), [PRD](file:///o:/github/promptVault/docs/01-product/prd.md) |
@@ -14,7 +14,7 @@
 
 ## 1. Introduction & Purpose
 
-This Software Requirements Specification (SRS) establishes the formal functional and non-functional requirements for **PromptVault v2.2.1**. It translates the high-level user needs outlined in the [Product Requirements Document (PRD)](file:///o:/github/promptVault/docs/01-product/prd.md) into quantifiable, testable engineering specifications.
+This Software Requirements Specification (SRS) establishes the formal functional and non-functional requirements for **PromptVault v2.3.0**. It translates the high-level user needs outlined in the [Product Requirements Document (PRD)](file:///o:/github/promptVault/docs/01-product/prd.md) into quantifiable, testable engineering specifications.
 
 This document serves as the single source of truth for software engineers, quality assurance testers, security auditors, and system architects. Every requirement defined herein is objectively verifiable with concrete metrics (e.g., millisecond latency thresholds, iteration counts, cryptographic key lengths, and availability percentages).
 
@@ -145,7 +145,7 @@ PromptVault operates under a hybrid client-first architecture comprising three d
 ### NFR-3: Reliability, Availability & Fault Tolerance
 - **NFR-3.1 Client Availability**: 100% offline availability for stored prompt access and encryption operations.
 - **NFR-3.2 AI Proxy Service Level Objective (SLO)**: >= 99.9% uptime for `/api/suggest` requests, achieved through automatic multi-region fallback between Google Gemini and Groq Cloud.
-- **NFR-3.3 Automated Test Suite**: 100% of automated unit tests (81 tests in Vitest across 11 test suites) must pass cleanly on every build. Zero test regressions or flaky tests are permitted.
+- **NFR-3.3 Automated Test Suite**: 100% of automated unit tests (141 tests in Vitest across 18 test suites) must pass cleanly on every build. Zero test regressions or flaky tests are permitted.
 
 ### NFR-4: Accessibility & Keyboard Ergonomics (WCAG 2.1 AA)
 - **NFR-4.1 Color Contrast**: Text and interactive UI elements shall meet or exceed WCAG 2.1 Level AA contrast ratios (>= 4.5:1 for normal text, >= 3:1 for large headings and input borders).

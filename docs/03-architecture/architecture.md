@@ -5,7 +5,7 @@
 | **Product Name** | PromptVault |
 | **Document Type** | System Architecture & C4 Engineering Blueprint |
 | **Status** | Approved (Production Baseline) |
-| **Version** | v2.2.1 |
+| **Version** | v2.3.0 |
 | **Owner / Lead Architect** | Sagar Biswas (@SagarBiswas-MultiHAT) / MultiHAT (<https://multihat.dev>) |
 | **Reference Documents** | [Vision & Charter](file:///o:/github/promptVault/docs/00-overview/vision-charter.md), [PRD](file:///o:/github/promptVault/docs/01-product/prd.md), [SRS](file:///o:/github/promptVault/docs/02-requirements/srs.md) |
 
