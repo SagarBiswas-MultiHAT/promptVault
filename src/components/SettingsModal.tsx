@@ -52,7 +52,7 @@ export function SettingsModal({
             <ShieldCheck size={14} />
             <span>Vault Encryption</span>
           </div>
-          <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl flex items-center justify-between gap-4">
+          <div className="p-4 sm:p-5 bg-vault-bg/50 border border-vault-border rounded-2xl flex items-center justify-between gap-4">
             <div className="space-y-1">
               <p className="text-sm font-medium">{hasPin ? 'Remove encryption' : 'Encrypt vault'}</p>
               <p className="text-xs text-vault-text-muted font-mono">
@@ -82,7 +82,7 @@ export function SettingsModal({
             <Cloud size={14} />
             <span>Cloud Sync</span>
           </div>
-          <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl space-y-4">
+          <div className="p-4 sm:p-5 bg-vault-bg/50 border border-vault-border rounded-2xl space-y-4">
             {!sync.configured ? (
               <div className="space-y-2">
                 <p className="text-sm font-medium">Supabase not configured</p>
@@ -96,54 +96,71 @@ export function SettingsModal({
                 <p className="text-xs text-vault-text-muted font-mono">Please wait while we load your session.</p>
               </div>
             ) : sync.session ? (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between gap-4 flex-wrap">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-vault-panel-bright border border-vault-border flex items-center justify-center">
-                      <User size={16} className="text-vault-text-muted" />
+              <div className="space-y-3.5">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-full bg-vault-panel-bright border border-vault-border flex items-center justify-center shrink-0">
+                      <User size={15} className="text-vault-accent-blue" />
                     </div>
-                    <div className="space-y-0.5">
-                      <p className="text-sm font-medium">Signed in</p>
-                      <p className="text-xs text-vault-text-muted font-mono">{sync.session.user.email || 'Unknown user'}</p>
+                    <div className="min-w-0 space-y-0.5">
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-xs font-medium text-vault-text leading-none">Signed in</p>
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" title="Active session" />
+                      </div>
+                      <p className="text-[11px] text-vault-text-muted font-mono truncate" title={sync.session.user.email}>
+                        {sync.session.user.email || 'Unknown user'}
+                      </p>
                     </div>
                   </div>
                   <button
                     onClick={sync.signOut}
-                    className="px-4 py-2 border border-vault-border text-vault-text-muted hover:text-vault-text hover:border-vault-text-muted rounded-lg text-[10px] font-mono font-bold tracking-widest uppercase transition-all flex items-center gap-2"
+                    className="shrink-0 px-2.5 py-1.5 border border-vault-border text-vault-text-muted hover:text-red-400 hover:border-red-400/40 rounded-lg text-[10px] font-mono font-bold tracking-wider uppercase transition-all flex items-center gap-1.5 group"
+                    title="Sign out of Supabase"
                   >
-                    <LogOut size={12} />
-                    Sign out
+                    <LogOut size={12} className="group-hover:translate-x-0.5 transition-transform" />
+                    <span>Sign out</span>
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="p-3 rounded-lg border border-vault-border bg-vault-panel-bright/40">
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className="p-2.5 sm:p-3 rounded-xl border border-vault-border bg-vault-panel-bright/40 space-y-1">
                     <p className="text-[9px] font-mono text-vault-text-muted uppercase tracking-widest">Sync status</p>
-                    <p aria-live="polite" aria-atomic="true" className={`text-sm font-semibold ${sync.status === 'error' ? 'text-red-400' : sync.status === 'syncing' ? 'text-vault-accent-blue' : 'text-vault-text'}`}>
-                      {sync.status === 'syncing' ? 'Syncing' : sync.status === 'error' ? 'Error' : 'Idle'}
-                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                        sync.status === 'syncing' ? 'bg-vault-accent-blue animate-ping' :
+                        sync.status === 'error' ? 'bg-red-400' : 'bg-emerald-400'
+                      }`} />
+                      <p aria-live="polite" aria-atomic="true" className={`text-xs font-semibold font-mono truncate ${
+                        sync.status === 'error' ? 'text-red-400' :
+                        sync.status === 'syncing' ? 'text-vault-accent-blue' :
+                        'text-vault-text'
+                      }`}>
+                        {sync.status === 'syncing' ? 'Syncing...' : sync.status === 'error' ? 'Error' : 'Idle'}
+                      </p>
+                    </div>
                   </div>
-                  <div className="p-3 rounded-lg border border-vault-border bg-vault-panel-bright/40">
+                  <div className="p-2.5 sm:p-3 rounded-xl border border-vault-border bg-vault-panel-bright/40 space-y-1">
                     <p className="text-[9px] font-mono text-vault-text-muted uppercase tracking-widest">Last synced</p>
-                    <p aria-live="polite" aria-atomic="true" className="text-sm font-semibold text-vault-text">{formatTimestamp(sync.lastSyncedAt)}</p>
+                    <p aria-live="polite" aria-atomic="true" className="text-xs font-semibold font-mono text-vault-text truncate">
+                      {formatTimestamp(sync.lastSyncedAt)}
+                    </p>
                   </div>
                 </div>
 
                 {sync.error && (
-                  <div className="p-3 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 text-xs font-mono">
+                  <div className="p-3 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 text-xs font-mono break-all whitespace-pre-wrap">
                     {sync.error}
                   </div>
                 )}
 
-                <div className="flex items-center justify-center">
-                  <button
-                    onClick={sync.syncNow}
-                    className="px-4 py-2 bg-vault-accent-blue text-vault-bg rounded-lg text-[10px] font-mono font-bold tracking-widest uppercase transition-all flex items-center gap-2"
-                  >
-                    <RefreshCcw size={12} />
-                    Sync now
-                  </button>
-                </div>
+                <button
+                  onClick={sync.syncNow}
+                  disabled={sync.status === 'syncing'}
+                  className="w-full py-2 px-4 bg-vault-accent-blue hover:bg-vault-accent-blue/90 disabled:opacity-50 text-vault-bg rounded-xl text-[10px] font-mono font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-2 shadow-sm"
+                >
+                  <RefreshCcw size={12} className={sync.status === 'syncing' ? 'animate-spin' : ''} />
+                  <span>{sync.status === 'syncing' ? 'Syncing...' : 'Sync now'}</span>
+                </button>
               </div>
             ) : (
               <div className="space-y-3">
@@ -165,7 +182,7 @@ export function SettingsModal({
                 </div>
 
                 {sync.error && (
-                  <div className="p-3 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 text-xs font-mono">
+                  <div className="p-3 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 text-xs font-mono break-all whitespace-pre-wrap">
                     {sync.error}
                   </div>
                 )}
@@ -179,7 +196,7 @@ export function SettingsModal({
             <Download size={14} />
             <span>Data Management</span>
           </div>
-          <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="p-4 sm:p-5 bg-vault-bg/50 border border-vault-border rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="space-y-1">
               <p className="text-sm font-medium">Backup &amp; Restore</p>
               <p className="text-xs text-vault-text-muted font-mono">Export your vault to a JSON file or import an existing backup.</p>
@@ -204,21 +221,25 @@ export function SettingsModal({
             <Command size={14} />
             <span>Architecture Details</span>
           </div>
-          <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl space-y-4">
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-vault-text-muted font-mono">App Version</span>
+          <div className="p-4 sm:p-5 bg-vault-bg/50 border border-vault-border rounded-2xl space-y-3">
+            <div className="flex justify-between items-center gap-3 text-xs">
+              <span className="text-vault-text-muted font-mono shrink-0">App Version</span>
               <span className="font-mono text-vault-accent-blue">{APP_VERSION}</span>
             </div>
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-vault-text-muted font-mono">Schema Version</span>
+            <div className="flex justify-between items-center gap-3 text-xs">
+              <span className="text-vault-text-muted font-mono shrink-0">Schema Version</span>
               <span className="font-mono text-vault-text-muted">{SCHEMA_VERSION}</span>
             </div>
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-vault-text-muted font-mono">Storage Engine</span>
-              <span className="font-mono">LocalStorage + Supabase (optional)</span>
+            <div className="flex items-start sm:items-center justify-between gap-3 text-xs">
+              <span className="text-vault-text-muted font-mono shrink-0 pt-0.5 sm:pt-0">Storage Engine</span>
+              <div className="flex items-center gap-1.5 font-mono text-right text-[11px] sm:text-xs flex-wrap justify-end">
+                <span className="text-vault-text font-medium whitespace-nowrap">LocalStorage</span>
+                <span className="text-vault-text-muted whitespace-nowrap">+ Supabase</span>
+                <span className="text-[10px] text-vault-text-muted/70 tracking-tight whitespace-nowrap">(optional)</span>
+              </div>
             </div>
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-vault-text-muted font-mono">Encryption</span>
+            <div className="flex justify-between items-center gap-3 text-xs">
+              <span className="text-vault-text-muted font-mono shrink-0">Encryption</span>
               <span className="font-mono opacity-50 italic">{hasPin ? 'AES-256-GCM + PBKDF2' : 'Not enabled'}</span>
             </div>
 
@@ -228,7 +249,7 @@ export function SettingsModal({
                 onClick={() => { onClose(); onOpenShortcuts(); }}
                 className="w-full flex items-center justify-between text-xs py-1 group"
               >
-                <span className="text-vault-text-muted font-mono">Protocol Shortcuts</span>
+                <span className="text-vault-text-muted font-mono shrink-0">Protocol Shortcuts</span>
                 <span className="flex items-center gap-1.5 text-vault-text-muted group-hover:text-vault-accent transition-colors">
                   <Keyboard size={12} />
                   <span className="font-mono text-[10px] uppercase tracking-widest">View</span>
@@ -243,27 +264,32 @@ export function SettingsModal({
           <div className="flex items-center gap-2 text-vault-text-muted font-mono uppercase tracking-widest text-[10px] font-bold">
             <span>About &amp; License</span>
           </div>
-          <div className="p-6 bg-vault-bg/50 border border-vault-border rounded-2xl space-y-3">
+          <div className="p-4 sm:p-5 bg-vault-bg/50 border border-vault-border rounded-2xl space-y-3">
             <a
               href="https://multihat.dev"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between text-xs group"
+              className="flex items-center justify-between gap-3 text-xs group"
             >
-              <span className="text-vault-text-muted font-mono">Author</span>
-              <span className="flex items-center gap-1.5 text-vault-text-muted group-hover:text-vault-accent transition-colors font-mono">
-                <User size={12} />
-                Sagar Biswas (@SagarBiswas-MultiHAT)
+              <span className="text-vault-text-muted font-mono shrink-0">Author</span>
+              <span className="flex items-center gap-1.5 text-right font-mono transition-colors">
+                <User size={12} className="shrink-0 text-vault-accent" />
+                <span className="font-sans font-medium text-vault-text group-hover:text-vault-accent transition-colors whitespace-nowrap">
+                  Sagar Biswas
+                </span>
+                <span className="text-vault-text-muted text-[10px] whitespace-nowrap">
+                  (@SagarBiswas-MultiHAT)
+                </span>
               </span>
             </a>
             <div className="border-t border-vault-border/50" />
             <a
               href="mailto:sagarbiswas@multihat.dev"
-              className="flex items-center justify-between text-xs group"
+              className="flex items-center justify-between gap-3 text-xs group"
             >
-              <span className="text-vault-text-muted font-mono">Contact</span>
-              <span className="flex items-center gap-1.5 text-vault-text-muted group-hover:text-vault-accent transition-colors font-mono">
-                <Mail size={12} />
+              <span className="text-vault-text-muted font-mono shrink-0">Contact</span>
+              <span className="flex items-center gap-1.5 text-vault-text-muted group-hover:text-vault-accent transition-colors font-mono text-[11px] whitespace-nowrap">
+                <Mail size={12} className="shrink-0 text-vault-accent" />
                 sagarbiswas@multihat.dev
               </span>
             </a>
@@ -272,34 +298,34 @@ export function SettingsModal({
               href="https://github.com/SagarBiswas-MultiHAT/promptVault"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between text-xs group"
+              className="flex items-center justify-between gap-3 text-xs group"
             >
-              <span className="text-vault-text-muted font-mono">Canonical Source</span>
-              <span className="flex items-center gap-1.5 text-vault-text-muted group-hover:text-vault-accent transition-colors font-mono">
-                <Github size={12} />
+              <span className="text-vault-text-muted font-mono shrink-0">Source</span>
+              <span className="flex items-center gap-1.5 text-vault-text-muted group-hover:text-vault-accent transition-colors font-mono text-[11px] whitespace-nowrap">
+                <Github size={12} className="shrink-0 text-vault-accent" />
                 SagarBiswas-MultiHAT/promptVault
               </span>
             </a>
             <div className="border-t border-vault-border/50" />
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-vault-text-muted font-mono">License</span>
+            <div className="flex items-center justify-between gap-3 text-xs">
+              <span className="text-vault-text-muted font-mono shrink-0">License</span>
               <a
                 href="https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/LICENSE"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-emerald-400 hover:text-emerald-300 transition-colors text-[11px]"
+                className="font-mono text-emerald-400 hover:text-emerald-300 transition-colors text-[11px] whitespace-nowrap"
               >
                 Apache-2.0 (NOTICE Attributed)
               </a>
             </div>
             <div className="border-t border-vault-border/50" />
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-vault-text-muted font-mono">Privacy Policy</span>
+            <div className="flex items-center justify-between gap-3 text-xs">
+              <span className="text-vault-text-muted font-mono shrink-0">Privacy Policy</span>
               <a
                 href="https://github.com/SagarBiswas-MultiHAT/promptVault/blob/main/PRIVACY.md"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-mono text-vault-accent hover:underline transition-colors text-[11px]"
+                className="font-mono text-vault-accent hover:underline transition-colors text-[11px] whitespace-nowrap"
               >
                 Zero Prompt Tracking
               </a>

@@ -82,7 +82,7 @@ export function Modal({ isOpen, onClose, title, children, footer }: ModalProps) 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -110,7 +110,7 @@ export function Modal({ isOpen, onClose, title, children, footer }: ModalProps) 
             {/* Top accent line */}
             <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-vault-accent/40 to-transparent" />
             
-            <div className="flex items-center justify-between px-6 py-5">
+            <div className="flex items-center justify-between px-5 sm:px-6 py-4 sm:py-5">
               <div>
                 <h2 id={titleId} className="text-lg font-bold text-vault-text tracking-tight">{title}</h2>
               </div>
@@ -123,12 +123,12 @@ export function Modal({ isOpen, onClose, title, children, footer }: ModalProps) 
               </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto px-6 pb-6">
+            <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-5 sm:pb-6">
               {children}
             </div>
             
             {footer && (
-              <div className="px-6 py-4 border-t border-vault-border/50 bg-vault-bg/30">
+              <div className="px-5 sm:px-6 py-3.5 sm:py-4 border-t border-vault-border/50 bg-vault-bg/30">
                 {footer}
               </div>
             )}

@@ -253,6 +253,120 @@ export function useCloudSync({ syncMeta, dataRef, onRemoteData, data, enabled }:
     }
 
     setError(null);
+
+    // Detect if running inside a browser extension with identity support
+    const isExtension =
+      typeof chrome !== 'undefined' &&
+      Boolean(chrome.runtime?.id && chrome.identity?.launchWebAuthFlow);
+
+    if (isExtension) {
+      try {
+        const redirectUrl = chrome.identity.getRedirectURL();
+        const { data, error: authError } = await supabaseClient.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: redirectUrl,
+            skipBrowserRedirect: true,
+          },
+        });
+
+        if (authError) {
+          setStatus('error');
+          setError(authError.message);
+          return;
+        }
+
+        if (!data?.url) {
+          setStatus('error');
+          setError('Failed to generate authentication URL from Supabase.');
+          return;
+        }
+
+        chrome.identity.launchWebAuthFlow(
+          {
+            url: data.url,
+            interactive: true,
+          },
+          async (callbackUrl: string | undefined) => {
+            if (chrome.runtime.lastError) {
+              const msg = chrome.runtime.lastError.message || 'Authentication cancelled.';
+              setStatus('error');
+              setError(msg);
+              return;
+            }
+
+            if (!callbackUrl) {
+              setStatus('error');
+              setError('No callback URL received from authorization flow.');
+              return;
+            }
+
+            try {
+              const url = new URL(callbackUrl);
+              const hashParams = new URLSearchParams(url.hash.substring(1));
+              const errorDesc =
+                url.searchParams.get('error_description') ||
+                hashParams.get('error_description');
+
+              if (errorDesc) {
+                const cleanError = decodeURIComponent(errorDesc.replace(/\+/g, ' '));
+                setStatus('error');
+                setError(
+                  cleanError.toLowerCase().includes('redirect') || cleanError.toLowerCase().includes('not allowed')
+                    ? `Supabase redirect URL not whitelisted. Please add this URL in your Supabase Dashboard -> Authentication -> URL Configuration -> Redirect URLs:\n${redirectUrl}`
+                    : cleanError
+                );
+                return;
+              }
+
+              const accessToken = hashParams.get('access_token') || url.searchParams.get('access_token');
+              const refreshToken = hashParams.get('refresh_token') || url.searchParams.get('refresh_token');
+
+              if (accessToken && refreshToken) {
+                const { data: sessionData, error: sessionError } = await supabaseClient.auth.setSession({
+                  access_token: accessToken,
+                  refresh_token: refreshToken,
+                });
+
+                if (sessionError) {
+                  setStatus('error');
+                  setError(sessionError.message);
+                } else {
+                  setSession(sessionData.session);
+                  setStatus('idle');
+                }
+                return;
+              }
+
+              const code = url.searchParams.get('code') || hashParams.get('code');
+              if (code) {
+                const { data: sessionData, error: exchangeError } = await supabaseClient.auth.exchangeCodeForSession(code);
+                if (exchangeError) {
+                  setStatus('error');
+                  setError(exchangeError.message);
+                } else {
+                  setSession(sessionData.session);
+                  setStatus('idle');
+                }
+                return;
+              }
+
+              setStatus('error');
+              setError('No authentication token found in callback.');
+            } catch (parseError) {
+              setStatus('error');
+              setError(parseError instanceof Error ? parseError.message : 'Failed to parse authorization response.');
+            }
+          }
+        );
+      } catch (flowError) {
+        setStatus('error');
+        setError(flowError instanceof Error ? flowError.message : 'Extension authentication flow failed.');
+      }
+      return;
+    }
+
+    // Standard web application OAuth flow
     const { error: authError } = await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: window.location.origin },
