@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "allowImportingTsExtensions": true,
+    "types": ["chrome", "vite/client"],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "src/extension",
+    "src/types.ts",
+    "src/constants.ts",
+    "src/utils",
+    "src/hooks",
+    "src/components",
+    "src/vite-env.d.ts"
+  ]
+}

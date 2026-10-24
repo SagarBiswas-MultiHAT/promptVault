@@ -602,7 +602,7 @@ export function AiAssistantWidget({ categories, onCreatePrompt, hideOnMobile = f
 
       <button
         onClick={() => setIsOpen(prev => !prev)}
-        className="fixed bottom-[3.5rem] right-10 z-[9999] badge badge-emerald !px-4 !py-3 shadow-xl shadow-emerald-500/10 hover:scale-105 active:scale-95 transition-all cursor-pointer border border-emerald-500/20 flex items-center"
+        className="fixed bottom-[3.5rem] right-6 z-[9999] badge badge-emerald !px-4 !py-3 shadow-xl shadow-emerald-500/10 hover:scale-105 active:scale-95 transition-all cursor-pointer border border-emerald-500/20 flex items-center"
         aria-label="Open prompt assistant"
       >
         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" />

@@ -77,6 +77,15 @@ async function deriveKek(secret: string, salt: Uint8Array): Promise<CryptoKey> {
   );
 }
 
+export type CryptoTransferOptions = {
+  includeTransferKey?: boolean;
+};
+
+export type UnlockedKeys = {
+  key: CryptoKey;
+  transferKey?: CryptoKey;
+};
+
 async function createWrapper(rawKey: Uint8Array, secret: string): Promise<KeyWrapper> {
   const salt = randomBytes(SALT_BYTES);
   const iv = randomBytes(IV_BYTES);
@@ -85,12 +94,21 @@ async function createWrapper(rawKey: Uint8Array, secret: string): Promise<KeyWra
   return { salt: toBase64(salt), iv: toBase64(iv), ciphertext: toBase64(new Uint8Array(ciphertext)) };
 }
 
-async function unwrapKey(wrapper: KeyWrapper, secret: string): Promise<CryptoKey> {
+async function unwrapKey(
+  wrapper: KeyWrapper,
+  secret: string,
+  includeTransferKey = false,
+): Promise<UnlockedKeys> {
   const kek = await deriveKek(secret, fromBase64(wrapper.salt));
   const raw = await crypto.subtle.decrypt(
     { name: 'AES-GCM', iv: fromBase64(wrapper.iv) }, kek, fromBase64(wrapper.ciphertext),
   );
-  return crypto.subtle.importKey('raw', raw, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  const algorithm = { name: 'AES-GCM', length: 256 } as const;
+  const key = await crypto.subtle.importKey('raw', raw, algorithm, false, ['encrypt', 'decrypt']);
+  const transferKey = includeTransferKey
+    ? await crypto.subtle.importKey('raw', raw, algorithm, true, ['encrypt', 'decrypt'])
+    : undefined;
+  return { key, transferKey };
 }
 
 async function encryptPayload(data: VaultData, key: CryptoKey): Promise<EncryptedVault['encryption']['payload']> {
@@ -111,13 +129,27 @@ export async function decryptVaultPayload(envelope: EncryptedVault, key: CryptoK
   return decryptPayload(envelope, key);
 }
 
-export async function createEncryptedVault(data: VaultData, secret: string, mode: SecretMode): Promise<NewEncryptedVault> {
+export async function createEncryptedVault(
+  data: VaultData,
+  secret: string,
+  mode: SecretMode,
+  options?: CryptoTransferOptions,
+): Promise<NewEncryptedVault & { transferKey?: CryptoKey }> {
   const rawKey = randomBytes(VAULT_KEY_BYTES);
-  const key = await crypto.subtle.importKey('raw', rawKey, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  const algorithm = { name: 'AES-GCM', length: 256 } as const;
+  const key = await crypto.subtle.importKey('raw', rawKey, algorithm, false, ['encrypt', 'decrypt']);
+  const transferKey = options?.includeTransferKey
+    ? await crypto.subtle.importKey('raw', rawKey, algorithm, true, ['encrypt', 'decrypt'])
+    : undefined;
   const recoveryKey = Array.from(randomBytes(32), byte => byte.toString(16).padStart(2, '0')).join('');
-  const [primary, recovery, payload] = await Promise.all([createWrapper(rawKey, secret), createWrapper(rawKey, recoveryKey), encryptPayload(data, key)]);
+  const [primary, recovery, payload] = await Promise.all([
+    createWrapper(rawKey, secret),
+    createWrapper(rawKey, recoveryKey),
+    encryptPayload(data, key),
+  ]);
   return {
     key,
+    transferKey,
     recoveryKey,
     envelope: {
       schemaVersion: '2.0.0',
@@ -126,14 +158,35 @@ export async function createEncryptedVault(data: VaultData, secret: string, mode
   };
 }
 
-export async function unlockEncryptedVault(envelope: EncryptedVault, secret: string): Promise<{ data: VaultData; key: CryptoKey }> {
-  const key = await unwrapKey(envelope.encryption.primary, secret);
-  return { key, data: await decryptPayload(envelope, key) };
+export async function unlockEncryptedVault(
+  envelope: EncryptedVault,
+  secret: string,
+  options?: CryptoTransferOptions,
+): Promise<{ data: VaultData; key: CryptoKey; transferKey?: CryptoKey }> {
+  const { key, transferKey } = await unwrapKey(envelope.encryption.primary, secret, options?.includeTransferKey);
+  return { key, transferKey, data: await decryptPayload(envelope, key) };
 }
 
-export async function recoverEncryptedVault(envelope: EncryptedVault, recoveryKey: string): Promise<{ data: VaultData; key: CryptoKey }> {
-  const key = await unwrapKey(envelope.encryption.recovery, recoveryKey);
-  return { key, data: await decryptPayload(envelope, key) };
+export async function recoverEncryptedVault(
+  envelope: EncryptedVault,
+  recoveryKey: string,
+  options?: CryptoTransferOptions,
+): Promise<{ data: VaultData; key: CryptoKey; transferKey?: CryptoKey }> {
+  const { key, transferKey } = await unwrapKey(envelope.encryption.recovery, recoveryKey, options?.includeTransferKey);
+  return { key, transferKey, data: await decryptPayload(envelope, key) };
+}
+
+export async function exportVaultKey(key: CryptoKey): Promise<string> {
+  if (!key.extractable) {
+    throw new Error('Only an explicitly created extension transfer key may be exported');
+  }
+  const raw = await crypto.subtle.exportKey('raw', key);
+  return toBase64(new Uint8Array(raw));
+}
+
+export async function importVaultKey(base64Key: string): Promise<CryptoKey> {
+  const raw = fromBase64(base64Key);
+  return crypto.subtle.importKey('raw', raw, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
 }
 
 export async function updateEncryptedVault(envelope: EncryptedVault, data: VaultData, key: CryptoKey): Promise<EncryptedVault> {

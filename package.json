@@ -33,7 +33,9 @@
     "start": "cross-env NODE_ENV=production node --import tsx server/index.ts",
     "preview": "vite preview",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
-    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.server.json && tsc -p tsconfig.node.json && tsc -p tsconfig.test.json",
+    "build:ext": "tsx scripts/build-extension.ts",
+    "clean:ext": "node -e \"require('fs').rmSync('dist-extension',{recursive:true,force:true})\"",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.server.json && tsc -p tsconfig.node.json && tsc -p tsconfig.test.json && tsc -p tsconfig.ext.json",
     "lint": "npm run typecheck",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -58,6 +60,7 @@
   "devDependencies": {
     "@playwright/test": "^1.62.1",
     "@tailwindcss/vite": "^4.1.14",
+    "@types/chrome": "^0.3.6",
     "@types/compression": "^1.8.1",
     "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
