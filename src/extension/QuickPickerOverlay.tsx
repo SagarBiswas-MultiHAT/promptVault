@@ -8,12 +8,12 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import type { Prompt } from '../types.ts';
 import { Search, Sparkles, Lock, X } from 'lucide-react';
-import { extractVariables } from '../utils/vault.ts';
 
+export type PromptSummary = Omit<Prompt, 'body'> & { hasVariables: boolean };
 interface QuickPickerOverlayProps {
-  prompts: Prompt[];
+  prompts: PromptSummary[];
   isLocked: boolean;
-  onSelectPrompt: (prompt: Prompt) => void;
+  onSelectPrompt: (prompt: PromptSummary) => void;
   onClose: () => void;
 }
 
@@ -41,7 +41,6 @@ export function QuickPickerOverlay({
       (p) =>
         p.deletedAt === null &&
         (((p.title || '').toLowerCase().includes(q)) ||
-          ((p.body || '').toLowerCase().includes(q)) ||
           ((p.tags || []).some((t) => (t || '').toLowerCase().includes(q))))
     );
   }, [prompts, search]);
@@ -91,7 +90,7 @@ export function QuickPickerOverlay({
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder={isLocked ? 'Vault is locked...' : 'Search prompts by title, body, or tag...'}
+            placeholder={isLocked ? 'Vault is locked...' : 'Search prompts by title or tag...'}
             disabled={isLocked}
             className="flex-1 bg-transparent border-none outline-none text-sm text-white placeholder:text-zinc-400 font-medium"
           />
@@ -131,8 +130,6 @@ export function QuickPickerOverlay({
           ) : (
             filteredPrompts.map((prompt, idx) => {
               const isSelected = idx === selectedIndex;
-              const promptBody = prompt.body || '';
-              const vars = extractVariables(promptBody);
               return (
                 <div
                   key={prompt.id}
@@ -157,7 +154,7 @@ export function QuickPickerOverlay({
                       {prompt.title || 'Untitled Prompt'}
                     </span>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      {vars.length > 0 && (
+                      {prompt.hasVariables && (
                         <span
                           className="flex items-center gap-1 px-1.5 py-0.5 rounded-md text-amber-400 text-[10px] font-mono font-medium"
                           style={{
@@ -166,7 +163,7 @@ export function QuickPickerOverlay({
                           }}
                         >
                           <Sparkles size={10} />
-                          {vars.length} {vars.length === 1 ? 'var' : 'vars'}
+                          variables
                         </span>
                       )}
                       {prompt.usageCount > 0 && (
@@ -176,10 +173,6 @@ export function QuickPickerOverlay({
                       )}
                     </div>
                   </div>
-
-                  <p className="text-[11px] text-zinc-300 line-clamp-2 leading-relaxed">
-                    {promptBody}
-                  </p>
 
                   {prompt.tags && prompt.tags.length > 0 && (
                     <div className="flex items-center gap-1 flex-wrap pt-0.5">

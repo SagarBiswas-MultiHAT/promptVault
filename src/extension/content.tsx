@@ -10,7 +10,7 @@ import { createRoot } from 'react-dom/client';
 import { RotateCcw } from 'lucide-react';
 import extensionStyles from '../index.css?inline';
 import { findActiveInput, injectIntoHostInput, type InputSelectionRange } from './hostDom.ts';
-import { QuickPickerOverlay } from './QuickPickerOverlay.tsx';
+import { QuickPickerOverlay, type PromptSummary } from './QuickPickerOverlay.tsx';
 import { VariableForm } from '../components/VariableForm.tsx';
 import { extractVariables } from '../utils/vault.ts';
 import type { Prompt } from '../types.ts';
@@ -26,7 +26,7 @@ function isExtensionValid(): boolean {
 function ContentScriptApp() {
   const [isOpen, setIsOpen] = useState(false);
   const [isInvalidated, setIsInvalidated] = useState(false);
-  const [prompts, setPrompts] = useState<Prompt[]>([]);
+  const [prompts, setPrompts] = useState<PromptSummary[]>([]);
   const [isLocked, setIsLocked] = useState(false);
   const [activePromptForVars, setActivePromptForVars] = useState<Prompt | null>(null);
   const [replaceTrigger, setReplaceTrigger] = useState(false);
@@ -71,7 +71,7 @@ function ContentScriptApp() {
 
       chrome.runtime.sendMessage(
         { type: 'PV_GET_PROMPTS' },
-        (res: { prompts?: Prompt[]; locked?: boolean } | undefined) => {
+        (res: { prompts?: PromptSummary[]; locked?: boolean } | undefined) => {
           try {
             let hasError = false;
             try {
@@ -109,14 +109,24 @@ function ContentScriptApp() {
     }
   };
 
-  const handleSelectPrompt = (prompt: Prompt) => {
-    const promptBody = prompt.body || '';
-    const vars = extractVariables(promptBody);
-    if (vars.length > 0) {
-      setActivePromptForVars(prompt);
-      return;
+  const handleSelectPrompt = (prompt: PromptSummary) => {
+    try {
+      chrome.runtime.sendMessage(
+        { type: 'PV_GET_PROMPT_BODY', promptId: prompt.id },
+        (response: { success?: boolean; body?: string } | undefined) => {
+          if (chrome.runtime.lastError || !response?.success || typeof response.body !== 'string') return;
+          const fullPrompt: Prompt = { ...prompt, body: response.body };
+          const vars = extractVariables(response.body);
+          if (vars.length > 0) {
+            setActivePromptForVars(fullPrompt);
+            return;
+          }
+          executeInjection(fullPrompt, response.body);
+        },
+      );
+    } catch {
+      setIsInvalidated(true);
     }
-    executeInjection(prompt, promptBody);
   };
 
   const executeInjection = (prompt: Prompt, textToInject: string) => {
@@ -129,13 +139,6 @@ function ContentScriptApp() {
         savedInputSelectionRef.current,
         replaceTrigger
       );
-    }
-
-    // Optional clipboard copy
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(textToInject).catch(() => {
-        // Content script clipboard permissions may vary by site
-      });
     }
 
     // Record prompt usage in background worker

@@ -9,6 +9,7 @@ import { isEncryptedVault, decryptVaultPayload, updateEncryptedVault, importVaul
 import { EXTENSION_SESSION_KEY } from './sessionBridge.ts';
 import { ensureWebClipCategory, flushPendingClips, parsePendingClips, type PendingClip } from './pendingClips.ts';
 import { initExtensionStorage } from './storageAdapter.ts';
+import { isValidVaultData } from '../utils/vault.ts';
 import type { Prompt, VaultData } from '../types.ts';
 
 let mutationQueue: Promise<void> = Promise.resolve();
@@ -24,7 +25,14 @@ function enqueueMutation<T>(operation: () => Promise<T>): Promise<T> {
 }
 
 function isSupportedContentSender(sender: chrome.runtime.MessageSender): boolean {
-  return sender.id === chrome.runtime.id && Boolean(sender.tab?.id);
+  if (sender.id !== chrome.runtime.id || !sender.tab?.id || !sender.url) return false;
+  try {
+    const url = new URL(sender.url);
+    return ['chatgpt.com', 'claude.ai', 'gemini.google.com', 'chat.deepseek.com', 'www.perplexity.ai']
+      .includes(url.hostname);
+  } catch {
+    return false;
+  }
 }
 
 // Restrict session storage to extension contexts (Popup and Background Worker)
@@ -86,6 +94,10 @@ async function handleSaveSelection(text: string): Promise<void> {
       try {
         const key = await importVaultKey(serializedKey);
         const decrypted: VaultData = await decryptVaultPayload(parsedVault as EncryptedVault, key);
+        if (!isValidVaultData(decrypted)) {
+          console.error('[PromptVault Background] Refusing to mutate invalid decrypted vault data');
+          return;
+        }
         const clipCategory = ensureWebClipCategory(decrypted);
         const now = Date.now();
 
@@ -140,6 +152,10 @@ async function handleSaveSelection(text: string): Promise<void> {
   } else if (parsedVault) {
     // Unencrypted vault
     const vaultData = parsedVault as VaultData;
+    if (!isValidVaultData(vaultData)) {
+      console.error('[PromptVault Background] Refusing to mutate invalid vault data');
+      return;
+    }
     const clipCategory = ensureWebClipCategory(vaultData);
     const now = Date.now();
 
@@ -251,8 +267,15 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
           try {
             const key = await importVaultKey(serialized);
             const decrypted = await decryptVaultPayload(parsed, key);
+            if (!isValidVaultData(decrypted)) {
+             sendResponse({ prompts: [], locked: false });
+             return;
+            }
             sendResponse({
-              prompts: decrypted.prompts || [],
+              prompts: (decrypted.prompts || []).map(({ body: _body, ...metadata }) => ({
+                ...metadata,
+                hasVariables: /\{\{\s*[a-zA-Z0-9_-]+\s*\}\}/.test(_body),
+              })),
               locked: false,
             });
             return;
@@ -266,8 +289,15 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       }
 
       const vaultData = parsed as VaultData;
+      if (!isValidVaultData(vaultData)) {
+        sendResponse({ prompts: [], locked: false });
+        return;
+      }
       sendResponse({
-        prompts: vaultData.prompts || [],
+        prompts: (vaultData.prompts || []).map(({ body: _body, ...metadata }) => ({
+          ...metadata,
+          hasVariables: /\{\{\s*[a-zA-Z0-9_-]+\s*\}\}/.test(_body),
+        })),
         locked: false,
       });
     })();
@@ -308,12 +338,20 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         }
         try {
           vaultData = await decryptVaultPayload(parsed, await importVaultKey(serialized));
+          if (!isValidVaultData(vaultData)) {
+            sendResponse({ success: false });
+            return;
+          }
         } catch {
           sendResponse({ success: false, locked: true });
           return;
         }
       } else {
         vaultData = parsed as VaultData;
+        if (!isValidVaultData(vaultData)) {
+          sendResponse({ success: false });
+          return;
+        }
       }
 
       const prompt = vaultData.prompts.find((candidate) => candidate.id === message.promptId);
@@ -326,7 +364,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   }
 
   if (message.type === 'PV_SESSION_KEY_SAVED') {
-    if (!_sender.id || _sender.id !== chrome.runtime.id) {
+    if (
+      _sender.id !== chrome.runtime.id ||
+      !_sender.url?.startsWith(`chrome-extension://${chrome.runtime.id}/`)
+    ) {
       sendResponse({ success: false });
       return;
     }
@@ -373,6 +414,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
           try {
             const key = await importVaultKey(serialized);
             const decrypted = await decryptVaultPayload(parsed, key);
+            if (!isValidVaultData(decrypted)) {
+              sendResponse({ success: false });
+              return;
+            }
             const prompts = decrypted.prompts.map((p) =>
               p.id === promptId ? { ...p, usageCount: p.usageCount + 1, updatedAt: Date.now() } : p
             );
@@ -392,6 +437,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       }
 
       const vaultData = parsed as VaultData;
+      if (!isValidVaultData(vaultData)) {
+        sendResponse({ success: false });
+        return;
+      }
       const prompts = vaultData.prompts.map((p) =>
         p.id === promptId ? { ...p, usageCount: p.usageCount + 1, updatedAt: Date.now() } : p
       );
