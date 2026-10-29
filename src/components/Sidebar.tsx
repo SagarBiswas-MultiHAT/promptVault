@@ -5,7 +5,7 @@
  * @license SPDX-License-Identifier: Apache-2.0
  */
 
-import { Plus, ChevronLeft, ChevronRight, Star, Trash2, Edit2, BarChart3, Hash, FolderOpen } from 'lucide-react';
+import { Plus, ChevronLeft, ChevronRight, Star, Trash2, Edit2, BarChart3, Hash, FolderOpen, Puzzle } from 'lucide-react';
 import { Category, Prompt } from '../types.ts';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useCallback } from 'react';
@@ -327,7 +327,24 @@ export function Sidebar({
                 </div>
 
                 {/* Vault Health Footer */}
-                <div className="p-4 border-t border-vault-border mt-auto">
+                <div className="p-4 border-t border-vault-border mt-auto space-y-3">
+                  {/* Browser Extension Banner */}
+                  <a
+                    href="https://microsoftedge.microsoft.com/addons/detail/promptvault-ai-prompt-m/ckhifhpbhebgnfomgcojfakpampkijni"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full flex items-center justify-between p-2.5 rounded-xl border border-vault-accent/30 bg-vault-accent/5 hover:bg-vault-accent/15 text-vault-accent transition-all group"
+                    title="Install PromptVault on Microsoft Edge"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Puzzle size={14} className="group-hover:rotate-12 transition-transform" />
+                      <span className="text-xs font-semibold">Edge Extension</span>
+                    </div>
+                    <span className="text-[9px] font-mono uppercase bg-vault-accent/20 px-1.5 py-0.5 rounded text-vault-accent font-bold tracking-wider">
+                      Live
+                    </span>
+                  </a>
+
                   <div className="p-3 rounded-lg bg-vault-bg/50 border border-vault-border/50 space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-mono text-vault-text-muted uppercase tracking-[0.1em] font-semibold">Vault Health</span>
