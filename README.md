@@ -4,11 +4,13 @@
 
 <!-- Badges Section -->
 <p align="left">
+  <a href="https://microsoftedge.microsoft.com/addons/detail/promptvault-ai-prompt-m/ckhifhpbhebgnfomgcojfakpampkijni"><img src="https://img.shields.io/badge/Microsoft%20Edge%20Add--ons-v2.3.1%20Live-0078D7?logo=microsoftedge&logoColor=white" alt="Microsoft Edge Add-ons: Live" /></a>
+  &nbsp;
   <a href="https://promptvault.multihat.dev/"><img src="https://img.shields.io/website?url=https%3A%2F%2Fpromptvault.multihat.dev&up_message=online&down_message=offline&label=Live%20Demo&color=10B981&logo=vercel" alt="Live Demo" /></a>
   &nbsp;
   <a href="https://github.com/SagarBiswas-MultiHAT/promptVault/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/SagarBiswas-MultiHAT/promptVault/ci.yml?branch=main&label=CI%20Build&logo=githubactions&logoColor=white" alt="CI Status" /></a>
   &nbsp;
-  <a href="https://github.com/SagarBiswas-MultiHAT/promptVault/releases"><img src="https://img.shields.io/badge/Release-v2.2.1-F59E0B?logo=semanticrelease&logoColor=white" alt="Version" /></a>
+  <a href="https://github.com/SagarBiswas-MultiHAT/promptVault/releases"><img src="https://img.shields.io/badge/Release-v2.3.1-F59E0B?logo=semanticrelease&logoColor=white" alt="Version" /></a>
   &nbsp;
   <a href="docs/README.md"><img src="https://img.shields.io/badge/Docs-Architecture%20Portal-6366F1?logo=gitbook&logoColor=white" alt="Docs Portal" /></a>
   &nbsp;
@@ -29,15 +31,18 @@
   &nbsp;
   <img src="https://img.shields.io/badge/Sync-Supabase%20RLS-3ECF8E?logo=supabase&logoColor=white" alt="Supabase Sync" />
   &nbsp;
+  <img src="https://img.shields.io/badge/Extension-Manifest%20V3-0284C7?logo=microsoftedge&logoColor=white" alt="Extension: Manifest V3" />
+  &nbsp;
   <img src="https://img.shields.io/badge/React-19.0-61DAFB?logo=react&logoColor=black" alt="React 19" />
   &nbsp;
   <img src="https://img.shields.io/badge/TypeScript-5.8%20Strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
   &nbsp;
   <img src="https://img.shields.io/badge/Tailwind-CSS%20v4-38B2AC?logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
   &nbsp;
-  <img src="https://img.shields.io/badge/Testing-Playwright%20%2B%20Vitest%20(81%20Tests)-E33D26?logo=playwright&logoColor=white" alt="Testing" />
+  <img src="https://img.shields.io/badge/Testing-Playwright%20%2B%20Vitest%20(141%20Tests)-E33D26?logo=playwright&logoColor=white" alt="Testing" />
 </p>
 <p align="left">
+  <strong><a href="https://microsoftedge.microsoft.com/addons/detail/promptvault-ai-prompt-m/ckhifhpbhebgnfomgcojfakpampkijni">🧩 Install on Microsoft Edge</a></strong> &nbsp;•&nbsp;
   <strong><a href="https://promptvault.multihat.dev/">🚀 Launch Live Web App</a></strong> &nbsp;•&nbsp;
   <strong><a href="docs/README.md">📖 Architecture & Docs Portal</a></strong> &nbsp;•&nbsp;
   <strong><a href="diagrams/">🗺️ 300% DPI Architecture Diagrams</a></strong> &nbsp;•&nbsp;
@@ -54,6 +59,7 @@
   - [Docs-as-Code Technical Documentation Portal](#docs-as-code-technical-documentation-portal)
 - [What is PromptVault?](#what-is-promptvault)
 - [What Can It Do? (Features)](#what-can-it-do)
+  - [Browser Extension (Edge & Chromium)](#-browser-extension-microsoft-edge--chromium)
 - [How Does It Compare?](#how-does-it-compare)
 - [Requirements](#what-do-you-need-to-run-it)
 - [Getting Started (Step by Step)](#getting-started-step-by-step)
@@ -138,7 +144,7 @@ PromptVault features a complete, enterprise-grade technical documentation suite 
 | [docs/03-architecture/adr/](docs/03-architecture/adr/) | **[Architectural Decision Records (ADRs)](docs/03-architecture/adr/)** | Formal ADRs 0001 - 0004 covering Encryption, Dual AI Fallback, LWW Sync, and Proxy Isolation | Senior Engineers, System Architects |
 | [docs/04-security/](docs/04-security/threat-model.md) | **[Threat Model & Security Spec](docs/04-security/threat-model.md)** | Plain-English security summary, STRIDE threat mitigations, and 5 mandatory invariants | Security Auditors, Compliance |
 | [docs/05-api/](docs/05-api/api-spec.md) | **[API Specification & OpenAPI 3.1](docs/05-api/api-spec.md)** | Human-friendly API guide and machine-readable [OpenAPI 3.1.0 schema](docs/05-api/openapi.yaml) | API Developers, Integrators |
-| [docs/06-testing/](docs/06-testing/test-strategy.md) | **[Test Strategy & Quality Plan](docs/06-testing/test-strategy.md)** | Quality framework covering 81 unit tests across 11 suites and Playwright E2E browser tests | QA Engineers, Contributors |
+| [docs/06-testing/](docs/06-testing/test-strategy.md) | **[Test Strategy & Quality Plan](docs/06-testing/test-strategy.md)** | Quality framework covering 141 unit tests across 18 suites and Playwright E2E browser tests | QA Engineers, Contributors |
 | [docs/07-operations/](docs/07-operations/deployment-guide.md) | **[Production Deployment Runbook](docs/07-operations/deployment-guide.md)** | Complete operations guide for VPS/Node.js, Docker containers, Railway, and Render | DevOps, Sysadmins, Self-Hosters |
 
 ---
@@ -199,6 +205,32 @@ Switch between a dark theme (easy on the eyes at night) and a light theme (great
 ### 📱 Works on Mobile Too
 The app is fully usable on phones and tablets. The sidebar slides in and out, buttons are large enough to tap, and the layout adjusts to any screen size.
 
+### 🧩 Browser Extension (Microsoft Edge & Chromium)
+
+PromptVault is officially available on the **Microsoft Edge Add-ons Store** and as a cross-browser Manifest V3 package for Chrome, Brave, and Opera. It brings your encrypted prompt vault directly into your daily AI workflows:
+
+<p align="left">
+  <a href="https://microsoftedge.microsoft.com/addons/detail/promptvault-ai-prompt-m/ckhifhpbhebgnfomgcojfakpampkijni">
+    <img src="https://img.shields.io/badge/Get%20it%20from-Microsoft%20Edge%20Add--ons-0078D7?style=for-the-badge&logo=microsoftedge&logoColor=white" alt="Get it from Microsoft Edge Add-ons" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://microsoftedge.microsoft.com/addons/detail/promptvault-ai-prompt-m/ckhifhpbhebgnfomgcojfakpampkijni">
+    <img src="docs/img/Edge%20Add-ons.png" alt="PromptVault Live on Microsoft Edge Add-ons Store" width="850" />
+  </a>
+  <br />
+  <em>Figure: Official PromptVault listing on the Microsoft Edge Add-ons Store (Version 2.3.1). Click the screenshot to open the live store page.</em>
+</p>
+
+- **Official 1-Click Store Installation**: Install directly from the [Microsoft Edge Add-ons Store](https://microsoftedge.microsoft.com/addons/detail/promptvault-ai-prompt-m/ckhifhpbhebgnfomgcojfakpampkijni) with automatic background updates (Store ID: `0RDCK9QZNVBV`, Extension ID: `ckhifhpbhebgnfomgcojfakpampkijni`).
+- **In-Chat Quick Picker Overlay (`Alt+P`)**: Press `Alt+P` (or `Option+P` on Mac) inside ChatGPT, Claude, Google Gemini, DeepSeek, Perplexity, or any webpage to search and inject prompts into the active chat box in one click. Isolated inside a shadow DOM to ensure host CSS isolation.
+- **In-Chat Command Trigger (`/pv`)**: Type `/pv ` directly inside any AI chat input to open an instant prompt suggestion picker without moving your hands from the keyboard.
+- **1-Click Web Clipping**: Select any text on any webpage, right-click, and choose **Save selection to PromptVault** to store prompt snippets directly into your vault.
+- **Offline-First AES-256-GCM Security**: All prompts stay encrypted on your local machine using hardware-backed Web Crypto APIs.
+- **Optional Multi-Device Cloud Sync**: Sign in with Google via `chrome.identity` to sync your encrypted prompt library across multiple computers with Supabase.
+- **Chrome & Brave Sideloading**: Pre-built packages (`promptvault-extension-v2.3.1.zip`) are available under [Releases](https://github.com/SagarBiswas-MultiHAT/promptVault/releases/latest) for side-loading in Developer Mode via `Load unpacked`.
+
 ---
 
 ## How Does It Compare?
@@ -208,6 +240,7 @@ Why choose PromptVault instead of saving prompts in a general note-taking app or
 | Capability | PromptVault | Notion / Docs | Obsidian | Web Prompt Directories |
 | :--- | :--- | :--- | :--- | :--- |
 | **100% Offline-First** | Yes (zero network requirement) | No (cloud-dependent) | Yes (local markdown) | No (cloud-dependent) |
+| **Direct Browser Integration** | Yes (Live Edge Add-on + Alt+P Overlay) | Web clipper only | Third-party plugin | None / Copy-paste |
 | **Client-Side AES-256-GCM Encryption** | Yes (PBKDF2 + recovery key) | No | Community plugins only | No (stored on third-party servers) |
 | **Built-in AI Prompt Refinement** | Yes (Gemini + Groq fallback) | Paid add-on required | Third-party plugin required | Limited or static only |
 | **Variable Template Injection (`{{var}}`)** | Yes (interactive form before copy) | No native support | Templater plugin required | Rare |
