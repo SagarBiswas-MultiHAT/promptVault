@@ -16,7 +16,7 @@
  * Static, not lazy: this is in the first paint.
  */
 
-import { Cloud, Lock, LogOut, Moon, Plus, Search, Settings, Sun, Unlock, User } from 'lucide-react';
+import { Cloud, Lock, LogOut, Moon, Plus, Puzzle, Search, Settings, Sun, Unlock, User } from 'lucide-react';
 
 import type { CloudSyncController } from '../hooks/useCloudSync.ts';
 import { SortOption } from '../types.ts';
@@ -102,6 +102,16 @@ export function AppHeader({
               <div className="flex items-center gap-2">
                 <img src="/logo-sm.png" alt="PromptVault Logo" width="20" height="20" className="w-5 h-5 rounded-md shrink-0 drop-shadow-[0_0_10px_rgba(245,158,11,0.35)]" />
                 <span className="text-sm font-bold tracking-tight">Prompt<span className="text-vault-accent">Vault</span></span>
+                <a
+                  href="https://microsoftedge.microsoft.com/addons/detail/promptvault-ai-prompt-m/ckhifhpbhebgnfomgcojfakpampkijni"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 px-1.5 py-0.5 rounded-full border border-vault-accent/30 bg-vault-accent/10 text-vault-accent hover:bg-vault-accent hover:text-vault-bg text-[9px] font-mono uppercase tracking-wider font-bold transition-all ml-0.5"
+                  title="Install on Microsoft Edge"
+                >
+                  <Puzzle size={10} />
+                  <span>Extension</span>
+                </a>
               </div>
             </div>
 
@@ -246,6 +256,17 @@ export function AppHeader({
                 </div>
               )}
             </div>
+
+            <a
+              href="https://microsoftedge.microsoft.com/addons/detail/promptvault-ai-prompt-m/ckhifhpbhebgnfomgcojfakpampkijni"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden lg:flex items-center gap-1.5 px-3 py-2 border border-vault-accent/30 bg-vault-accent/10 hover:bg-vault-accent hover:text-vault-bg text-vault-accent rounded-xl text-[10px] font-mono font-bold tracking-widest uppercase transition-all shadow-sm"
+              title="Install PromptVault on Microsoft Edge (Alt+P or /pv in-chat)"
+            >
+              <Puzzle size={13} />
+              <span>Get Extension</span>
+            </a>
 
             <button
               onClick={onNewPrompt}
