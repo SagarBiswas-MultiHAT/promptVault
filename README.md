@@ -207,7 +207,7 @@ The app is fully usable on phones and tablets. The sidebar slides in and out, bu
 
 ### 🧩 Browser Extension (Microsoft Edge & Chromium)
 
-PromptVault is officially available on the **Microsoft Edge Add-ons Store** and as a cross-browser Manifest V3 package for Chrome, Brave, and Opera. It brings your encrypted prompt vault directly into your daily AI workflows:
+PromptVault is officially available on the **Microsoft Edge Add-ons Store** (compatible with Microsoft Edge and Chromium browsers). It brings your encrypted prompt vault directly into your daily AI workflows:
 
 <p align="left">
   <a href="https://microsoftedge.microsoft.com/addons/detail/promptvault-ai-prompt-m/ckhifhpbhebgnfomgcojfakpampkijni">
@@ -229,7 +229,6 @@ PromptVault is officially available on the **Microsoft Edge Add-ons Store** and 
 - **1-Click Web Clipping**: Select any text on any webpage, right-click, and choose **Save selection to PromptVault** to store prompt snippets directly into your vault.
 - **Offline-First AES-256-GCM Security**: All prompts stay encrypted on your local machine using hardware-backed Web Crypto APIs.
 - **Optional Multi-Device Cloud Sync**: Sign in with Google via `chrome.identity` to sync your encrypted prompt library across multiple computers with Supabase.
-- **Chrome & Brave Sideloading**: Pre-built packages (`promptvault-extension-v2.3.1.zip`) are available under [Releases](https://github.com/SagarBiswas-MultiHAT/promptVault/releases/latest) for side-loading in Developer Mode via `Load unpacked`.
 
 ---
 
