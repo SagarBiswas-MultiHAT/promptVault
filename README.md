@@ -8,6 +8,8 @@
   &nbsp;
   <a href="https://promptvault.multihat.dev/"><img src="https://img.shields.io/website?url=https%3A%2F%2Fpromptvault.multihat.dev&up_message=online&down_message=offline&label=Live%20Demo&color=10B981&logo=vercel" alt="Live Demo" /></a>
   &nbsp;
+  <a href="https://buy.polar.sh/polar_cl_I7DT5UQNUs1Qjb4VrFYOiRA2nkb3RVVUJCnjr3o5SGK"><img src="https://img.shields.io/badge/Sponsor-Polar.sh-0062FF?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor SagarBiswas-MultiHAT on Polar.sh" /></a>
+  &nbsp;
   <a href="https://github.com/SagarBiswas-MultiHAT/promptVault/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/SagarBiswas-MultiHAT/promptVault/ci.yml?branch=main&label=CI%20Build&logo=githubactions&logoColor=white" alt="CI Status" /></a>
   &nbsp;
   <a href="https://github.com/SagarBiswas-MultiHAT/promptVault/releases"><img src="https://img.shields.io/badge/Release-v2.3.1-F59E0B?logo=semanticrelease&logoColor=white" alt="Version" /></a>
@@ -72,6 +74,7 @@
 - [Security & Privacy](#is-my-data-safe)
   - [Privacy Policy & Zero Prompt Tracking](PRIVACY.md)
 - [Contributing & Community](#contributing--community)
+- [Support MultiHAT Open-Source](#support-multihat-open-source)
 - [License & Attribution](#license--attribution)
 
 ---
@@ -282,7 +285,7 @@ PromptVault is an open-source project built for the AI community, and we welcome
 
 ---
 
-## ⭐ Star History & Community Support
+## Star History
 
 If you find PromptVault useful for your AI workflow or project, please consider giving this repository a star on GitHub! It helps more developers discover the project and keeps development active.
 
@@ -291,6 +294,16 @@ If you find PromptVault useful for your AI workflow or project, please consider 
 [![Star History Chart](https://api.star-history.com/svg?repos=SagarBiswas-MultiHAT/promptVault&type=Date)](https://star-history.com/#SagarBiswas-MultiHAT/promptVault&Date)
 
 </div>
+
+---
+
+## Support MultiHAT Open-Source
+
+If you find this project useful in your workflow, development, or security research, consider supporting **SagarBiswas-MultiHAT** in its ongoing maintenance and future updates (supports both One-Time and Monthly backing):
+
+[![Support on Polar.sh](https://img.shields.io/badge/Support%20on-Polar.sh-0062FF?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://buy.polar.sh/polar_cl_I7DT5UQNUs1Qjb4VrFYOiRA2nkb3RVVUJCnjr3o5SGK)
+[![Portfolio](https://img.shields.io/badge/Portfolio-sagarbiswas.multihat.dev-2563EB?style=for-the-badge&logo=todoist&logoColor=white)](https://sagarbiswas.multihat.dev/)
+[![Agency](https://img.shields.io/badge/Agency-multihat.dev-111827?style=for-the-badge&logo=vercel&logoColor=white)](https://multihat.dev)
 
 ---
 
